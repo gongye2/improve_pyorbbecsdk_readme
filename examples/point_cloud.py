@@ -16,8 +16,8 @@
 
 import os
 
-from pyorbbecsdk import *
-
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBError, AlignFilter, OBStreamType, PointCloudFilter, OBFormat
+import pyorbbecsdk as ob
 save_points_dir = os.path.join(os.getcwd(), "point_clouds")
 if not os.path.exists(save_points_dir):
     os.mkdir(save_points_dir)
@@ -77,7 +77,7 @@ def main():
         if point_cloud_frame is None:
             continue
         #save point cloud
-        save_point_cloud_to_ply(os.path.join(save_points_dir, "point_cloud.ply"), point_cloud_frame)
+        ob.save_point_cloud_to_ply(os.path.join(save_points_dir, "point_cloud.ply"), point_cloud_frame)
         #save mesh to point cloud
         #save_point_cloud_to_ply(os.path.join(save_points_dir, "point_cloud.ply"), point_cloud_frame, False, True, 50)        
         break

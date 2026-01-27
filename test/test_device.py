@@ -1,5 +1,5 @@
 import unittest
-from pyorbbecsdk import *
+from pyorbbecsdk import Context, OBPropertyID, OBPermissionType
 
 
 class DeviceTest(unittest.TestCase):

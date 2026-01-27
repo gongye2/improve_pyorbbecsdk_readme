@@ -14,7 +14,7 @@
 #  limitations under the License.
 # ******************************************************************************
 
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, OBFrameMetadataType
 
 ESC_KEY = 27
 

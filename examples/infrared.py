@@ -16,7 +16,7 @@
 
 import cv2
 import numpy as np
-from pyorbbecsdk import *
+from pyorbbecsdk import OBFormat, Config, Pipeline, OBSensorType, OBFrameType
 
 ESC_KEY = 27
 

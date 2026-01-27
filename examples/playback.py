@@ -16,7 +16,8 @@
 
 import cv2
 import numpy as np
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType
+import pyorbbecsdk as ob
 from utils import frame_to_bgr_image
 import time
 

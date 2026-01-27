@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # ******************************************************************************
-from pyorbbecsdk import *
+from pyorbbecsdk import OBPermissionType, OBPropertyType, Context
 
 def permission_type_to_string(permission):
     """Convert permission type to display string (e.g., R/W)"""

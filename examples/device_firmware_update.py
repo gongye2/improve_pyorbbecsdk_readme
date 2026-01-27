@@ -16,7 +16,7 @@
 
 import os
 import sys
-from pyorbbecsdk import *
+from pyorbbecsdk import Context
 
 devices = []
 first_call = True

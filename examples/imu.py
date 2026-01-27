@@ -14,7 +14,7 @@
 #  limitations under the License.
 # ******************************************************************************
 import cv2
-from pyorbbecsdk import *
+from pyorbbecsdk import Config, Pipeline, OBSensorType, OBFrameAggregateOutputMode, OBFrameType
 
 ESC_KEY = 27
 

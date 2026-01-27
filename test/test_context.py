@@ -1,5 +1,5 @@
 import unittest
-from pyorbbecsdk import *
+from pyorbbecsdk import DeviceList, Context, OBLogLevel
 
 
 def on_device_connected_callback(_: DeviceList):

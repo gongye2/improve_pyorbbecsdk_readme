@@ -18,18 +18,17 @@ import numpy as np
 import threading
 import sys
 
-from pyorbbecsdk import *
+from pyorbbecsdk import SequenceIdFilter, Pipeline, Config, OBSensorType, OBFrameAggregateOutputMode, OBPropertyID, OBFrameType, OBFormat
 
 cached_frames = {
     'depth' : None,
     'left_ir' : None,
-    'right_ir' : None,
-    'ir' : None
+    'right_ir' : None
 }
 
 stream_sequence_id = {
     'depth': -1,     # -1 means all frames
-    'ir': -1,
+    'left_ir': -1,
     'right_ir': -1
 }
 
@@ -55,7 +54,6 @@ def setup_camera():
     # Define video sensor types to enable
     video_sensor = [
         OBSensorType.DEPTH_SENSOR,
-        OBSensorType.IR_SENSOR,
         OBSensorType.LEFT_IR_SENSOR,
         OBSensorType.RIGHT_IR_SENSOR        
     ]
@@ -92,8 +90,6 @@ def set_filter_value(frame):
         frame = postLeftInfraredFilter.process(frame).as_ir_frame()
     if frame_type == OBFrameType.RIGHT_IR_FRAME:
         frame = postRightInfraredFilter.process(frame).as_ir_frame()
-    if frame_type == OBFrameType.IR_FRAME:
-        frame = postLeftInfraredFilter.process(frame).as_ir_frame()
         
     return frame
     
@@ -263,14 +259,10 @@ def main():
             # Try to get separate left/right IR frames
             left = process_ir(frames.get_frame(OBFrameType.LEFT_IR_FRAME).as_video_frame())
             right = process_ir(frames.get_frame(OBFrameType.RIGHT_IR_FRAME).as_video_frame())
-            processed_frames['ir'] = left
+            processed_frames['left_ir'] = left
             processed_frames['right_ir'] = right
         except:
-            # Fall back to single IR frame if separate frames not available
-            ir_frame = frames.get_ir_frame()
-            ir_frame = set_filter_value(frame)
-            if ir_frame:
-                processed_frames['ir'] = process_ir(ir_frame.as_video_frame())
+            pass
                 
         display = create_display(processed_frames, DISPLAY_WIDTH, DISPLAY_HEIGHT)
         cv2.imshow(WINDOW_NAME, display)

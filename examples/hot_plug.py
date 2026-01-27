@@ -18,7 +18,7 @@ import threading
 import time
 from typing import Optional
 
-from pyorbbecsdk import *
+from pyorbbecsdk import Device, Pipeline, Config, OBSensorType, DeviceList, OBError, Frame, Context, FrameSet
 
 # Global variables
 device: Optional[Device] = None

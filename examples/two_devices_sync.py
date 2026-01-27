@@ -21,7 +21,7 @@ from typing import List
 import cv2
 import numpy as np
 
-from pyorbbecsdk import *
+from pyorbbecsdk import OBMultiDeviceSyncMode, FrameSet, OBFormat, Pipeline, Config, Context, OBSensorType, VideoStreamProfile, OBError
 from utils import frame_to_bgr_image
 
 MAX_DEVICES = 2

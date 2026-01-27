@@ -16,7 +16,8 @@
 import sys
 import os
 import threading
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBFrameAggregateOutputMode, OBPlaybackStatus
+import pyorbbecsdk as ob
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import is_lidar_device
 
@@ -42,7 +43,7 @@ class PlaybackApp:
         self.frame_count = 0
         
         # Create a playback device with a Rosbag file
-        self.playback = PlaybackDevice(file_path)
+        self.playback = ob.PlaybackDevice(file_path)
         # Create a pipeline with the playback device
         self.pipe = Pipeline(self.playback)
         # Enable all recording streams from the playback device
@@ -95,7 +96,7 @@ class PlaybackApp:
                     if self.exited:
                         break
                         
-                    self.play_status = OBPlaybackStatus.UNKNOWN
+                    self.play_status = ob.OBPlaybackStatus.UNKNOWN
                     print("Replay again")
                     self.pipe.start(self.config, self.on_new_frame)
 

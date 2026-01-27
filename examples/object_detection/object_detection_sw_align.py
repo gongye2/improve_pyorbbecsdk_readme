@@ -19,7 +19,7 @@ import time
 import argparse
 import numpy as np
 import onnxruntime as ort
-from pyorbbecsdk import *
+from pyorbbecsdk import Config, OBSensorType, OBFormat, Pipeline, AlignFilter, OBStreamType
 
 import sys
 import os

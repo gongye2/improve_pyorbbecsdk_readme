@@ -14,7 +14,7 @@
 #  limitations under the License.
 # ******************************************************************************
 import sys
-from pyorbbecsdk import *
+from pyorbbecsdk import Context
 
 # Callback function to display update progress
 def preset_update_callback(first_call, state, message, percent):

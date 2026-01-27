@@ -15,7 +15,7 @@
 # ******************************************************************************
 
 import os
-from pyorbbecsdk import *
+from pyorbbecsdk import Context, OBLogLevel, Config, Pipeline, OBSensorType
 import time
 
 def main():

@@ -16,7 +16,8 @@
 
 import cv2
 import numpy as np
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBError, OBSensorType, OBFormat, OBFrameType
+import pyorbbecsdk as ob
 from utils import frame_to_bgr_image, is_astra_mini_device
 import threading
 import math
@@ -56,7 +57,7 @@ def setup_camera(file_path):
     except OBError as e:
         print(e)
         
-    state.recorder = RecordDevice(device, file_path)
+    state.recorder = ob.RecordDevice(device, file_path)
     device_info = device.get_device_info()
 
     # Try to enable all possible sensors

@@ -16,7 +16,7 @@
 import sys
 import cv2
 import numpy as np
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, OBPropertyID, Config, OBSensorType, OBPermissionType, OBFrameAggregateOutputMode, OBHdrConfig, HDRMergeFilter, OBFrameType
 
 ESC_KEY = 27
 PRINT_INTERVAL = 1  # seconds

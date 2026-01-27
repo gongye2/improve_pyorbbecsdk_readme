@@ -16,8 +16,8 @@
 import os
 import sys
 
-from pyorbbecsdk import *
-
+from pyorbbecsdk import Pipeline, OBFrameType, OBError
+import pyorbbecsdk as ob
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import is_lidar_device
 
@@ -72,7 +72,7 @@ def main():
                 
                 # Save point cloud data to ply file
                 save_path = os.path.join(save_points_dir, "LiDARPoints.ply")
-                save_lidar_point_cloud_to_ply(save_path, frame.as_lidar_points_frame(), False)
+                ob.save_lidar_point_cloud_to_ply(save_path, frame.as_lidar_points_frame(), False)
                 print(f"LiDARPoints.ply Saved at: {os.path.abspath(save_path)}")
     
     except KeyboardInterrupt:

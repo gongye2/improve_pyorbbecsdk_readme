@@ -18,7 +18,7 @@ import cv2
 import time
 import numpy as np
 from threading import Thread
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBStreamType, OBError
 
 # --- Configuration Constants ---
 ESC_KEY = 27

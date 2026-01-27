@@ -18,7 +18,8 @@ import cv2
 import time
 from threading import Lock
 
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBError, OBSensorType
+import pyorbbecsdk as ob
 from utils import is_astra_mini_device
 
 class GlobalState:
@@ -46,7 +47,7 @@ def setup_camera(file_path):
     except OBError as e:
         print(e)
     
-    state.recorder = RecordDevice(device, file_path)
+    state.recorder = ob.RecordDevice(device, file_path)
     print("Streams and recorder have started!")
     print("Press 'Ctrl + C' to stop and save.")
     

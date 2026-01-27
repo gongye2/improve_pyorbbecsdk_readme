@@ -14,7 +14,7 @@
 #  limitations under the License.
 # ******************************************************************************
 
-from pyorbbecsdk import *
+from pyorbbecsdk import OBAlignMode, Pipeline, Config, OBSensorType, OBFormat
 import cv2
 import numpy as np
 from utils import frame_to_bgr_image

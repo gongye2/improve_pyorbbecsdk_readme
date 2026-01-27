@@ -16,7 +16,7 @@
 
 import cv2
 import numpy as np
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType
 from utils import frame_to_bgr_image, is_astra_mini_device
 import threading
 import math

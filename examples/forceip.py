@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # ******************************************************************************
-from pyorbbecsdk import *
+from pyorbbecsdk import OBDeviceIpAddrConfig, Context
 
 def get_ip_config():
     """Get the new IP configuration from user input"""

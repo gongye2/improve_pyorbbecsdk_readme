@@ -17,7 +17,8 @@ import sys
 import os
 import time
 import threading
-from pyorbbecsdk import *
+from pyorbbecsdk import Context, Pipeline, Config
+import pyorbbecsdk as ob
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils import is_lidar_device
 
@@ -100,7 +101,7 @@ def main():
                         frame_count_map[f_type] = frame_count_map.get(f_type, 0) + 1
 
         # Initialize the recording device with the output file path
-        record_device = RecordDevice(device, file_path)
+        record_device = ob.RecordDevice(device, file_path)
         
         # Start the pipeline with the configuration and callback
         pipe.start(config, on_new_frame)

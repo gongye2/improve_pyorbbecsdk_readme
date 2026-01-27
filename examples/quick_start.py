@@ -17,7 +17,7 @@
 import cv2
 import numpy as np
 
-from pyorbbecsdk import *
+from pyorbbecsdk import Pipeline, OBFormat
 from utils import frame_to_bgr_image
 
 ESC_KEY = 27
