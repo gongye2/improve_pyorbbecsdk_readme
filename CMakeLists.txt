@@ -4,14 +4,15 @@ project(pyorbbecsdk)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O3")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -fPIC -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
 set(CMAKE_BUILD_TYPE "Release")
-# If you want to install the package in a different location, change the following line
+
+# Install prefix
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install")
 
-
+# RPATH: always search dependencies relative to the module itself
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_INSTALL_RPATH "$ORIGIN/")
 set(BUILD_TESTING ON CACHE BOOL "Build tests" FORCE)
@@ -20,25 +21,31 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif ()
 
+# Platform-specific library prefix and suffix
 if (WIN32)
   set(ORBBEC_LIB_PREFIX "")
   set(ORBBEC_LIB_SUFFIX ".lib")
-elseif(APPLE)
+elseif (APPLE)
   set(ORBBEC_LIB_PREFIX "lib")
   set(ORBBEC_LIB_SUFFIX ".dylib")
 elseif (UNIX)
   set(ORBBEC_LIB_PREFIX "lib")
   set(ORBBEC_LIB_SUFFIX ".so")
 endif ()
+
 # Determine host platform
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetermineHostPlatform.cmake)
 
+# Orbbec SDK paths
 set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/${HOST_PLATFORM})
 set(ORBBEC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
+
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(pybind11 REQUIRED)
+
 link_directories(${ORBBEC_LIBS})
 
+# Python extension module
 pybind11_add_module(${PROJECT_NAME}
   src/pyorbbecsdk/pyorbbecsdk.cpp
   src/pyorbbecsdk/context.cpp
@@ -53,7 +60,7 @@ pybind11_add_module(${PROJECT_NAME}
   src/pyorbbecsdk/types.cpp
   src/pyorbbecsdk/utils.cpp
   src/pyorbbecsdk/record_playback.cpp
-  )
+)
 
 if (CMAKE_C_COMPILER_ID MATCHES "Clang" AND NOT APPLE)
   target_link_libraries(${PROJECT_NAME} PRIVATE atomic)
@@ -62,25 +69,28 @@ endif ()
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${ORBBEC_INCLUDE_DIR}
   src/pyorbbecsdk/
-  )
+)
 
 if (UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     -lOrbbecSDK
     -L${ORBBEC_LIBS}
-    )
+  )
 elseif (WIN32)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     OrbbecSDK
-    )
+  )
 endif ()
 
+# ===============================
+# Tests
+# ===============================
 set(PY_TEST_SRCS
   test/test_context.py
   test/test_device.py
   test/test_pipeline.py
   test/test_sensor_control.py
-  )
+)
 
 if (BUILD_TESTING)
   enable_testing()
@@ -90,32 +100,79 @@ if (BUILD_TESTING)
     get_filename_component(PY_TEST_NAME ${PY_TEST_SRC} NAME_WE)
     add_test(NAME ${PY_TEST_NAME}
       COMMAND ${Python3_EXECUTABLE} -v ${CMAKE_CURRENT_SOURCE_DIR}/${PY_TEST_SRC}
-      )
+    )
   endforeach ()
 endif ()
 
+# ===============================
+# Installation layout
+# ===============================
+
+# Final Python package directory
+set(PY_PACKAGE_DIR ${CMAKE_INSTALL_PREFIX}/lib/pyorbbecsdk)
+
+# 1. Install pybind11 extension module (.pyd / .so)
 install(TARGETS ${PROJECT_NAME}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-if(APPLE)
+  LIBRARY DESTINATION ${PY_PACKAGE_DIR}
+  RUNTIME DESTINATION ${PY_PACKAGE_DIR}
+)
+
+# 2. Install OrbbecSDK shared libraries
+if (APPLE)
   install(DIRECTORY ${ORBBEC_LIBS}/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    FILES_MATCHING PATTERN "*.dylib"
-    )
+          DESTINATION ${PY_PACKAGE_DIR}
+          FILES_MATCHING PATTERN "*.dylib")
 elseif (UNIX)
   install(DIRECTORY ${ORBBEC_LIBS}/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    FILES_MATCHING
-    PATTERN "*.so"
-    PATTERN "*.so.*"
-    PATTERN "*.xml"
-    )
+          DESTINATION ${PY_PACKAGE_DIR}
+          FILES_MATCHING
+            PATTERN "*.so"
+            PATTERN "*.so.*"
+            PATTERN "*.md"
+            PATTERN "*.xml")
 elseif (WIN32)
   install(DIRECTORY ${ORBBEC_LIBS}/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-    FILES_MATCHING PATTERN "*.lib"
-    PATTERN "*.dll"
-    PATTERN "*.xml"
-    )
+          DESTINATION ${PY_PACKAGE_DIR}
+          FILES_MATCHING
+            PATTERN "*.dll"
+            PATTERN "*.lib"
+            PATTERN "*.md"
+            PATTERN "*.xml")
 endif ()
+
+# 3. Examples
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/examples
+          DESTINATION ${PY_PACKAGE_DIR})
+endif ()
+
+# 4. Config files
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/config
+          DESTINATION ${PY_PACKAGE_DIR})
+endif ()
+
+# 5. env_setup scripts 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup)
+  if (WIN32)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup/
+            DESTINATION ${PY_PACKAGE_DIR}/shared
+            FILES_MATCHING
+              PATTERN "*.md"
+              PATTERN "*.ps1")
+  elseif (UNIX)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup/
+            DESTINATION ${PY_PACKAGE_DIR}/shared
+            FILES_MATCHING
+              PATTERN "*.rules"
+              PATTERN "*.sh")
+  endif ()
+endif ()
+
+# 6. Extension directory 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/extension)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/extension
+          DESTINATION ${PY_PACKAGE_DIR})
+endif ()
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
