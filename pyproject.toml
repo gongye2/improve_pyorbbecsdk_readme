@@ -1,3 +1,30 @@
-[tool.cibuildwheel]
-build = "cp39-* cp310-*"
-archs = "AMD64"   # Options: AMD64 ARM64 x86
+[project]
+name = "pyorbbecsdk2"
+version = "2.0.16"
+description = "pyorbbecsdk is a python wrapper for the OrbbecSDK"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "zhonghong", email = "zhonghong@orbbec.com" }
+]
+dependencies = [
+    "av>=12.3.0",
+    "numpy>=1.24.4",
+    "opencv-python>=4.13.0.90",
+    "pygame>=2.6.1",
+    "pynput>=1.8.1",
+]
+
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel",
+    "pybind11==2.12.0",
+    "pybind11-global==2.12.0"
+]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "auditwheel",
+]
