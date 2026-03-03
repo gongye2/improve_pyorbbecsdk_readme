@@ -82,14 +82,13 @@ def set_filter_value(frame):
     global postLeftInfraredFilter 
     global postRightInfraredFilter 
     
-    frame = frame.as_video_frame()
     frame_type = frame.get_type()
     if frame_type == OBFrameType.DEPTH_FRAME:
-        frame = postDepthFilter.process(frame).as_depth_frame()
+        frame = postDepthFilter.process(frame)
     if frame_type == OBFrameType.LEFT_IR_FRAME:
-        frame = postLeftInfraredFilter.process(frame).as_ir_frame()
+        frame = postLeftInfraredFilter.process(frame)
     if frame_type == OBFrameType.RIGHT_IR_FRAME:
-        frame = postRightInfraredFilter.process(frame).as_ir_frame()
+        frame = postRightInfraredFilter.process(frame)
         
     return frame
     
@@ -257,8 +256,8 @@ def main():
         
         try:
             # Try to get separate left/right IR frames
-            left = process_ir(frames.get_frame(OBFrameType.LEFT_IR_FRAME).as_video_frame())
-            right = process_ir(frames.get_frame(OBFrameType.RIGHT_IR_FRAME).as_video_frame())
+            left = process_ir(frames.get_left_ir_frame())
+            right = process_ir(frames.get_right_ir_frame())
             processed_frames['left_ir'] = left
             processed_frames['right_ir'] = right
         except:

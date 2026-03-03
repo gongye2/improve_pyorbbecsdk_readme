@@ -42,42 +42,50 @@ void define_stream_profile(const py::object &m) {
            [](const std::shared_ptr<ob::StreamProfile> &self) {
              OB_TRY_CATCH({ return self->is<ob::GyroStreamProfile>(); });
            })
-      .def("as_video_stream_profile",
-           [](std::shared_ptr<ob::StreamProfile> &self) {
-             OB_TRY_CATCH({
-               if (!self->is<ob::VideoStreamProfile>()) {
-                 throw std::invalid_argument("Not a video stream profile");
-               }
-               return self->as<ob::VideoStreamProfile>();
-             });
-           })
-      .def("as_accel_stream_profile",
-           [](std::shared_ptr<ob::StreamProfile> &self) {
-             OB_TRY_CATCH({
-               if (!self->is<ob::AccelStreamProfile>()) {
-                 throw std::invalid_argument("Not an accel stream profile");
-               }
-               return self->as<ob::AccelStreamProfile>();
-             });
-           })
-      .def("as_gyro_stream_profile",
-           [](std::shared_ptr<ob::StreamProfile> &self) {
-             OB_TRY_CATCH({
-               if (!self->is<ob::GyroStreamProfile>()) {
-                 throw std::invalid_argument("Not a gyro stream profile");
-               }
-               return self->as<ob::GyroStreamProfile>();
-             });
-           })
-      .def("as_lidar_stream_profile",
-           [](std::shared_ptr<ob::StreamProfile> &self) {
-             OB_TRY_CATCH({
-               if (!self->is<ob::LiDARStreamProfile>()) {
-                 throw std::invalid_argument("Not a lidar stream profile");
-               }
-               return self->as<ob::LiDARStreamProfile>();
-             });
-           })
+      .def(
+          "as_video_stream_profile",
+          [](std::shared_ptr<ob::StreamProfile> &self) {
+            OB_TRY_CATCH({
+              if (!self->is<ob::VideoStreamProfile>()) {
+                throw std::invalid_argument("Not a video stream profile");
+              }
+              return self->as<ob::VideoStreamProfile>();
+            });
+          },
+          "DEPRECATED: Use profile.get_video_stream_profile() instead.")
+      .def(
+          "as_accel_stream_profile",
+          [](std::shared_ptr<ob::StreamProfile> &self) {
+            OB_TRY_CATCH({
+              if (!self->is<ob::AccelStreamProfile>()) {
+                throw std::invalid_argument("Not an accel stream profile");
+              }
+              return self->as<ob::AccelStreamProfile>();
+            });
+          },
+          "DEPRECATED: Use profile.get_accel_stream_profile() instead.")
+      .def(
+          "as_gyro_stream_profile",
+          [](std::shared_ptr<ob::StreamProfile> &self) {
+            OB_TRY_CATCH({
+              if (!self->is<ob::GyroStreamProfile>()) {
+                throw std::invalid_argument("Not a gyro stream profile");
+              }
+              return self->as<ob::GyroStreamProfile>();
+            });
+          },
+          "DEPRECATED: Use profile.get_gyro_stream_profile() instead.")
+      .def(
+          "as_lidar_stream_profile",
+          [](std::shared_ptr<ob::StreamProfile> &self) {
+            OB_TRY_CATCH({
+              if (!self->is<ob::LiDARStreamProfile>()) {
+                throw std::invalid_argument("Not a lidar stream profile");
+              }
+              return self->as<ob::LiDARStreamProfile>();
+            });
+          },
+          "DEPRECATED: Use profile.get_lidar_stream_profile() instead.")
       .def("bind_extrinsic_to",
            [](const std::shared_ptr<ob::StreamProfile> &self,
               std::shared_ptr<ob::StreamProfile> &target,
@@ -175,8 +183,8 @@ void define_gyro_stream_profile(const py::object &m) {
            })
       .def("__repr__", [](const std::shared_ptr<ob::GyroStreamProfile> &self) {
         OB_TRY_CATCH({
-          return "<GyroStreamProfile: " + std::to_string(self->fullScaleRange()) +
-                 ">";
+          return "<GyroStreamProfile: " +
+                 std::to_string(self->fullScaleRange()) + ">";
         });
       });
 }

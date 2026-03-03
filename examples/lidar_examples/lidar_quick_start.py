@@ -65,14 +65,14 @@ def main():
                     continue
             
                 # Get LiDAR point cloud frame
-                frame = frames.get_frame(OBFrameType.LIDAR_POINTS_FRAME)
+                frame = frames.get_lidar_points_frame()
                 if frame is None:
                     print("No LiDAR frame found!")
                     continue
                 
                 # Save point cloud data to ply file
                 save_path = os.path.join(save_points_dir, "LiDARPoints.ply")
-                ob.save_lidar_point_cloud_to_ply(save_path, frame.as_lidar_points_frame(), False)
+                ob.save_lidar_point_cloud_to_ply(save_path, frame, False)
                 print(f"LiDARPoints.ply Saved at: {os.path.abspath(save_path)}")
     
     except KeyboardInterrupt:

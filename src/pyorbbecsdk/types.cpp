@@ -223,6 +223,14 @@ void define_orbbec_types(const py::object &m) {
       .def_readwrite("step", &OBUint8PropertyRange::step)
       .def_readwrite("default_value", &OBUint8PropertyRange::def);
 
+  py::class_<OBBoolPropertyRange>(m, "OBBoolPropertyRange")
+      .def(py::init<>())
+      .def_readwrite("cur", &OBBoolPropertyRange::cur)
+      .def_readwrite("min", &OBBoolPropertyRange::min)
+      .def_readwrite("max", &OBBoolPropertyRange::max)
+      .def_readwrite("step", &OBBoolPropertyRange::step)
+      .def_readwrite("default_value", &OBBoolPropertyRange::def);
+
   py::class_<OBCameraIntrinsic>(m, "OBCameraIntrinsic")
       .def(py::init<>())
       .def_readwrite("fx", &OBCameraIntrinsic::fx)
@@ -501,6 +509,7 @@ void define_orbbec_types(const py::object &m) {
       .value("BGR_TO_RGB", OBConvertFormat::FORMAT_BGR_TO_RGB);
 
   py::enum_<OBGyroSampleRate>(m, "OBGyroSampleRate")
+      .value("SAMPLE_RATE_UNKNOWN", OBGyroSampleRate::OB_SAMPLE_RATE_UNKNOWN)
       .value("SAMPLE_RATE_1_5625_HZ",
              OBGyroSampleRate::OB_SAMPLE_RATE_1_5625_HZ)
       .value("SAMPLE_RATE_3_125_HZ", OBGyroSampleRate::OB_SAMPLE_RATE_3_125_HZ)
@@ -517,10 +526,13 @@ void define_orbbec_types(const py::object &m) {
       .value("SAMPLE_RATE_8_KHZ", OBGyroSampleRate::OB_SAMPLE_RATE_8_KHZ)
       .value("SAMPLE_RATE_16_KHZ", OBGyroSampleRate::OB_SAMPLE_RATE_16_KHZ)
       .value("SAMPLE_RATE_32_KHZ", OBGyroSampleRate::OB_SAMPLE_RATE_32_KHZ)
+      .value("SAMPLE_RATE_400_HZ", OBGyroSampleRate::OB_SAMPLE_RATE_400_HZ)
+      .value("SAMPLE_RATE_800_HZ", OBGyroSampleRate::OB_SAMPLE_RATE_800_HZ)
       .export_values();
   m.attr("OBAccelSampleRate") = m.attr("OBGyroSampleRate");
 
   py::enum_<OBGyroFullScaleRange>(m, "OBGyroFullScaleRange")
+      .value("FS_UNKNOWN", OB_GYRO_FS_UNKNOWN)
       .value("FS_16dps", OB_GYRO_FS_16dps)
       .value("FS_31dps", OB_GYRO_FS_31dps)
       .value("FS_62dps", OB_GYRO_FS_62dps)
@@ -528,13 +540,20 @@ void define_orbbec_types(const py::object &m) {
       .value("FS_250dps", OB_GYRO_FS_250dps)
       .value("FS_500dps", OB_GYRO_FS_500dps)
       .value("FS_1000dps", OB_GYRO_FS_1000dps)
-      .value("FS_2000dps", OB_GYRO_FS_2000dps);
+      .value("FS_2000dps", OB_GYRO_FS_2000dps)
+      .value("FS_400dps", OB_GYRO_FS_400dps)
+      .value("FS_800dps", OB_GYRO_FS_800dps);
 
   py::enum_<OBAccelFullScaleRange>(m, "OBAccelFullScaleRange")
+      .value("ACCEL_FS_UNKNOWN", OBAccelFullScaleRange::OB_ACCEL_FS_UNKNOWN)
       .value("ACCEL_FS_2g", OBAccelFullScaleRange::OB_ACCEL_FS_2g)
       .value("ACCEL_FS_4g", OBAccelFullScaleRange::OB_ACCEL_FS_4g)
       .value("ACCEL_FS_8g", OBAccelFullScaleRange::OB_ACCEL_FS_8g)
-      .value("ACCEL_FS_16g", OBAccelFullScaleRange::OB_ACCEL_FS_16g);
+      .value("ACCEL_FS_16g", OBAccelFullScaleRange::OB_ACCEL_FS_16g)
+      .value("ACCEL_FS_3g", OBAccelFullScaleRange::OB_ACCEL_FS_3g)
+      .value("ACCEL_FS_6g", OBAccelFullScaleRange::OB_ACCEL_FS_6g)
+      .value("ACCEL_FS_12g", OBAccelFullScaleRange::OB_ACCEL_FS_12g)
+      .value("ACCEL_FS_24g", OBAccelFullScaleRange::OB_ACCEL_FS_24g);
 
   py::class_<OBAccelValue>(m, "OBAccelValue")
       .def(py::init<>())
@@ -714,8 +733,7 @@ void define_orbbec_types(const py::object &m) {
              OBSyncMode::OB_SYNC_MODE_PRIMARY_SOFT_TRIGGER)
       .value("SECONDARY_SOFT_TRIGGER",
              OBSyncMode::OB_SYNC_MODE_SECONDARY_SOFT_TRIGGER)
-      .value("IR_IMU_SYNC",
-             OBSyncMode::OB_SYNC_MODE_IR_IMU_SYNC)
+      .value("IR_IMU_SYNC", OBSyncMode::OB_SYNC_MODE_IR_IMU_SYNC)
       .value("UNKNOWN", OBSyncMode::OB_SYNC_MODE_UNKNOWN);
 
   py::enum_<OBPowerLineFreqMode>(m, "OBPowerLineFreqMode")
@@ -937,9 +955,8 @@ void define_orbbec_types(const py::object &m) {
       .value(
           "ANY_SITUATION",
           OBFrameAggregateOutputMode::OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION)
-      .value(
-          "DISABLE",
-          OBFrameAggregateOutputMode::OB_FRAME_AGGREGATE_OUTPUT_DISABLE);
+      .value("DISABLE",
+             OBFrameAggregateOutputMode::OB_FRAME_AGGREGATE_OUTPUT_DISABLE);
   py::enum_<OBCoordinateSystemType>(m, "OBCoordinateSystemType")
       .value("LEFT_HAND",
              OBCoordinateSystemType::OB_LEFT_HAND_COORDINATE_SYSTEM)
@@ -1102,8 +1119,9 @@ void define_orbbec_types(const py::object &m) {
              OBFrameMetadataType::OB_FRAME_METADATA_TYPE_LASER_STATUS)
       .value("GPIO_INPUT_DATA",
              OBFrameMetadataType::OB_FRAME_METADATA_TYPE_GPIO_INPUT_DATA)
-      .value("DISPARITY_SEARCH_OFFSET",
-             OBFrameMetadataType::OB_FRAME_METADATA_TYPE_DISPARITY_SEARCH_OFFSET)
+      .value(
+          "DISPARITY_SEARCH_OFFSET",
+          OBFrameMetadataType::OB_FRAME_METADATA_TYPE_DISPARITY_SEARCH_OFFSET)
       .value("DISPARITY_SEARCH_RANGE",
              OBFrameMetadataType::OB_FRAME_METADATA_TYPE_DISPARITY_SEARCH_RANGE)
       .value("COUNT", OBFrameMetadataType::OB_FRAME_METADATA_TYPE_COUNT);

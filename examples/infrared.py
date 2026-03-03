@@ -24,7 +24,6 @@ ESC_KEY = 27
 def process_ir_frame(ir_frame, is_dual_ir=False):
     if ir_frame is None:
         return None
-    ir_frame = ir_frame.as_video_frame()
     ir_data = np.asanyarray(ir_frame.get_data())
     width = ir_frame.get_width()
     height = ir_frame.get_height()
@@ -117,8 +116,8 @@ def main():
                 continue
 
             if has_dual_ir:
-                left_ir_frame = frames.get_frame(OBFrameType.LEFT_IR_FRAME)
-                right_ir_frame = frames.get_frame(OBFrameType.RIGHT_IR_FRAME)
+                left_ir_frame = frames.get_left_ir_frame()
+                right_ir_frame = frames.get_right_ir_frame()
 
                 left_image = process_ir_frame(left_ir_frame, True)
                 right_image = process_ir_frame(right_ir_frame, True)
@@ -129,7 +128,7 @@ def main():
                 combined_ir = np.hstack((left_image, right_image))
                 cv2.imshow("Dual IR", combined_ir)
             else:
-                ir_frame = frames.get_frame(OBFrameType.IR_FRAME)
+                ir_frame = frames.get_ir_frame()
                 ir_image = process_ir_frame(ir_frame)
                 if ir_image is not None:
                     cv2.imshow("IR", ir_image)

@@ -43,7 +43,7 @@ def main():
             profile = enable_profiles.get_stream_profile_by_index(i)
             if profile.get_type() == OBStreamType.DEPTH_STREAM:
                 # Cast to VideoStreamProfile to access resolution and FPS
-                depth_profile = profile.as_video_stream_profile()
+                depth_profile = profile
                 if depth_profile:
                     # Enable Confidence stream using same width, height, and FPS as Depth
                     config.enable_video_stream(
@@ -70,7 +70,7 @@ def main():
                 continue
             
             # Cast the generic frame to a specialized ConfidenceFrame
-            confidence_frame = confidence_frame.as_confidence_frame()
+            confidence_frame = frames.get_confidence_frame()
             
             try:
                 # Convert raw frame data into a NumPy buffer (unsigned 8-bit integers)

@@ -94,7 +94,6 @@ def main():
             if not frames:
                 continue
             
-            frames = frames.as_frame_set()
             color_frame = frames.get_color_frame()
             depth_frame = frames.get_depth_frame()
             

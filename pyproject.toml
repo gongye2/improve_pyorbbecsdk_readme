@@ -27,4 +27,5 @@ build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = [
     "auditwheel",
+    "pybind11-stubgen",
 ]

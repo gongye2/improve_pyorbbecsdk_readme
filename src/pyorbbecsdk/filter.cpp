@@ -50,9 +50,18 @@ void define_filter(const py::object& m) {
                auto out = self->process(frame);
                if (!out) {
                  return py::object(py::none());
-               }
-               if (out->is<ob::FrameSet>()) {
+               } else if (out->is<ob::FrameSet>()) {
                  return py::cast(out->as<ob::FrameSet>());
+               } else if (out->is<ob::ColorFrame>()) {
+                 return py::cast(out->as<ob::ColorFrame>());
+               } else if (out->is<ob::DepthFrame>()) {
+                 return py::cast(out->as<ob::DepthFrame>());
+               } else if (out->is<ob::IRFrame>()) {
+                 return py::cast(out->as<ob::IRFrame>());
+               } else if (out->is<ob::ConfidenceFrame>()) {
+                 return py::cast(out->as<ob::ConfidenceFrame>());
+               } else if (out->is<ob::PointsFrame>()) {
+                 return py::cast(out->as<ob::PointsFrame>());
                }
                return py::cast(out);
              });

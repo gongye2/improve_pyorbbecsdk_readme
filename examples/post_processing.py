@@ -192,10 +192,7 @@ def main():
                     processed_frame = f.process(processed_frame)
             
             if processed_frame is None:
-                continue
-            
-            # Re-cast processed result back to depth frame format
-            processed_frame = processed_frame.as_depth_frame()                    
+                continue                  
             
             # --- Process Original Frame for Display ---
             depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)

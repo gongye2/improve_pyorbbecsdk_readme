@@ -16,7 +16,7 @@
 
 import cv2
 import numpy as np
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType, PlaybackDevice, OBPlaybackStatus
 import pyorbbecsdk as ob
 from utils import frame_to_bgr_image
 import time
@@ -97,7 +97,6 @@ def process_ir(ir_frame, key):
     if ir_frame is None:
         return None
 
-    ir_frame = ir_frame.as_video_frame()
     ir_data = np.asanyarray(ir_frame.get_data())
     width = ir_frame.get_width()
     height = ir_frame.get_height()
@@ -279,19 +278,19 @@ def main():
                 continue
 
             # Process color image        
-            color_frame = frames.get_frame(OBFrameType.COLOR_FRAME)
+            color_frame = frames.get_color_frame()
             if color_frame:
-                processed_frames['color'] = process_color(color_frame.as_video_frame())
+                processed_frames['color'] = process_color(color_frame)
             # Process depth image
-            depth_frame = frames.get_frame(OBFrameType.DEPTH_FRAME)
+            depth_frame = frames.get_depth_frame()
             if depth_frame:
-                processed_frames['depth'] = process_depth(depth_frame.as_video_frame())       
+                processed_frames['depth'] = process_depth(depth_frame)       
             # Process left IR
-            left_ir_frame = frames.get_frame(OBFrameType.LEFT_IR_FRAME)
+            left_ir_frame = frames.get_left_ir_frame()
             processed_frames['left_ir'] = process_ir(left_ir_frame, 'left_ir')
 
             # Process right IR
-            right_ir_frame = frames.get_frame(OBFrameType.RIGHT_IR_FRAME)
+            right_ir_frame = frames.get_right_ir_frame()
             processed_frames['right_ir'] = process_ir(right_ir_frame, 'right_ir')
 
             # Process mono IR
@@ -299,27 +298,27 @@ def main():
             processed_frames['ir'] = process_ir(ir_frame, 'ir')
             
             # Process confidence
-            confidence = frames.get_frame_by_type(OBFrameType.CONFIDENCE_FRAME)
+            confidence = frames.get_confidence_frame()
             if confidence:
-                processed_frames['confidence'] = process_confidence(confidence.as_confidence_frame())
+                processed_frames['confidence'] = process_confidence(confidence)
 
             # Process IMU data
-            accel = frames.get_frame(OBFrameType.ACCEL_FRAME)
-            gyro = frames.get_frame(OBFrameType.GYRO_FRAME)
+            accel = frames.get_accel_frame()
+            gyro = frames.get_gyro_frame()
             if accel:
-                processed_frames['accel'] = accel.as_accel_frame()
+                processed_frames['accel'] = accel
             if gyro:
-                processed_frames['gyro'] = gyro.as_gyro_frame()
+                processed_frames['gyro'] = gyro
                 
             # Process left RGB
-            left_color_frame = frames.get_frame(OBFrameType.LEFT_COLOR_FRAME)
+            left_color_frame = frames.get_left_color_frame()
             if left_color_frame:
-                processed_frames['left_color'] = process_color(left_color_frame.as_video_frame())
+                processed_frames['left_color'] = process_color(left_color_frame)
 
             # Process right RGB
-            right_color_frame = frames.get_frame(OBFrameType.RIGHT_COLOR_FRAME)
+            right_color_frame = frames.get_right_color_frame()
             if right_color_frame:
-                processed_frames['right_color'] = process_color(right_color_frame.as_video_frame())
+                processed_frames['right_color'] = process_color(right_color_frame)
             
             # create display
             display = create_display(processed_frames, enabled_sensor_types, DISPLAY_WIDTH, DISPLAY_HEIGHT)

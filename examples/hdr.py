@@ -133,8 +133,8 @@ def main(argv):
 
             # Get all frames
             depth_frame = frames.get_depth_frame()
-            left_ir_frame = frames.get_frame(OBFrameType.LEFT_IR_FRAME)
-            right_ir_frame = frames.get_frame(OBFrameType.RIGHT_IR_FRAME)
+            left_ir_frame = frames.get_left_ir_frame()
+            right_ir_frame = frames.get_right_ir_frame()
 
             if not all([depth_frame, left_ir_frame, right_ir_frame]):
                 print("Not All frames received")
@@ -145,8 +145,7 @@ def main(argv):
             if not merged_frame:
                 continue
 
-            merged_frames = merged_frame.as_frame_set()
-            merged_depth_frame = merged_frames.get_depth_frame()
+            merged_depth_frame = merged_frame.get_depth_frame()
 
             # Convert frames to displayable images
             depth_image = create_depth_image(depth_frame)
@@ -213,7 +212,6 @@ def create_depth_image(depth_frame):
 
 def create_ir_image(ir_frame):
     """Convert IR frame to displayable image with enhanced contrast"""
-    ir_frame = ir_frame.as_video_frame()
     width = ir_frame.get_width()
     height = ir_frame.get_height()
 

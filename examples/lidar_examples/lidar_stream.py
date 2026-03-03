@@ -179,17 +179,17 @@ def select_streams(device, config):
             profile = stream_profile_list.get_stream_profile_by_index(index)
             # Differentiate profiles based on sensor type
             if sensor.get_type() == OBSensorType.ACCEL_SENSOR:
-                acc_profile = profile.as_accel_stream_profile()
+                acc_profile = profile.get_accel_stream_profile()
                 acc_rate = acc_profile.get_sample_rate()
                 print(f" - {index}.acc rate: {acc_rate}")
                 
             elif sensor.get_type() == OBSensorType.GYRO_SENSOR:
-                gyro_profile = profile.as_gyro_stream_profile()
+                gyro_profile = profile.get_gyro_stream_profile()
                 gyro_rate = gyro_profile.get_sample_rate()
                 print(f" - {index}.gyro rate: {gyro_rate}")
     
             elif sensor.get_type() == OBSensorType.LIDAR_SENSOR:
-                lidar_profile = profile.as_lidar_stream_profile()
+                lidar_profile = profile.get_lidar_stream_profile()
                 format_name = lidar_profile.get_format()
                 scan_rate = lidar_profile.get_scan_rate()
                 print(f" - {index}.format: {format_name}, scan rate: {scan_rate}")
@@ -226,11 +226,11 @@ def on_new_frame_set(frames):
         if frame_count % 50 == 0:
             f_type = frame.get_type()
             if f_type == OBFrameType.LIDAR_POINTS_FRAME:
-                print_lidar_point_cloud_info(frame.as_lidar_points_frame())
+                print_lidar_point_cloud_info(frame)
             elif f_type == OBFrameType.ACCEL_FRAME:
-                print_imu_value(frame.as_accel_frame(), "m/s^2")
+                print_imu_value(frame, "m/s^2")
             elif f_type == OBFrameType.GYRO_FRAME:
-                print_imu_value(frame.as_gyro_frame(), "rad/s")
+                print_imu_value(frame, "rad/s")
 
     frame_count += 1
 

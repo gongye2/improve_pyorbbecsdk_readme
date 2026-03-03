@@ -169,21 +169,42 @@ PYBIND11_MODULE(pyorbbecsdk, m) {
     std::cout << "load extensions from " << extensions_path << std::endl;
     ob::Context::setExtensionsDirectory(extensions_path.c_str());
   }
-  // context
+  // types
   pyorbbecsdk::define_orbbec_types(m);
-  pyorbbecsdk::define_context(m);
+
+  // stream_profile
+  pyorbbecsdk::define_stream_profile(m);
+  pyorbbecsdk::define_video_stream_profile(m);
+  pyorbbecsdk::define_accel_stream_profile(m);
+  pyorbbecsdk::define_gyro_stream_profile(m);
+  pyorbbecsdk::define_lidar_stream_profile(m);
+  pyorbbecsdk::define_stream_profile_list(m);
+
+  // sensor
+  pyorbbecsdk::define_sensor(m);
+  pyorbbecsdk::define_sensor_list(m);
 
   // device
   pyorbbecsdk::define_device_info(m);
-  pyorbbecsdk::define_device_list(m);
   pyorbbecsdk::define_device_preset_list(m);
   pyorbbecsdk::define_depth_work_mode_list(m);
   pyorbbecsdk::define_preset_resolution_config_list(m);
-  pyorbbecsdk::define_device(m);
   pyorbbecsdk::define_camera_list(m);
+  pyorbbecsdk::define_device(m);
+  pyorbbecsdk::define_device_list(m);
 
-  // error
-  pyorbbecsdk::define_orbbec_error(m);
+  // frame
+  pyorbbecsdk::define_frame(m);
+  pyorbbecsdk::define_video_frame(m);
+  pyorbbecsdk::define_color_frame(m);
+  pyorbbecsdk::define_depth_frame(m);
+  pyorbbecsdk::define_ir_frame(m);
+  pyorbbecsdk::define_confidence_frame(m);
+  pyorbbecsdk::define_points_frame(m);
+  pyorbbecsdk::define_accel_frame(m);
+  pyorbbecsdk::define_gyro_frame(m);
+  pyorbbecsdk::define_lidar_points_frame(m);
+  pyorbbecsdk::define_frame_set(m);
 
   // filter
   pyorbbecsdk::define_filter(m);
@@ -199,38 +220,21 @@ PYBIND11_MODULE(pyorbbecsdk, m) {
   pyorbbecsdk::define_sequence_id_filter(m);
   pyorbbecsdk::define_noise_removal_filter(m);
   pyorbbecsdk::define_decimation_filter(m);
+  pyorbbecsdk::define_filter_list(m);
 
-  // frame
-  pyorbbecsdk::define_frame(m);
-  pyorbbecsdk::define_video_frame(m);
-  pyorbbecsdk::define_color_frame(m);
-  pyorbbecsdk::define_depth_frame(m);
-  pyorbbecsdk::define_ir_frame(m);
-  pyorbbecsdk::define_confidence_frame(m);
-  pyorbbecsdk::define_points_frame(m);
-  pyorbbecsdk::define_frame_set(m);
-  pyorbbecsdk::define_accel_frame(m);
-  pyorbbecsdk::define_gyro_frame(m);
-  pyorbbecsdk::define_lidar_points_frame(m);
+  // context
+  pyorbbecsdk::define_context(m);
+
+  // error
+  pyorbbecsdk::define_orbbec_error(m);
 
   // pipeline
-  pyorbbecsdk::define_pipeline(m);
   pyorbbecsdk::define_pipeline_config(m);
+  pyorbbecsdk::define_pipeline(m);
 
   // properties
   pyorbbecsdk::define_properties(m);
 
-  // sensor
-  pyorbbecsdk::define_sensor(m);
-  pyorbbecsdk::define_sensor_list(m);
-  pyorbbecsdk::define_filter_list(m);
-  // stream_profile
-  pyorbbecsdk::define_stream_profile(m);
-  pyorbbecsdk::define_video_stream_profile(m);
-  pyorbbecsdk::define_accel_stream_profile(m);
-  pyorbbecsdk::define_gyro_stream_profile(m);
-  pyorbbecsdk::define_lidar_stream_profile(m);
-  pyorbbecsdk::define_stream_profile_list(m);
   pyorbbecsdk::define_coordinate_transform_helper(m);
   pyorbbecsdk::define_point_cloud_helper(m);
   pyorbbecsdk::define_record(m);
@@ -254,21 +258,42 @@ PYBIND11_MODULE(pyorbbecsdk2, m) {
     std::cout << "load extensions from " << extensions_path << std::endl;
     ob::Context::setExtensionsDirectory(extensions_path.c_str());
   }
-  // context
+  // types
   pyorbbecsdk::define_orbbec_types(m);
-  pyorbbecsdk::define_context(m);
+
+  // stream_profile
+  pyorbbecsdk::define_stream_profile(m);
+  pyorbbecsdk::define_video_stream_profile(m);
+  pyorbbecsdk::define_accel_stream_profile(m);
+  pyorbbecsdk::define_gyro_stream_profile(m);
+  pyorbbecsdk::define_lidar_stream_profile(m);
+  pyorbbecsdk::define_stream_profile_list(m);
+
+  // sensor
+  pyorbbecsdk::define_sensor(m);
+  pyorbbecsdk::define_sensor_list(m);
 
   // device
   pyorbbecsdk::define_device_info(m);
-  pyorbbecsdk::define_device_list(m);
   pyorbbecsdk::define_device_preset_list(m);
   pyorbbecsdk::define_depth_work_mode_list(m);
   pyorbbecsdk::define_preset_resolution_config_list(m);
-  pyorbbecsdk::define_device(m);
   pyorbbecsdk::define_camera_list(m);
+  pyorbbecsdk::define_device(m);
+  pyorbbecsdk::define_device_list(m);
 
-  // error
-  pyorbbecsdk::define_orbbec_error(m);
+  // frame
+  pyorbbecsdk::define_frame(m);
+  pyorbbecsdk::define_video_frame(m);
+  pyorbbecsdk::define_color_frame(m);
+  pyorbbecsdk::define_depth_frame(m);
+  pyorbbecsdk::define_ir_frame(m);
+  pyorbbecsdk::define_confidence_frame(m);
+  pyorbbecsdk::define_points_frame(m);
+  pyorbbecsdk::define_accel_frame(m);
+  pyorbbecsdk::define_gyro_frame(m);
+  pyorbbecsdk::define_lidar_points_frame(m);
+  pyorbbecsdk::define_frame_set(m);
 
   // filter
   pyorbbecsdk::define_filter(m);
@@ -284,38 +309,21 @@ PYBIND11_MODULE(pyorbbecsdk2, m) {
   pyorbbecsdk::define_sequence_id_filter(m);
   pyorbbecsdk::define_noise_removal_filter(m);
   pyorbbecsdk::define_decimation_filter(m);
+  pyorbbecsdk::define_filter_list(m);
 
-  // frame
-  pyorbbecsdk::define_frame(m);
-  pyorbbecsdk::define_video_frame(m);
-  pyorbbecsdk::define_color_frame(m);
-  pyorbbecsdk::define_depth_frame(m);
-  pyorbbecsdk::define_ir_frame(m);
-  pyorbbecsdk::define_confidence_frame(m);
-  pyorbbecsdk::define_points_frame(m);
-  pyorbbecsdk::define_frame_set(m);
-  pyorbbecsdk::define_accel_frame(m);
-  pyorbbecsdk::define_gyro_frame(m);
-  pyorbbecsdk::define_lidar_points_frame(m);
+  // context
+  pyorbbecsdk::define_context(m);
+
+  // error
+  pyorbbecsdk::define_orbbec_error(m);
 
   // pipeline
-  pyorbbecsdk::define_pipeline(m);
   pyorbbecsdk::define_pipeline_config(m);
+  pyorbbecsdk::define_pipeline(m);
 
   // properties
   pyorbbecsdk::define_properties(m);
 
-  // sensor
-  pyorbbecsdk::define_sensor(m);
-  pyorbbecsdk::define_sensor_list(m);
-  pyorbbecsdk::define_filter_list(m);
-  // stream_profile
-  pyorbbecsdk::define_stream_profile(m);
-  pyorbbecsdk::define_video_stream_profile(m);
-  pyorbbecsdk::define_accel_stream_profile(m);
-  pyorbbecsdk::define_gyro_stream_profile(m);
-  pyorbbecsdk::define_lidar_stream_profile(m);
-  pyorbbecsdk::define_stream_profile_list(m);
   pyorbbecsdk::define_coordinate_transform_helper(m);
   pyorbbecsdk::define_point_cloud_helper(m);
   pyorbbecsdk::define_record(m);
