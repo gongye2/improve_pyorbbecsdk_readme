@@ -46,7 +46,7 @@ void define_frame(const py::object& m) {
            })
       .def(
           "get_data_pointer",
-          [](const std::shared_ptr<ob::Frame>& self) {
+          [](const std::shared_ptr<ob::Frame>& self) -> py::object {
             OB_TRY_CATCH({
               auto ptr = self->data();
               return py::capsule(ptr, "frame_data_pointer");
@@ -91,95 +91,86 @@ void define_frame(const py::object& m) {
           })
       .def(
           "as_video_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
+          [](const std::shared_ptr<ob::Frame>& self)
+              -> std::shared_ptr<ob::VideoFrame> {
             if (!self->is<ob::VideoFrame>()) {
               throw std::runtime_error("Frame is not a VideoFrame");
             }
             OB_TRY_CATCH({ return self->as<ob::VideoFrame>(); });
           },
           "DISCOURAGED: This method is rarely needed in normal usage.")
-      .def(
-          "as_color_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::ColorFrame>()) {
-              throw std::runtime_error("Frame is not a ColorFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::ColorFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_color_frame() instead.")
-      .def(
-          "as_depth_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::DepthFrame>()) {
-              throw std::runtime_error("Frame is not a DepthFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::DepthFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_depth_frame() instead.")
-      .def(
-          "as_ir_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::IRFrame>()) {
-              throw std::runtime_error("Frame is not an IRFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::IRFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_ir_frame() instead.")
-      .def(
-          "as_frame_set",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::FrameSet>()) {
-              throw std::runtime_error("Frame is not a FrameSet");
-            }
-            OB_TRY_CATCH({ return self->as<ob::FrameSet>(); });
-          },
-          "DEPRECATED: Use FrameSet specific getters or cast at the return "
-          "point.")
-      .def(
-          "as_accel_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::AccelFrame>()) {
-              throw std::runtime_error("Frame is not an AccelFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::AccelFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_accel_frame() instead.")
-      .def(
-          "as_gyro_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::GyroFrame>()) {
-              throw std::runtime_error("Frame is not an GyroFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::GyroFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_gyro_frame() instead.")
-      .def(
-          "as_confidence_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::ConfidenceFrame>()) {
-              throw std::runtime_error("Frame is not a ConfidenceFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::ConfidenceFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_confidence_frame() instead.")
-      .def(
-          "as_points_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::PointsFrame>()) {
-              throw std::runtime_error("Frame is not a PointsFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::PointsFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_points_frame() instead.")
-      .def(
-          "as_lidar_points_frame",
-          [](const std::shared_ptr<ob::Frame>& self) {
-            if (!self->is<ob::LiDARPointsFrame>()) {
-              throw std::runtime_error("Frame is not a LiDARPointsFrame");
-            }
-            OB_TRY_CATCH({ return self->as<ob::LiDARPointsFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_lidar_points_frame() instead.")
+      .def("as_color_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::ColorFrame> {
+             if (!self->is<ob::ColorFrame>()) {
+               throw std::runtime_error("Frame is not a ColorFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::ColorFrame>(); });
+           })
+      .def("as_depth_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::DepthFrame> {
+             if (!self->is<ob::DepthFrame>()) {
+               throw std::runtime_error("Frame is not a DepthFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::DepthFrame>(); });
+           })
+      .def("as_ir_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::IRFrame> {
+             if (!self->is<ob::IRFrame>()) {
+               throw std::runtime_error("Frame is not an IRFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::IRFrame>(); });
+           })
+      .def("as_frame_set",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::FrameSet> {
+             if (!self->is<ob::FrameSet>()) {
+               throw std::runtime_error("Frame is not a FrameSet");
+             }
+             OB_TRY_CATCH({ return self->as<ob::FrameSet>(); });
+           })
+      .def("as_accel_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::AccelFrame> {
+             if (!self->is<ob::AccelFrame>()) {
+               throw std::runtime_error("Frame is not an AccelFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::AccelFrame>(); });
+           })
+      .def("as_gyro_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::GyroFrame> {
+             if (!self->is<ob::GyroFrame>()) {
+               throw std::runtime_error("Frame is not an GyroFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::GyroFrame>(); });
+           })
+      .def("as_confidence_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::ConfidenceFrame> {
+             if (!self->is<ob::ConfidenceFrame>()) {
+               throw std::runtime_error("Frame is not a ConfidenceFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::ConfidenceFrame>(); });
+           })
+      .def("as_points_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::PointsFrame> {
+             if (!self->is<ob::PointsFrame>()) {
+               throw std::runtime_error("Frame is not a PointsFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::PointsFrame>(); });
+           })
+      .def("as_lidar_points_frame",
+           [](const std::shared_ptr<ob::Frame>& self)
+               -> std::shared_ptr<ob::LiDARPointsFrame> {
+             if (!self->is<ob::LiDARPointsFrame>()) {
+               throw std::runtime_error("Frame is not a LiDARPointsFrame");
+             }
+             OB_TRY_CATCH({ return self->as<ob::LiDARPointsFrame>(); });
+           })
       .def("get_stream_profile",
            [](const std::shared_ptr<ob::Frame>& self) {
              OB_TRY_CATCH({ return self->getStreamProfile(); });
@@ -203,7 +194,8 @@ void define_frame(const py::object& m) {
              OB_TRY_CATCH({ self->setSystemTimestampUs(system_timestamp_us); });
            })
       .def("update_data",
-           [](const std::shared_ptr<ob::Frame>& self, py::buffer buffer) {
+           [](const std::shared_ptr<ob::Frame>& self,
+              py::buffer buffer) -> void {
              auto data = buffer.request();
              if (data.ndim != 1) {
                throw std::runtime_error("update_data expects 1D buffer");
@@ -221,7 +213,8 @@ void define_frame(const py::object& m) {
              });
            })
       .def("update_metadata",
-           [](const std::shared_ptr<ob::Frame>& self, py::buffer buffer) {
+           [](const std::shared_ptr<ob::Frame>& self,
+              py::buffer buffer) -> void {
              auto metadata = buffer.request();
 
              if (metadata.ndim != 1) {
@@ -297,36 +290,31 @@ void define_video_frame(const py::object& m) {
            [](const std::shared_ptr<ob::VideoFrame>& self) {
              OB_TRY_CATCH({ return self->metadataSize(); });
            })
-      .def(
-          "as_color_frame",
-          [](const std::shared_ptr<ob::VideoFrame>& self) {
-            OB_TRY_CATCH({ return self->as<ob::ColorFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_color_frame() instead.")
-      .def(
-          "as_depth_frame",
-          [](const std::shared_ptr<ob::VideoFrame>& self) {
-            OB_TRY_CATCH({ return self->as<ob::DepthFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_depth_frame() instead.")
-      .def(
-          "as_ir_frame",
-          [](const std::shared_ptr<ob::VideoFrame>& self) {
-            OB_TRY_CATCH({ return self->as<ob::IRFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_ir_frame() instead.")
-      .def(
-          "as_confidence_frame",
-          [](const std::shared_ptr<ob::VideoFrame>& self) {
-            OB_TRY_CATCH({ return self->as<ob::ConfidenceFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_confidence_frame() instead.")
-      .def(
-          "as_points_frame",
-          [](const std::shared_ptr<ob::VideoFrame>& self) {
-            OB_TRY_CATCH({ return self->as<ob::PointsFrame>(); });
-          },
-          "DEPRECATED: Use frame_set.get_points_frame() instead.")
+      .def("as_color_frame",
+           [](const std::shared_ptr<ob::VideoFrame>& self)
+               -> std::shared_ptr<ob::ColorFrame> {
+             OB_TRY_CATCH({ return self->as<ob::ColorFrame>(); });
+           })
+      .def("as_depth_frame",
+           [](const std::shared_ptr<ob::VideoFrame>& self)
+               -> std::shared_ptr<ob::DepthFrame> {
+             OB_TRY_CATCH({ return self->as<ob::DepthFrame>(); });
+           })
+      .def("as_ir_frame",
+           [](const std::shared_ptr<ob::VideoFrame>& self)
+               -> std::shared_ptr<ob::IRFrame> {
+             OB_TRY_CATCH({ return self->as<ob::IRFrame>(); });
+           })
+      .def("as_confidence_frame",
+           [](const std::shared_ptr<ob::VideoFrame>& self)
+               -> std::shared_ptr<ob::ConfidenceFrame> {
+             OB_TRY_CATCH({ return self->as<ob::ConfidenceFrame>(); });
+           })
+      .def("as_points_frame",
+           [](const std::shared_ptr<ob::VideoFrame>& self)
+               -> std::shared_ptr<ob::PointsFrame> {
+             OB_TRY_CATCH({ return self->as<ob::PointsFrame>(); });
+           })
       .def("__repr__", [](const std::shared_ptr<ob::VideoFrame>& self) {
         OB_TRY_CATCH({
           std::ostringstream oss;
@@ -500,29 +488,7 @@ void define_frame_set(const py::object& m) {
            })
       .def("get_frame_by_index",
            [](const std::shared_ptr<ob::FrameSet>& self, int index) {
-             OB_TRY_CATCH({
-               auto out = self->getFrame(index);
-               if (!out) {
-                 return py::object(py::none());
-               } else if (out->is<ob::ColorFrame>()) {
-                 return py::cast(out->as<ob::ColorFrame>());
-               } else if (out->is<ob::DepthFrame>()) {
-                 return py::cast(out->as<ob::DepthFrame>());
-               } else if (out->is<ob::IRFrame>()) {
-                 return py::cast(out->as<ob::IRFrame>());
-               } else if (out->is<ob::ConfidenceFrame>()) {
-                 return py::cast(out->as<ob::ConfidenceFrame>());
-               } else if (out->is<ob::AccelFrame>()) {
-                 return py::cast(out->as<ob::AccelFrame>());
-               } else if (out->is<ob::GyroFrame>()) {
-                 return py::cast(out->as<ob::GyroFrame>());
-               } else if (out->is<ob::PointsFrame>()) {
-                 return py::cast(out->as<ob::PointsFrame>());
-               } else if (out->is<ob::LiDARPointsFrame>()) {
-                 return py::cast(out->as<ob::LiDARPointsFrame>());
-               }
-               return py::cast(out);
-             });
+             OB_TRY_CATCH({ return self->getFrame(index); });
            })
       .def("push_frame",
            [](const std::shared_ptr<ob::FrameSet>& self,
