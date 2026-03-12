@@ -122,15 +122,128 @@ parse_args() {
 # Cleanup functions
 # ============================================================
 
-# Global pre-cleanup
-global_cleanup() {
-    echo ">>> Global cleanup"
+# Check and confirm deletion of a single path
+confirm_delete() {
+    local path="$1"
+    local name="$2"
 
-    rm -rf "$ROOT_DIR/build" \
-           "$ROOT_DIR/wheel" \
-           "$ROOT_DIR/install" \
-           "$ROOT_DIR/dist"
+    if [ -e "$path" ]; then
+        echo -n "  Found: $name - delete? (y/n/a=all/s=skip-all): "
+        read -r response
 
+        case "$response" in
+            y|Y)
+                rm -rf "$path"
+                echo "    Deleted: $name"
+                return 0
+                ;;
+            a|A)
+                rm -rf "$path"
+                echo "    Deleted: $name"
+                return 0
+                ;;
+            s|S)
+                echo "    Skipped: $name"
+                return 1
+                ;;
+            *)
+                echo "    Skipped: $name"
+                return 1
+                ;;
+        esac
+    fi
+    return 1
+}
+
+# Interactive cleanup confirmation
+interactive_cleanup() {
+    local skip_all=false
+    local allow_all=false
+
+    echo ">>> Checking for existing build artifacts to clean"
+    echo ""
+
+    # Define paths to check
+    local paths_to_check=(
+        "$ROOT_DIR/build:build directory"
+        "$ROOT_DIR/dist:dist directory"
+        "$ROOT_DIR/install:install directory"
+        "$ROOT_DIR/wheel:wheel directory"
+    )
+
+    # Check for build_* directories
+    for dir in "$ROOT_DIR"/build_*; do
+        if [ -d "$dir" ]; then
+            local dirname
+            dirname="$(basename "$dir")"
+            paths_to_check+=("$dir:$dirname directory")
+        fi
+    done
+
+    # Check if anything exists
+    local has_items=false
+    for item in "${paths_to_check[@]}"; do
+        local path="${item%%:*}"
+        if [ -e "$path" ]; then
+            has_items=true
+            break
+        fi
+    done
+
+    if [ "$has_items" = "false" ]; then
+        echo "  No build artifacts found, nothing to clean."
+        echo ""
+        mkdir -p "$ROOT_DIR/wheel"
+        return
+    fi
+
+    # Confirm each path
+    for item in "${paths_to_check[@]}"; do
+        local path="${item%%:*}"
+        local name="${item#*:}"
+
+        if [ "$skip_all" = "true" ]; then
+            echo "  Skipped: $name"
+            continue
+        fi
+
+        if [ "$allow_all" = "true" ]; then
+            rm -rf "$path"
+            echo "  Deleted: $name"
+            continue
+        fi
+
+        if [ -e "$path" ]; then
+            echo -n "  Found: $name - delete? (y=yes/n=no/d=this dir only/s=skip-all/a=allow-all): "
+            read -r response
+
+            case "$response" in
+                y|Y)
+                    rm -rf "$path"
+                    echo "    Deleted: $name"
+                    ;;
+                d|D)
+                    rm -rf "$path"
+                    echo "    Deleted: $name"
+                    skip_all=true
+                    ;;
+                a|A)
+                    rm -rf "$path"
+                    echo "    Deleted: $name"
+                    allow_all=true
+                    ;;
+                s|S)
+                    echo "    Skipped: $name"
+                    skip_all=true
+                    ;;
+                *)
+                    echo "    Skipped: $name"
+                    ;;
+            esac
+        fi
+    done
+
+    echo ""
     mkdir -p "$ROOT_DIR/wheel"
 }
 
@@ -337,7 +450,7 @@ main() {
 
     # Global cleanup (always run first)
     if [ "$CLEAN_BUILD" = "true" ]; then
-        global_cleanup
+        interactive_cleanup
     else
         mkdir -p "$ROOT_DIR/wheel"
     fi
