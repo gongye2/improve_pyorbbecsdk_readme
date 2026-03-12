@@ -41,12 +41,45 @@
 #endif
 
 #include <cstring>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 // #include <Python.h>
 
 namespace py = pybind11;
 namespace pyorbbecsdk2 = pyorbbecsdk;
+
+#if defined(__linux__)
+std::string get_library_path_from_maps(const std::string &library_name) {
+  std::ifstream maps_file("/proc/self/maps");
+  if (!maps_file.is_open()) {
+    return "";
+  }
+
+  std::string line;
+  while (std::getline(maps_file, line)) {
+    std::istringstream iss(line);
+    std::string addr_range, perms, offset, dev, inode, pathname;
+    if (!(iss >> addr_range >> perms >> offset >> dev >> inode)) {
+      continue;
+    }
+
+    std::getline(iss, pathname);
+
+    size_t start = pathname.find_first_not_of(" \t");
+    if (start != std::string::npos) {
+      pathname = pathname.substr(start);
+    }
+
+    if (!pathname.empty() && pathname.find(library_name) != std::string::npos) {
+      return pathname;
+    }
+  }
+
+  return "";
+}
+#endif
 
 std::string get_site_packages_path() {
   Py_Initialize();  // Initialize the Python interpreter
@@ -108,6 +141,15 @@ std::string get_extensions_path() {
   if (dladdr(reinterpret_cast<void *>(&ob_create_context), &dl_info)) {
     if (dl_info.dli_fname) {
       library_path = std::string(dl_info.dli_fname);
+
+      if (library_path.find('/') == std::string::npos) {
+#if defined(__linux__)
+        std::string full_path = get_library_path_from_maps(library_path);
+        if (!full_path.empty()) {
+          library_path = full_path;
+        }
+#endif
+      }
     } else {
       std::cerr << "Failed to get library filename using dladdr" << std::endl;
     }

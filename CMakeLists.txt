@@ -2,22 +2,24 @@ cmake_minimum_required(VERSION 3.15)
 project(pyorbbecsdk)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O3")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -O3")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fPIC -g")
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE "Release") 
 
 # Install prefix
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install")
 
-# RPATH: always search dependencies relative to the module itself
+set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE) 
+set(CMAKE_INSTALL_RPATH "$ORIGIN")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-set(CMAKE_INSTALL_RPATH "$ORIGIN/")
-set(BUILD_TESTING ON CACHE BOOL "Build tests" FORCE)
 
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+option(BUILD_TESTING "Build tests" ON)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif ()
 
@@ -62,7 +64,22 @@ pybind11_add_module(${PROJECT_NAME}
   src/pyorbbecsdk/record_playback.cpp
 )
 
-if (CMAKE_C_COMPILER_ID MATCHES "Clang" AND NOT APPLE)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    SKIP_BUILD_RPATH FALSE
+    BUILD_WITH_INSTALL_RPATH FALSE      
+    INSTALL_RPATH "$ORIGIN"             
+    BUILD_RPATH "$ORIGIN"               
+    PREFIX "" 
+    SUFFIX "${Python3_SOABI}${CMAKE_SHARED_MODULE_SUFFIX}" 
+)
+
+if (UNIX AND NOT APPLE)
+    target_link_options(${PROJECT_NAME} PRIVATE
+        "LINKER:--enable-new-dtags"
+    )
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT APPLE)
   target_link_libraries(${PROJECT_NAME} PRIVATE atomic)
 endif ()
 
@@ -73,8 +90,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 if (UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE
-    -lOrbbecSDK
-    -L${ORBBEC_LIBS}
+    ${ORBBEC_LIBS}/libOrbbecSDK${ORBBEC_LIB_SUFFIX}
   )
 elseif (WIN32)
   target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -94,7 +110,9 @@ set(PY_TEST_SRCS
 
 if (BUILD_TESTING)
   enable_testing()
-  set(Python3_EXECUTABLE Python3::Interpreter)
+  if (TARGET Python3::Interpreter)
+    set(Python3_EXECUTABLE Python3::Interpreter)
+  endif()
   set(ENV{PYTHONPATH} "${CMAKE_CURRENT_BINARY_DIR}:$ENV{PYTHONPATH}")
   foreach (PY_TEST_SRC ${PY_TEST_SRCS})
     get_filename_component(PY_TEST_NAME ${PY_TEST_SRC} NAME_WE)
@@ -126,8 +144,7 @@ elseif (UNIX)
   install(DIRECTORY ${ORBBEC_LIBS}/
           DESTINATION ${PY_PACKAGE_DIR}
           FILES_MATCHING
-            PATTERN "*.so"
-            PATTERN "*.so.*"
+            PATTERN "*.so*"
             PATTERN "*.md"
             PATTERN "*.xml")
 elseif (WIN32)
@@ -175,4 +192,6 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/extension)
           DESTINATION ${PY_PACKAGE_DIR})
 endif ()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UninstallTarget.cmake)
+endif ()
