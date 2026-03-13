@@ -20,66 +20,92 @@ from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType, P
 import pyorbbecsdk as ob
 from utils import frame_to_bgr_image
 import time
+import threading
+import math
 
-exit_requested = False
-playback_status = None
+# Global state to share data between the processing callback and the UI thread
+class GlobalState:
+    def __init__(self):
+        self.frame_mutex = threading.Lock()
+        self.imu_mutex = threading.Lock()
+        self.status_mutex = threading.Lock()
+        self.stop_rendering = False
+        self.exited = False
+        self.playback_status = None
+        self.enabled_sensor_types = []
+        # cached frames for better visualization
+        self.cached_frames = {
+            'color': None,
+            'depth': None,
+            'left_ir': None,
+            'right_ir': None,
+            'ir': None,
+            'confidence': None,
+            'left_color': None,
+            'right_color': None,
+            'accel': None,
+            'gyro': None
+        }
 
-# cached frames for better visualization
-cached_frames = {
-    'color': None,
-    'depth': None,
-    'left_ir': None,
-    'right_ir': None,
-    'ir': None,
-    'confidence': None,
-    'left_color': None,
-    'right_color': None
-}
+state = GlobalState()
+pipeline = None
+config = None
+playback = None
 
-def setup_camera(playback):
+
+def setup_camera(playback_device):
     """Setup camera and stream configuration"""
-    pipeline = Pipeline(playback)
+    global pipeline, config
+    pipeline = Pipeline(playback_device)
     config = Config()
     device = pipeline.get_device()
 
     # Try to enable all possible sensors
-    video_sensors = [
+    sensors = [
         OBSensorType.COLOR_SENSOR,
         OBSensorType.DEPTH_SENSOR,
         OBSensorType.IR_SENSOR,
         OBSensorType.LEFT_IR_SENSOR,
         OBSensorType.RIGHT_IR_SENSOR,
         OBSensorType.CONFIDENCE_SENSOR,
-        OBSensorType.ACCEL_SENSOR, 
-        OBSensorType.GYRO_SENSOR,
         OBSensorType.LEFT_COLOR_SENSOR,
-        OBSensorType.RIGHT_COLOR_SENSOR 
+        OBSensorType.RIGHT_COLOR_SENSOR,
+        OBSensorType.ACCEL_SENSOR,
+        OBSensorType.GYRO_SENSOR
     ]
-    enabled_sensor_types = []  
 
-    sensor_list = device.get_sensor_list()
+    sensor_list = playback_device.get_sensor_list()
     for sensor in range(len(sensor_list)):
         try:
             sensor_type = sensor_list[sensor].get_type()
-            if sensor_type in video_sensors:
+            if sensor_type in sensors:
                 config.enable_stream(sensor_type)
-                enabled_sensor_types.append(sensor_type)
+                state.enabled_sensor_types.append(sensor_type)
         except:
             continue
-    return pipeline, config, enabled_sensor_types
+
+    # Set frame aggregate output mode if available
+    try:
+        config.set_frame_aggregate_output_mode(
+            ob.OBFrameAggregateOutputMode.OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION
+        )
+    except AttributeError:
+        # OBFrameAggregateOutputMode not available in this SDK version
+        pass
+
+    return pipeline, config
+
 
 def process_color(frame):
     """Process color image"""
-    frame = frame if frame else cached_frames['color']
-    cached_frames['color'] = frame
-    return frame_to_bgr_image(frame) if frame else None
+    if frame is None:
+        return None
+    return frame_to_bgr_image(frame)
 
 
 def process_depth(frame):
     """Process depth image"""
-    frame = frame if frame else cached_frames['depth']
-    cached_frames['depth'] = frame
-    if not frame:
+    if frame is None:
         return None
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
@@ -90,13 +116,10 @@ def process_depth(frame):
         return None
 
 
-def process_ir(ir_frame, key):
-    """Process IR frame (left, right, or mono) with cache"""  
-    ir_frame = ir_frame if ir_frame else cached_frames[key]
-    cached_frames[key] = ir_frame
+def process_ir(ir_frame):
+    """Process IR frame (left, right, or mono) to RGB image"""
     if ir_frame is None:
         return None
-
     ir_data = np.asanyarray(ir_frame.get_data())
     width = ir_frame.get_width()
     height = ir_frame.get_height()
@@ -127,11 +150,10 @@ def process_ir(ir_frame, key):
     ir_data = ir_data.astype(data_type)
     return cv2.cvtColor(ir_data, cv2.COLOR_GRAY2RGB)
 
+
 def process_confidence(frame):
     """Process confidence image"""
-    frame = frame if frame else cached_frames['confidence']
-    cached_frames['confidence'] = frame
-    if not frame:
+    if frame is None:
         return None
     try:
         confidence_data = np.frombuffer(frame.get_data(), dtype=np.uint8)
@@ -141,28 +163,138 @@ def process_confidence(frame):
     except ValueError:
         return None
 
-def get_imu_text(frame, name):
-    """Format IMU data"""
-    if not frame:
-        return []
-    if name == "accel":
-        return [
-            f"{name}:",
-            f"timestampus = {frame.get_timestamp_us()}us",
-            f"x = {frame.get_x():.6f}m/s^2",
-            f"y = {frame.get_y():.6f}m/s^2",
-            f"z = {frame.get_z():.6f}m/s^2"
-        ]
-    else:
-        return [
-            f"{name}:",
-            f"timestampus = {frame.get_timestamp_us()}us",
-            f"x = {frame.get_x():.6f}rad/s",
-            f"y = {frame.get_y():.6f}rad/s",
-            f"z = {frame.get_z():.6f}rad/s"
-        ]
 
-def create_display(frames, enabled_sensor_types, width=1280, height=720):
+def create_single_imu_panel(imu_frame, title, w=480, h=240):
+    """Create a panel displaying IMU data"""
+    p = np.zeros((h, w, 3), dtype=np.uint8)
+    if not imu_frame:
+        return p
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.6
+    thickness = 1
+    color = (255, 255, 255)
+
+    unit = "rad/s" if title == "GYRO" else "m/s^2"
+    lines = [
+        f"{title}:",
+        f" Time: {imu_frame.get_timestamp_us()}us",
+        f" X: {imu_frame.get_x():.6f}{unit}",
+        f" Y: {imu_frame.get_y():.6f}{unit}",
+        f" Z: {imu_frame.get_z():.6f}{unit}"
+    ]
+
+    line_height = 30
+    total_height = len(lines) * line_height
+    start_y = (h - total_height) // 2
+
+    for i, line in enumerate(lines):
+        text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
+        text_x = (w - text_size[0]) // 2
+        text_y = start_y + i * line_height + text_size[1]
+        cv2.putText(p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA)
+    return p
+
+
+def video_frame_callback(frames):
+    """Callback function triggered when a new FrameSet arrives"""
+    if frames is None:
+        return
+    with state.frame_mutex:
+        # Process video frames
+        color_frame = frames.get_color_frame()
+        if color_frame:
+            state.cached_frames['color'] = process_color(color_frame)
+
+        depth_frame = frames.get_depth_frame()
+        if depth_frame:
+            state.cached_frames['depth'] = process_depth(depth_frame)
+
+        left_ir = frames.get_left_ir_frame()
+        if left_ir:
+            state.cached_frames['left_ir'] = process_ir(left_ir)
+
+        right_ir = frames.get_right_ir_frame()
+        if right_ir:
+            state.cached_frames['right_ir'] = process_ir(right_ir)
+
+        ir_frame = frames.get_ir_frame()
+        if ir_frame:
+            state.cached_frames['ir'] = process_ir(ir_frame)
+
+        confidence = frames.get_confidence_frame()
+        if confidence:
+            try:
+                state.cached_frames['confidence'] = process_confidence(confidence)
+            except:
+                pass
+
+        left_color = frames.get_left_color_frame()
+        if left_color:
+            try:
+                state.cached_frames['left_color'] = process_color(left_color)
+            except:
+                pass
+
+        right_color = frames.get_right_color_frame()
+        if right_color:
+            try:
+                state.cached_frames['right_color'] = process_color(right_color)
+            except:
+                pass
+
+        # Process IMU data (if included in frame set)
+        accel = frames.get_accel_frame()
+        if accel:
+            state.cached_frames['accel'] = create_single_imu_panel(accel, "ACCEL")
+
+        gyro = frames.get_gyro_frame()
+        if gyro:
+            state.cached_frames['gyro'] = create_single_imu_panel(gyro, "GYRO")
+
+
+def on_playback_status_change(status):
+    """Callback for playback status changes"""
+    with state.status_mutex:
+        state.playback_status = status
+    print(f"[Callback] Playback status changed: {status}")
+
+
+def replay_monitor():
+    """Monitor playback status and auto-replay when stopped"""
+    global pipeline, config
+    while not state.exited:
+        with state.status_mutex:
+            status = state.playback_status
+
+        if status == OBPlaybackStatus.STOPPED:
+            print("Replay again")
+            try:
+                pipeline.stop()
+            except:
+                pass
+            time.sleep(1.0)
+
+            if state.exited:
+                break
+
+            # Clear frames cache for fresh start
+            with state.frame_mutex:
+                for key in state.cached_frames:
+                    state.cached_frames[key] = None
+
+            with state.status_mutex:
+                state.playback_status = None
+
+            try:
+                pipeline.start(config, video_frame_callback)
+            except Exception as e:
+                print(f"Failed to restart playback: {e}")
+        else:
+            time.sleep(0.1)
+
+
+def create_display(width=1280, height=720):
     """Create display window with correct dynamic layout"""
     sensor_type_to_name = {
         OBSensorType.COLOR_SENSOR: 'color',
@@ -174,16 +306,33 @@ def create_display(frames, enabled_sensor_types, width=1280, height=720):
         OBSensorType.LEFT_COLOR_SENSOR: 'left_color',
         OBSensorType.RIGHT_COLOR_SENSOR: 'right_color'
     }
-    video_keys = []
-    for sensor_type in enabled_sensor_types:
-        if sensor_type in sensor_type_to_name:
-            video_keys.append(sensor_type_to_name[sensor_type])
 
-    video_frames = [frames.get(k) for k in video_keys]
-    imu_keys = [k for k in ['accel', 'gyro'] if k in frames]
+    with state.frame_mutex:
+        # Get enabled video keys based on sensor types
+        video_keys = []
+        for sensor_type in state.enabled_sensor_types:
+            if sensor_type in sensor_type_to_name:
+                video_keys.append(sensor_type_to_name[sensor_type])
+
+        # Get video frames
+        video_frames = []
+        for k in video_keys:
+            img = state.cached_frames.get(k)
+            if img is not None:
+                video_frames.append(img)
+
+        # Get IMU panels
+        imu_frames = {}
+        for key in ['accel', 'gyro']:
+            img = state.cached_frames.get(key)
+            if img is not None:
+                imu_frames[key] = img
+
     num_videos = len(video_frames)
-    
-    total_elements = num_videos + len(imu_keys)
+    total_elements = num_videos + len(imu_frames)
+
+    if total_elements == 0:
+        return np.zeros((height, width, 3), dtype=np.uint8)
 
     if total_elements == 1:
         grid_cols, grid_rows = 1, 1
@@ -196,13 +345,14 @@ def create_display(frames, enabled_sensor_types, width=1280, height=720):
     elif total_elements <= 9:
         grid_cols, grid_rows = 3, 3
     else:
-        raise ValueError("Too many elements! Maximum supported is 5.")
+        grid_cols, grid_rows = 3, 3
 
     cell_w = width // grid_cols
     cell_h = height // grid_rows
 
     display = np.zeros((cell_h * grid_rows, cell_w * grid_cols, 3), dtype=np.uint8)
 
+    # Render video frames
     for idx, frame in enumerate(video_frames):
         row = idx // grid_cols
         col = idx % grid_cols
@@ -215,126 +365,89 @@ def create_display(frames, enabled_sensor_types, width=1280, height=720):
             else:
                 resized = cv2.resize(frame, (cell_w, cell_h))
                 display[y_start:y_start + cell_h, x_start:x_start + cell_w] = resized
-        else:
-            cv2.rectangle(display, (x_start, y_start), (x_start + cell_w, y_start + cell_h), (0, 0, 0), -1)
 
-    for i, key in enumerate(imu_keys):
+    # Render IMU panels
+    for i, (key, img) in enumerate(imu_frames.items()):
         current_idx = num_videos + i
         row = current_idx // grid_cols
         col = current_idx % grid_cols
         x_start = col * cell_w
         y_start = row * cell_h
-        cv2.rectangle(display, (x_start, y_start), (x_start + cell_w, y_start + cell_h), (50, 50, 50), -1)
-
-        text_lines = get_imu_text(frames[key], key.title())
-        for line_idx, line in enumerate(text_lines):
-            cv2.putText(display, line, (x_start + 10, y_start + 40 + line_idx * 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+        if total_elements == 1:
+            display = cv2.resize(img, (width, height))
+        else:
+            resized = cv2.resize(img, (cell_w, cell_h))
+            display[y_start:y_start + cell_h, x_start:x_start + cell_w] = resized
 
     return display
 
-def on_status_change(status):
-    global playback_status, exit_requested
-    if exit_requested:
-        return
-    playback_status = status
-    print(f"[Callback] status changed: {status}")
 
-def main():
-    global exit_requested, playback_status
-
-    # Window settings
+def render_frames():
+    """Main UI loop to display the frames"""
     WINDOW_NAME = "MultiStream Playback(.bag) Viewer"
-    file_path = input("Enter output filename (.bag) and press Enter to start playbacking: ")
-
     DISPLAY_WIDTH = 1280
     DISPLAY_HEIGHT = 720
+
+    cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+
+    while not state.stop_rendering:
+        display = create_display(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+
+        cv2.imshow(WINDOW_NAME, display)
+
+        # Check exit key
+        key = cv2.waitKey(1) & 0xFF
+        if key in [ord('q'), 27]:  # q or ESC
+            break
+
+
+def main():
+    global playback, pipeline, config
+
+    # Get file path from user
+    file_path = input("Enter output filename (.bag) and press Enter to start playbacking: ")
+
     try:
-        # initialize playback
+        # Initialize playback
         playback = PlaybackDevice(file_path)
-        # Initialize camera
-        pipeline, config, enabled_sensor_types = setup_camera(playback)
 
-        playback.set_playback_status_change_callback(on_status_change)
-        pipeline.start(config)
+        # Setup camera
+        pipeline, config = setup_camera(playback)
 
-        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-        cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        processed_frames = {}
-        while True:
-            if playback_status == OBPlaybackStatus.STOPPED:
-                print("Replay again")
-                pipeline.stop()
-                time.sleep(1.0)
-                if exit_requested:
-                    break
-                playback_status = None
-                pipeline.start(config)
-                continue
-                
-            # Get all frames
-            frames = pipeline.wait_for_frames(1000)
-            if not frames:
-                continue
+        # Set playback status callback
+        playback.set_playback_status_change_callback(on_playback_status_change)
 
-            # Process color image        
-            color_frame = frames.get_color_frame()
-            if color_frame:
-                processed_frames['color'] = process_color(color_frame)
-            # Process depth image
-            depth_frame = frames.get_depth_frame()
-            if depth_frame:
-                processed_frames['depth'] = process_depth(depth_frame)       
-            # Process left IR
-            left_ir_frame = frames.get_left_ir_frame()
-            processed_frames['left_ir'] = process_ir(left_ir_frame, 'left_ir')
+        # Start pipeline with callback
+        pipeline.start(config, video_frame_callback)
 
-            # Process right IR
-            right_ir_frame = frames.get_right_ir_frame()
-            processed_frames['right_ir'] = process_ir(right_ir_frame, 'right_ir')
+        # Start replay monitor thread
+        monitor_thread = threading.Thread(target=replay_monitor, daemon=True)
+        monitor_thread.start()
 
-            # Process mono IR
-            ir_frame = frames.get_ir_frame()
-            processed_frames['ir'] = process_ir(ir_frame, 'ir')
-            
-            # Process confidence
-            confidence = frames.get_confidence_frame()
-            if confidence:
-                processed_frames['confidence'] = process_confidence(confidence)
+        # Start rendering (main thread)
+        try:
+            render_frames()
+        except KeyboardInterrupt:
+            state.stop_rendering = True
 
-            # Process IMU data
-            accel = frames.get_accel_frame()
-            gyro = frames.get_gyro_frame()
-            if accel:
-                processed_frames['accel'] = accel
-            if gyro:
-                processed_frames['gyro'] = gyro
-                
-            # Process left RGB
-            left_color_frame = frames.get_left_color_frame()
-            if left_color_frame:
-                processed_frames['left_color'] = process_color(left_color_frame)
-
-            # Process right RGB
-            right_color_frame = frames.get_right_color_frame()
-            if right_color_frame:
-                processed_frames['right_color'] = process_color(right_color_frame)
-            
-            # create display
-            display = create_display(processed_frames, enabled_sensor_types, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-            cv2.imshow(WINDOW_NAME, display)
-
-            # check exit key
-            key = cv2.waitKey(1) & 0xFF
-            if key in (ord('q'), 27):
-                exit_requested = True
-                break
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
 
     finally:
-        pipeline.stop()
-        playback  = None 
+        # Signal exit
+        state.exited = True
+        state.stop_rendering = True
+
+        # Stop pipeline
+        try:
+            if pipeline:
+                pipeline.stop()
+        except:
+            pass
+
+        # Cleanup
+        playback = None
         cv2.destroyAllWindows()
 
 

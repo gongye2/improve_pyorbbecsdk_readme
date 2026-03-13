@@ -16,13 +16,17 @@
 
 import os
 import shutil
+import subprocess
+import sys
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
+
 class PrebuiltExtension(Extension):
     def __init__(self, name, lib_dir=''):
-        super().__init__(name, sources=[])  
+        super().__init__(name, sources=[])
         self.lib_dir = os.path.abspath(lib_dir)
+
 
 class CustomBuildExt(build_ext):
     def run(self):
@@ -40,6 +44,10 @@ class CustomBuildExt(build_ext):
         os.makedirs(extdir, exist_ok=True)
         self.copy_all_files(ext.lib_dir, extdir)
 
+        # macOS: fix rpath for dylib dependencies
+        if sys.platform == 'darwin':
+            self.fix_rpath(extdir)
+
     def copy_all_files(self, source_dir, destination_dir):
         os.makedirs(destination_dir, exist_ok=True)
         for item in os.listdir(source_dir):
@@ -55,6 +63,23 @@ class CustomBuildExt(build_ext):
                 self.copy_all_files(source_path, destination_path)
             else:
                 shutil.copy2(source_path, destination_path)
+
+    def fix_rpath(self, directory):
+        """Fix rpath for .so files to find libOrbbecSDK.2.dylib using @loader_path"""
+        for item in os.listdir(directory):
+            if item.endswith('.so'):
+                file_path = os.path.join(directory, item)
+                try:
+                    subprocess.run([
+                        'install_name_tool', '-change',
+                        '@rpath/libOrbbecSDK.2.dylib',
+                        '@loader_path/libOrbbecSDK.2.dylib',
+                        file_path
+                    ], check=True, capture_output=True)
+                    print(f"Fixed rpath for {file_path}")
+                except subprocess.CalledProcessError:
+                    pass  # rpath might already be correct
+
 
 setup(
     ext_modules=[PrebuiltExtension('pyorbbecsdk', 'install/lib')],

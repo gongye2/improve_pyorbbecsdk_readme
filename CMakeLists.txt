@@ -39,7 +39,11 @@ endif ()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetermineHostPlatform.cmake)
 
 # Orbbec SDK paths
-set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/${HOST_PLATFORM})
+if(APPLE)
+  set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/macOS)
+else()
+  set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/${HOST_PLATFORM})
+endif()
 set(ORBBEC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -94,6 +98,14 @@ if (UNIX)
 elseif (WIN32)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     OrbbecSDK
+  )
+endif ()
+
+# Fix rpath on macOS after build
+if (APPLE)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND install_name_tool -change "@rpath/libOrbbecSDK.2.dylib" "@loader_path/libOrbbecSDK.2.dylib" $<TARGET_FILE:${PROJECT_NAME}>
+    COMMENT "Fixing rpath for macOS"
   )
 endif ()
 
