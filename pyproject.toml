@@ -10,10 +10,10 @@ authors = [
 dependencies = [
     "av>=12.3.0; python_version < '3.13'",
     "av==13.0.0; python_version >= '3.13'",
-    "numpy>=1.24.4",
-    "opencv-python>=4.13.0.90",
-    "pygame>=2.6.1",
-    "pynput>=1.8.1",
+    "numpy",
+    "opencv-python",
+    "pygame",
+    "pynput",
 ]
 
 [build-system]

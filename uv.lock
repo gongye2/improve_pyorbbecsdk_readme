@@ -897,10 +897,10 @@ dev = [
 requires-dist = [
     { name = "av", marker = "python_full_version < '3.13'", specifier = ">=12.3.0" },
     { name = "av", marker = "python_full_version >= '3.13'", specifier = "==13.0.0" },
-    { name = "numpy", specifier = ">=1.24.4" },
-    { name = "opencv-python", specifier = ">=4.13.0.90" },
-    { name = "pygame", specifier = ">=2.6.1" },
-    { name = "pynput", specifier = ">=1.8.1" },
+    { name = "numpy" },
+    { name = "opencv-python" },
+    { name = "pygame" },
+    { name = "pynput" },
 ]
 
 [package.metadata.requires-dev]
