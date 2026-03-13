@@ -23,13 +23,15 @@ from pyorbbecsdk import SequenceIdFilter, Pipeline, Config, OBSensorType, OBFram
 cached_frames = {
     'depth' : None,
     'left_ir' : None,
-    'right_ir' : None
+    'right_ir' : None,
+    'ir' : None
 }
 
 stream_sequence_id = {
     'depth': -1,     # -1 means all frames
     'left_ir': -1,
-    'right_ir': -1
+    'right_ir': -1,
+    'ir': -1
 }
 
 running = True
@@ -54,6 +56,7 @@ def setup_camera():
     # Define video sensor types to enable
     video_sensor = [
         OBSensorType.DEPTH_SENSOR,
+        OBSensorType.IR_SENSOR,
         OBSensorType.LEFT_IR_SENSOR,
         OBSensorType.RIGHT_IR_SENSOR        
     ]
@@ -153,6 +156,9 @@ def create_display(frames, width=1280, height=720):
     
     if 'ir' in frames and frames['ir'] is not None:
         display[0:h, w:] = cv2.resize(frames['ir'], (w, h))
+
+    if 'left_ir' in frames and frames['left_ir'] is not None:
+        display[0:h, w:] = cv2.resize(frames['left_ir'], (w, h))
 
     if 'right_ir' in frames and frames['right_ir'] is not None:
         display[h:, 0:w] = cv2.resize(frames['right_ir'], (w, h))
