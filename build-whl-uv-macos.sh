@@ -316,6 +316,8 @@ build_version() {
 
     # Resolve Python interpreter
     echo "Resolving Python interpreter..."
+    # Ensure uv-managed Python is installed
+    uv python install "$PYVER"
     local PYTHON_EXE
     PYTHON_EXE="$(uv python find "$PYVER")"
     echo "Using Python: $PYTHON_EXE"
