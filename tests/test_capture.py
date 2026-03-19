@@ -19,12 +19,13 @@ def test_pipeline_creation():
     print("=" * 50)
     print("Pipeline Creation Test")
     print("=" * 50)
-    
+
     try:
         import pyorbbecsdk
-        
+        from pyorbbecsdk import OBSensorType, OBFormat
+
         ctx = pyorbbecsdk.Context()
-        pipeline = pyorbbecsdk.Pipeline(ctx)
+        pipeline = pyorbbecsdk.Pipeline()
         
         print(f"✓ Pipeline created successfully")
         print(f"  Pipeline object: {pipeline}")
@@ -41,24 +42,31 @@ def test_config_creation(ctx, pipeline):
     print("=" * 50)
     print("Configuration Test")
     print("=" * 50)
-    
+
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
         return None
-    
+
     try:
+        import pyorbbecsdk
+        from pyorbbecsdk import OBSensorType, OBFormat
+
         config = pyorbbecsdk.Config()
         print(f"✓ Config created successfully")
-        
+
         # Try to enable streams (may fail without device)
         try:
-            config.enable_stream(pyorbbecsdk.OB_STREAM_COLOR, -1, -1, pyorbbecsdk.OB_FORMAT_RGB888, 30)
+            profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+            profile = profile_list.get_default_video_stream_profile()
+            config.enable_stream(profile)
             print(f"✓ Color stream configured")
         except Exception as e:
             print(f"  Color stream config skipped: {type(e).__name__}")
-        
+
         try:
-            config.enable_stream(pyorbbecsdk.OB_STREAM_DEPTH, -1, -1, pyorbbecsdk.OB_FORMAT_Y16, 30)
+            profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+            profile = profile_list.get_default_video_stream_profile()
+            config.enable_stream(profile)
             print(f"✓ Depth stream configured")
         except Exception as e:
             print(f"  Depth stream config skipped: {type(e).__name__}")

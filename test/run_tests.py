@@ -193,8 +193,19 @@ def build_pytest_cmd(test_dir, report_path, device_marker,
         "--metadata", "Python", sys.version.split()[0],
     ]
 
+    # Add timeout only if pytest-timeout is installed
     if not quick and not no_hardware:
-        args += ["--timeout=120"]
+        try:
+            import subprocess
+            result = subprocess.run(
+                [sys.executable, "-m", "pytest", "--version"],
+                capture_output=True,
+                text=True
+            )
+            if "timeout" in result.stdout.lower() or "timeout" in result.stderr.lower():
+                args += ["--timeout=120"]
+        except Exception:
+            pass
 
     return args
 

@@ -46,24 +46,32 @@ def test_device_enumeration(ctx):
     
     try:
         devices = ctx.query_devices()
-        device_count = len(devices) if devices else 0
-        
+        device_count = devices.get_count() if devices else 0
+
         print(f"✓ Device query completed")
         print(f"  Devices found: {device_count}")
-        
+
         if device_count == 0:
             print("  Note: No devices connected (this is OK for testing)")
             return True, []
-        
+
         # List devices
-        for i, device in enumerate(devices):
+        device_list = []
+        for i in range(device_count):
             try:
-                name = device.get_name()
+                device = devices.get_device_by_index(i)
+                device_list.append(device)
+                # Get device info for name
+                try:
+                    device_info = device.get_device_info()
+                    name = device_info.get_name()
+                except:
+                    name = "<no device info>"
                 print(f"  Device {i + 1}: {name}")
-            except:
-                print(f"  Device {i + 1}: <unknown>")
-        
-        return True, devices
+            except Exception as e:
+                print(f"  Device {i + 1}: <unknown> ({e})")
+
+        return True, device_list
     except Exception as e:
         print(f"✗ Device enumeration failed: {e}")
         return False, []
@@ -81,14 +89,15 @@ def test_device_info(ctx, devices):
         return True
     
     try:
-        device = devices[0]
-        
+        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
+        device_info = device.get_device_info()
+
         # Try to get various device info
         info_tests = [
-            ('Name', lambda: device.get_name()),
-            ('Serial Number', lambda: device.get_serial_number()),
-            ('Firmware Version', lambda: device.get_firmware_version()),
-            ('USB Bandwidth', lambda: device.get_usb_bandwidth()),
+            ('Name', lambda: device_info.get_name()),
+            ('Serial Number', lambda: device_info.get_serial_number()),
+            ('Firmware Version', lambda: device_info.get_firmware_version()),
+            ('USB Bandwidth', lambda: str(device.get_usb_bandwidth())),
         ]
         
         for name, getter in info_tests:
@@ -116,24 +125,25 @@ def test_sensor_enumeration(ctx, devices):
         return True
     
     try:
-        device = devices[0]
+        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
         sensors = device.get_sensor_list()
-        sensor_count = len(sensors) if sensors else 0
-        
+        sensor_count = sensors.get_count() if sensors else 0
+
         print(f"✓ Sensor query completed")
         print(f"  Sensors found: {sensor_count}")
-        
+
         if sensor_count == 0:
             print("  Note: No sensors found")
             return True
-        
+
         # List sensors
-        for i, sensor in enumerate(sensors):
+        for i in range(sensor_count):
             try:
+                sensor = sensors.get_sensor_by_index(i)
                 sensor_type = sensor.get_type()
                 print(f"  Sensor {i + 1}: {sensor_type}")
-            except:
-                print(f"  Sensor {i + 1}: <unknown>")
+            except Exception as e:
+                print(f"  Sensor {i + 1}: <unknown> ({e})")
         
         return True
     except Exception as e:

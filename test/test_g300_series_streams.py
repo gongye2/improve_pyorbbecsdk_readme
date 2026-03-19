@@ -96,6 +96,7 @@ def _start_single_stream(pipeline, sensor_type, width=0, height=0, fps=30, fmt=N
         profile = profile_list.get_default_video_stream_profile()
     config.enable_stream(profile)
     pipeline.start(config)
+    time.sleep(0.5)  # 等待流稳定
     return profile
 
 

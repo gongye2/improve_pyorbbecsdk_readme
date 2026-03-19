@@ -150,7 +150,10 @@ install(TARGETS ${PROJECT_NAME}
 if (APPLE)
   install(DIRECTORY ${ORBBEC_LIBS}/
           DESTINATION ${PY_PACKAGE_DIR}
-          FILES_MATCHING PATTERN "*.dylib")
+          FILES_MATCHING 
+            PATTERN "*.dylib"
+            PATTERN "*.md"
+            PATTERN "*.xml")
 elseif (UNIX)
   install(DIRECTORY ${ORBBEC_LIBS}/
           DESTINATION ${PY_PACKAGE_DIR}
