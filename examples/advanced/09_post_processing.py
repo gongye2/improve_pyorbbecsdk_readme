@@ -195,6 +195,10 @@ def main():
         control_thread.start()
         
         print("Press 'ESC' on the window to exit.")
+
+        # Create window once outside the loop
+        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        window_initialized = False
         
         while not quit_program:
             # Wait for frameset from the pipeline
@@ -213,10 +217,7 @@ def main():
             
             if processed_frame is None:
                 continue
-            
-            # Re-cast processed result back to depth frame format
-            processed_frame = processed_frame.as_depth_frame()                    
-            
+                    
             # --- Process Original Frame for Display ---
             depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
             depth_data = depth_data.reshape(depth_frame.get_height(), depth_frame.get_width())
@@ -232,8 +233,17 @@ def main():
             
             # --- Render Side-by-Side View ---
             combined_view = np.hstack((depth_image, processed_image))
-            cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-            cv2.resizeWindow(WINDOW_NAME, 1280, 720)
+
+            # Fix for macOS: ensure array is contiguous in memory before displaying
+            # macOS OpenCV backend requires contiguous array to display correctly
+            combined_view = np.ascontiguousarray(combined_view)
+
+            # Initialize window size on first frame based on actual image dimensions
+            if not window_initialized:
+                height, width = combined_view.shape[:2]
+                cv2.resizeWindow(WINDOW_NAME, width, height)
+                window_initialized = True
+
             cv2.imshow(WINDOW_NAME, combined_view)
             
             # Listen for escape or quit keys in the UI window

@@ -15,7 +15,7 @@ import sys
 import os
 import time
 import threading
-from pyorbbecsdk import Context, Pipeline, Config  # type: ignore
+from pyorbbecsdk import Context, Pipeline, Config, RecordDevice  # type: ignore
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
 

@@ -45,11 +45,11 @@ def get_frame_data(color_frame, depth_frame):
 
     color_profile = color_frame.get_stream_profile()
     depth_profile = depth_frame.get_stream_profile()
-    print("video profile:", color_profile.as_video_stream_profile())
-    color_intrinsics = color_profile.as_video_stream_profile().get_intrinsic()
-    color_distortion = color_profile.as_video_stream_profile().get_distortion()
-    depth_intrinsics = depth_profile.as_video_stream_profile().get_intrinsic()
-    depth_distortion = depth_profile.as_video_stream_profile().get_distortion()
+    print("video profile:", color_profile)
+    color_intrinsics = color_profile.get_intrinsic()
+    color_distortion = color_profile.get_distortion()
+    depth_intrinsics = depth_profile.get_intrinsic()
+    depth_distortion = depth_profile.get_distortion()
 
     extrinsic = depth_profile.get_extrinsic_to(color_profile)
 

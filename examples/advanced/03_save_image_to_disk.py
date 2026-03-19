@@ -19,7 +19,7 @@ import os
 import cv2
 import numpy as np
 
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, DepthFrame, OBError, Context  # type: ignore
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, DepthFrame, ColorFrame, VideoStreamProfile, OBFrameAggregateOutputMode, OBError, Context  # type: ignore
 from utils import frame_to_bgr_image
 
 
@@ -66,15 +66,12 @@ def save_color_frame(frame: ColorFrame, index):
 def main():
     pipeline = Pipeline()
     config = Config()
-    saved_color_cnt: int = 0
-    saved_depth_cnt: int = 0
-    has_color_sensor = False
+
     try:
         profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
         if profile_list is not None:
             color_profile: VideoStreamProfile = profile_list.get_default_video_stream_profile()
             config.enable_stream(color_profile)
-            has_color_sensor = True
         depth_profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
         if depth_profile_list is not None:
             depth_profile = depth_profile_list.get_default_video_stream_profile()

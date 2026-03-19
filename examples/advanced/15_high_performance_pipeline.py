@@ -181,7 +181,7 @@ def main():
             render_fps.tick()
             process_ms = (time.perf_counter() - t0) * 1000
 
-            # Stack panels and add stats overlay
+            # Stack panels and add stats overlay with white text and black outline for readability
             display = np.hstack(panels)
             stats = (
                 f"Camera: {camera_fps.fps:.1f} fps  "
@@ -189,8 +189,10 @@ def main():
                 f"Process: {process_ms:.1f}ms  "
                 f"Dropped: {depth_q.dropped}d/{color_q.dropped}c"
             )
-            cv2.putText(display, stats, (10, 25),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 255, 0), 1)
+            # Black outline (draw text slightly offset in black)
+            cv2.putText(display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
+            cv2.putText(display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
+            cv2.putText(display, stats, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
 
             cv2.imshow("High-Performance Pipeline  |  Press 'q' to quit", display)
             if cv2.waitKey(1) in (ord("q"), ESC_KEY):

@@ -43,15 +43,13 @@ def main():
             if frames is None:
                 continue
             frame_counter += 1
-            accel_frame = frames.get_frame(OBFrameType.ACCEL_FRAME)
-            accel_frame = accel_frame.as_accel_frame()
+            accel_frame = frames.get_accel_frame()
 
             if accel_frame is not None and frame_counter % 50 == 0:
                 print("AccelFrame: ts={}".format(accel_frame.get_timestamp()))
                 print("AccelFrame: x={}, y={}, z={}".format(accel_frame.get_x(), accel_frame.get_y(), accel_frame.get_z()))
 
-            gyro_frame = frames.get_frame(OBFrameType.GYRO_FRAME)
-            gyro_frame = gyro_frame.as_gyro_frame()
+            gyro_frame = frames.get_gyro_frame()
 
             if gyro_frame is not None and frame_counter % 50 == 0:
                 print("GyroFrame: ts={}".format(gyro_frame.get_timestamp()))

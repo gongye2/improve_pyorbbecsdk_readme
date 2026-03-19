@@ -31,8 +31,9 @@ cached_frames = {
 
 stream_sequence_id = {
     'depth': -1,     # -1 means all frames
-    'ir': -1,
-    'right_ir': -1
+    'left_ir': -1,
+    'right_ir': -1,
+    'ir': -1
 }
 
 running = True
@@ -86,16 +87,15 @@ def set_filter_value(frame):
     global postLeftInfraredFilter 
     global postRightInfraredFilter 
     
-    frame = frame.as_video_frame()
     frame_type = frame.get_type()
     if frame_type == OBFrameType.DEPTH_FRAME:
-        frame = postDepthFilter.process(frame).as_depth_frame()
+        frame = postDepthFilter.process(frame)
     if frame_type == OBFrameType.LEFT_IR_FRAME:
-        frame = postLeftInfraredFilter.process(frame).as_ir_frame()
+        frame = postLeftInfraredFilter.process(frame)
     if frame_type == OBFrameType.RIGHT_IR_FRAME:
-        frame = postRightInfraredFilter.process(frame).as_ir_frame()
+        frame = postRightInfraredFilter.process(frame)
     if frame_type == OBFrameType.IR_FRAME:
-        frame = postLeftInfraredFilter.process(frame).as_ir_frame()
+        frame = postLeftInfraredFilter.process(frame)
         
     return frame
     
@@ -160,6 +160,9 @@ def create_display(frames, width=1280, height=720):
     
     if 'ir' in frames and frames['ir'] is not None:
         display[0:h, w:] = cv2.resize(frames['ir'], (w, h))
+
+    if 'left_ir' in frames and frames['left_ir'] is not None:
+        display[0:h, w:] = cv2.resize(frames['left_ir'], (w, h))
 
     if 'right_ir' in frames and frames['right_ir'] is not None:
         display[h:, 0:w] = cv2.resize(frames['right_ir'], (w, h))
@@ -261,19 +264,19 @@ def main():
         depth = process_depth(frames.get_depth_frame())
         processed_frames = {'depth' : depth}
         
-        try:
-            # Try to get separate left/right IR frames
-            left = process_ir(frames.get_frame(OBFrameType.LEFT_IR_FRAME).as_video_frame())
-            right = process_ir(frames.get_frame(OBFrameType.RIGHT_IR_FRAME).as_video_frame())
-            processed_frames['ir'] = left
-            processed_frames['right_ir'] = right
-        except:
-            # Fall back to single IR frame if separate frames not available
-            ir_frame = frames.get_ir_frame()
-            ir_frame = set_filter_value(frame)
-            if ir_frame:
-                processed_frames['ir'] = process_ir(ir_frame.as_video_frame())
-                
+        # Try to get separate left/right IR frames
+        left = frames.get_left_ir_frame()
+        right = frames.get_right_ir_frame()
+
+        if left and right:
+            processed_frames['left_ir'] = process_ir(left)
+            processed_frames['right_ir'] = process_ir(right)
+        else:
+            # Fall back to monocular IR frame if separate frames not available
+            ir = frames.get_ir_frame()
+            if ir:
+                processed_frames['ir'] = process_ir(ir)
+                            
         display = create_display(processed_frames, DISPLAY_WIDTH, DISPLAY_HEIGHT)
         cv2.imshow(WINDOW_NAME, display)
         

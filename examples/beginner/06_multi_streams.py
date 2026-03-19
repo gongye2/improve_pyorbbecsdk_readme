@@ -123,7 +123,6 @@ def process_ir(ir_frame):
     """Process IR frame (left or right) to RGB image"""
     if ir_frame is None:
         return None
-    ir_frame = ir_frame.as_video_frame()
     ir_data = np.asanyarray(ir_frame.get_data())
     width = ir_frame.get_width()
     height = ir_frame.get_height()
@@ -204,8 +203,8 @@ def video_frame_callback(frames):
             state.cached_frames['depth'] = process_depth(frames.get_depth_frame())
 
             if state.support_dual_ir:
-                left_ir = frames.get_frame(OBFrameType.LEFT_IR_FRAME)
-                right_ir = frames.get_frame(OBFrameType.RIGHT_IR_FRAME)
+                left_ir = frames.get_left_ir_frame()
+                right_ir = frames.get_right_ir_frame()
                 if left_ir and right_ir:
                     state.cached_frames['left_ir'] = process_ir(left_ir)
                     state.cached_frames['right_ir'] = process_ir(right_ir)
@@ -214,20 +213,20 @@ def video_frame_callback(frames):
                 if ir_frame:
                     state.cached_frames['ir'] = process_ir(ir_frame)
             
-            confidence = frames.get_frame(OBFrameType.CONFIDENCE_FRAME)
+            confidence = frames.get_confidence_frame()
             if confidence:
                 try:
-                    state.cached_frames['confidence'] = process_confidence(confidence.as_confidence_frame())
+                    state.cached_frames['confidence'] = process_confidence(confidence)
                 except:
                     pass
             
             if state.support_dual_rgb:
-                left_color = frames.get_frame(OBFrameType.LEFT_COLOR_FRAME)
-                right_color = frames.get_frame(OBFrameType.RIGHT_COLOR_FRAME)
+                left_color = frames.get_left_color_frame()
+                right_color = frames.get_right_color_frame()
                 if left_color and right_color:
                     try:
-                        state.cached_frames['left_color'] = process_color(left_color.as_video_frame())
-                        state.cached_frames['right_color'] = process_color(right_color.as_video_frame())
+                        state.cached_frames['left_color'] = process_color(left_color)
+                        state.cached_frames['right_color'] = process_color(right_color)
                     except:
                         pass
 
@@ -237,13 +236,12 @@ def imu_frame_callback(imu_frames):
     
     with state.imu_mutex:
         if imu_frames:
-            accel = imu_frames.get_frame(OBFrameType.ACCEL_FRAME)
-            gyro = imu_frames.get_frame(OBFrameType.GYRO_FRAME)
+            accel = imu_frames.get_accel_frame()
+            gyro = imu_frames.get_gyro_frame()
             if accel:
-                state.cached_frames['accel'] = create_single_imu_panel(accel.as_accel_frame(), "ACCEL")
+                state.cached_frames['accel'] = create_single_imu_panel(accel, "ACCEL")
             if gyro:
-                state.cached_frames['gyro'] = create_single_imu_panel(gyro.as_gyro_frame(), "GYRO")
-
+                state.cached_frames['gyro'] = create_single_imu_panel(gyro, "GYRO")
 
 def create_display(blocks, width=1280, height=720):
     """

@@ -14,7 +14,7 @@
 import sys
 import os
 import threading
-from pyorbbecsdk import Pipeline, Config, OBFrameAggregateOutputMode, OBPlaybackStatus  # type: ignore
+from pyorbbecsdk import Pipeline, Config, OBFrameAggregateOutputMode, OBPlaybackStatus, PlaybackDevice  # type: ignore
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
 
@@ -38,6 +38,8 @@ class PlaybackApp:
         self.exited = False
         self.file_path = file_path
         self.frame_count = 0
+        self.pipeline_started = False
+        self.pipeline_lock = threading.Lock()
         
         # Create a playback device with a Rosbag file
         self.playback = PlaybackDevice(file_path)
@@ -86,7 +88,6 @@ class PlaybackApp:
                 
                 if self.play_status == OBPlaybackStatus.STOPPED:
                     print("End of file reached. Replaying in 1s...")
-                    self.pipe.stop()
 
                     # wait 1s and play again
                     self.replay_condition.wait(1.0)
@@ -95,14 +96,21 @@ class PlaybackApp:
                         
                     self.play_status = OBPlaybackStatus.UNKNOWN
                     print("Replay again")
-                    self.pipe.start(self.config, self.on_new_frame)
+                    with self.pipeline_lock:
+                        try:
+                            self.pipe.start(self.config, self.on_new_frame)
+                            self.pipeline_started = True
+                        except Exception as e:
+                            print(f"Error starting pipe: {e}")
 
     def run(self):
         monitor_thread = threading.Thread(target=self.monitor_replay)
         monitor_thread.start()
 
         # Start the pipeline with the config
-        self.pipe.start(self.config, self.on_new_frame)
+        with self.pipeline_lock:
+            self.pipe.start(self.config, self.on_new_frame)
+            self.pipeline_started = True
 
         print("\nControls:")
         print("Press 'p' or 'P' to pause/resume.")
@@ -127,7 +135,10 @@ class PlaybackApp:
 
         # stop
         self.exited = True
-        self.pipe.stop()
+        with self.pipeline_lock:
+            if self.pipeline_started:
+                self.pipe.stop()
+                self.pipeline_started = False
         with self.replay_condition:
             self.replay_condition.notify_all()
         monitor_thread.join()

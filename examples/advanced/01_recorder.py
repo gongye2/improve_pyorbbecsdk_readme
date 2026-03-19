@@ -150,7 +150,6 @@ def _process_depth(frame):
 def _process_ir(ir_frame):
     if ir_frame is None:
         return None
-    ir_frame = ir_frame.as_video_frame()
     ir_data  = np.asanyarray(ir_frame.get_data())
     w, h     = ir_frame.get_width(), ir_frame.get_height()
     fmt      = ir_frame.get_format()
@@ -226,8 +225,9 @@ def _gui_frame_callback(frames):
         state.cached_frames['depth'] = _process_depth(frames.get_depth_frame())
 
         if state.support_dual_ir:
-            left  = frames.get_frame(OBFrameType.LEFT_IR_FRAME)
-            right = frames.get_frame(OBFrameType.RIGHT_IR_FRAME)
+            left = frames.get_left_ir_frame()
+            right = frames.get_right_ir_frame()
+
             if left and right:
                 state.cached_frames['left_ir']  = _process_ir(left)
                 state.cached_frames['right_ir'] = _process_ir(right)
@@ -236,21 +236,20 @@ def _gui_frame_callback(frames):
             if ir:
                 state.cached_frames['ir'] = _process_ir(ir)
 
-        conf = frames.get_frame(OBFrameType.CONFIDENCE_FRAME)
+        conf = frames.get_confidence_frame()
         if conf:
             try:
-                state.cached_frames['confidence'] = _process_confidence(
-                    conf.as_confidence_frame())
+                state.cached_frames['confidence'] = _process_confidence(conf)
             except Exception:
                 pass
 
         if state.support_dual_rgb:
-            lc = frames.get_frame(OBFrameType.LEFT_COLOR_FRAME)
-            rc = frames.get_frame(OBFrameType.RIGHT_COLOR_FRAME)
+            lc = frames.get_left_color_frame()
+            rc = frames.get_right_color_frame()
             if lc and rc:
                 try:
-                    state.cached_frames['left_color']  = _process_color(lc.as_video_frame())
-                    state.cached_frames['right_color'] = _process_color(rc.as_video_frame())
+                    state.cached_frames['left_color']  = _process_color(lc)
+                    state.cached_frames['right_color'] = _process_color(rc)
                 except Exception:
                     pass
 
@@ -268,12 +267,12 @@ def _imu_frame_callback(imu_frames):
     if imu_frames is None:
         return
     with state.imu_mutex:
-        accel = imu_frames.get_frame(OBFrameType.ACCEL_FRAME)
-        gyro  = imu_frames.get_frame(OBFrameType.GYRO_FRAME)
+        accel = imu_frames.get_accel_frame()
+        gyro = imu_frames.get_gyro_frame()
         if accel:
-            state.cached_frames['accel'] = _create_imu_panel(accel.as_accel_frame(), "ACCEL")
+            state.cached_frames['accel'] = _create_imu_panel(accel, "ACCEL")
         if gyro:
-            state.cached_frames['gyro']  = _create_imu_panel(gyro.as_gyro_frame(), "GYRO")
+            state.cached_frames['gyro']  = _create_imu_panel(gyro, "GYRO")
 
 
 # ---------------------------------------------------------------------------
