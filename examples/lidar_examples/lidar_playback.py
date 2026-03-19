@@ -1,24 +1,21 @@
 # ******************************************************************************
-#  Copyright (c) 2024 Orbbec 3D Technology, Inc
+#  pyorbbecsdk LiDAR Example — LiDAR Bag File Playback
 #
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
+#  What you will learn:
+#    1. How to open a recorded LiDAR .bag file with PlaybackDevice
+#    2. How to replay the LiDAR point cloud stream and visualize it
+#    3. How to monitor playback status and handle end-of-file
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#  Device requirement: None required (plays back from .bag file)
 #
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
+#  Run:
+#    python examples/lidar_examples/lidar_playback.py
 # ******************************************************************************
 import sys
 import os
 import threading
-from pyorbbecsdk import Pipeline, Config, OBFrameAggregateOutputMode, OBPlaybackStatus
-import pyorbbecsdk as ob
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pyorbbecsdk import Pipeline, Config, OBFrameAggregateOutputMode, OBPlaybackStatus  # type: ignore
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
 
 # Get valid .bag file path from user input
@@ -41,18 +38,16 @@ class PlaybackApp:
         self.exited = False
         self.file_path = file_path
         self.frame_count = 0
-        self.pipeline_started = False
-        self.pipeline_lock = threading.Lock()
-
+        
         # Create a playback device with a Rosbag file
-        self.playback = ob.PlaybackDevice(file_path)
+        self.playback = PlaybackDevice(file_path)
         # Create a pipeline with the playback device
         self.pipe = Pipeline(self.playback)
         # Enable all recording streams from the playback device
         self.config = Config()
-
+        
         print(f"Duration: {self.playback.get_duration()}ms")
-
+        
         self.replay_condition = threading.Condition()
         self.play_status = OBPlaybackStatus.STOPPED
 
@@ -63,7 +58,7 @@ class PlaybackApp:
         for i in range(sensor_list.get_count()):
             sensor_type = sensor_list.get_sensor_by_index(i).get_type()
             self.config.enable_stream(sensor_type)
-
+        
         self.config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.ANY_SITUATION)
 
     def on_playback_status_change(self, status):
@@ -85,42 +80,29 @@ class PlaybackApp:
         while not self.exited:
             with self.replay_condition:
                 self.replay_condition.wait_for(lambda: self.exited or self.play_status == OBPlaybackStatus.STOPPED)
-
+                
                 if self.exited:
                     break
-
+                
                 if self.play_status == OBPlaybackStatus.STOPPED:
                     print("End of file reached. Replaying in 1s...")
-                    with self.pipeline_lock:
-                        if self.pipeline_started:
-                            try:
-                                self.pipe.stop()
-                            except Exception as e:
-                                print(f"Error stopping pipe: {e}")
-                            self.pipeline_started = False
+                    self.pipe.stop()
 
                     # wait 1s and play again
                     self.replay_condition.wait(1.0)
                     if self.exited:
                         break
-
-                    self.play_status = ob.OBPlaybackStatus.UNKNOWN
+                        
+                    self.play_status = OBPlaybackStatus.UNKNOWN
                     print("Replay again")
-                    with self.pipeline_lock:
-                        try:
-                            self.pipe.start(self.config, self.on_new_frame)
-                            self.pipeline_started = True
-                        except Exception as e:
-                            print(f"Error starting pipe: {e}")
+                    self.pipe.start(self.config, self.on_new_frame)
 
     def run(self):
         monitor_thread = threading.Thread(target=self.monitor_replay)
         monitor_thread.start()
 
         # Start the pipeline with the config
-        with self.pipeline_lock:
-            self.pipe.start(self.config, self.on_new_frame)
-            self.pipeline_started = True
+        self.pipe.start(self.config, self.on_new_frame)
 
         print("\nControls:")
         print("Press 'p' or 'P' to pause/resume.")
@@ -129,7 +111,7 @@ class PlaybackApp:
         try:
             while not self.exited:
                 key = input(">> (p: Pause/Resume, q: Quit): ").strip().lower()
-
+                
                 if key == 'q':  # 'q' key to exit.
                     break
                 elif key == 'p':  # 'p' or 'P' key to pause/resume playback.
@@ -145,10 +127,7 @@ class PlaybackApp:
 
         # stop
         self.exited = True
-        with self.pipeline_lock:
-            if self.pipeline_started:
-                self.pipe.stop()
-                self.pipeline_started = False
+        self.pipe.stop()
         with self.replay_condition:
             self.replay_condition.notify_all()
         monitor_thread.join()
