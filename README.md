@@ -41,6 +41,8 @@
 - [Samples](#samples)
 - [Supported platforms](#supported-platforms)
 - [Automated Firmware Update](#automated-firmware-update)
+- [Build from Source](#build-from-source)
+- [FAQ](#faq)
 - [Community](#community)
 - [License](#license)
 
@@ -95,27 +97,47 @@ Here is the simplified device support list comparing the `v2-main` branch (v2.x)
 The pyorbbecsdk contains all the libraries that power your camera along with tools that let you experiment with its features and settings.
 
 To get started:
-- **Install the package** via PyPI (recommended) or from GitHub Release:
-  ```bash
-  pip install pyorbbecsdk2
-  ```
-- **Setup the environment** (one-time OS-level configuration for metadata and udev rules):
-  ```bash
-  # Windows (PowerShell — will auto-request Administrator)
-  python scripts/env_setup/setup_env.py
-  
-  # Linux (will auto-request sudo)
-  python3 scripts/env_setup/setup_env.py
-  ```
-- **Start experimenting** with the SDK's Quick Start code:
 
-  ```python
-  from pyorbbecsdk import *
-  
-  pipeline = Pipeline()
-  pipeline.start()                        # uses default config from OrbbecSDKConfig.xml
-  frames = pipeline.wait_for_frames(1000) # get synchronized Color + Depth frames
-  ```
+**1. Install the package** via PyPI (recommended) or from GitHub Release:
+
+```bash
+pip install --upgrade pyorbbecsdk2
+```
+
+> 💡 **Recommended: Use Virtual Environment**
+>
+> Modern systems (e.g., macOS, Ubuntu 24.04+) restrict pip installations to the system Python. Using a virtual environment avoids permission errors:
+>
+> ```bash
+> # Create and activate virtual environment
+> python3 -m venv orbbec_env
+> source orbbec_env/bin/activate  # Linux/macOS
+> # .\orbbec_env\Scripts\Activate.ps1  # Windows PowerShell
+>
+> # Install SDK in virtual environment
+> pip install --upgrade pyorbbecsdk2
+> ```
+> See [Virtual Environment Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/virtual_environment_guide.html) for more options (venv, pyenv, conda).
+
+**2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
+
+```bash
+# Windows (PowerShell — will auto-request Administrator)
+python scripts/env_setup/setup_env.py
+
+# Linux (will auto-request sudo)
+python3 scripts/env_setup/setup_env.py
+```
+
+**3. Start experimenting** with the SDK's Quick Start code:
+
+```python
+from pyorbbecsdk import *
+
+pipeline = Pipeline()
+pipeline.start()                        # uses default config from OrbbecSDKConfig.xml
+frames = pipeline.wait_for_frames(1000) # get synchronized Color + Depth frames
+```
 
 For full visualisation, check out [`examples/quick_start.py`](examples/quick_start.py). 
 **Running result:**
@@ -157,6 +179,55 @@ python scripts/auto_update_firmware.py
 
 This script will check your current device firmware version, guide you to download the correct firmware, and perform the firmware update safely.
 
+## Build from Source
+
+To build pyorbbecsdk from source, you need:
+
+- **CMake** (3.15.0+)
+- **C++ compiler** (GCC 5.4+ on Linux, Clang on macOS, MSVC 2019+ on Windows)
+- **uv** - A fast Python package manager ([install guide](https://docs.astral.sh/uv/getting-started/installation/))
+
+Then run the build script for your platform:
+
+```bash
+# Linux
+chmod +x build-whl-uv.sh
+./build-whl-uv.sh        # Build for Python 3.10 (default)
+./build-whl-uv.sh 3.11   # Build for specific version
+./build-whl-uv.sh all    # Build all supported versions (3.8-3.13)
+
+# macOS
+chmod +x build-whl-uv-macos.sh
+./build-whl-uv-macos.sh
+
+# Windows PowerShell
+.\build-whl-uv.ps1
+```
+
+The built wheel packages will be in the `wheel/` directory. See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions including offline builds and troubleshooting.
+
+## FAQ
+
+**How to configure or disable SDK logging?**
+
+You can modify the log level by editing the `OrbbecSDKConfig.xml` configuration file:
+
+```bash
+# Locate the config file (for pip-installed package)
+pip show pyorbbecsdk2
+# Edit: <Location>/OrbbecSDKConfig.xml
+```
+
+Change the log levels in the `<Log>` section:
+```xml
+<Log>
+    <FileLogLevel>5</FileLogLevel>      <!-- 5 = NONE (disable file logging) -->
+    <ConsoleLogLevel>3</ConsoleLogLevel>  <!-- 0=DEBUG, 1=INFO, 2=WARN, 3=ERROR, 4=FATAL, 5=NONE -->
+</Log>
+```
+
+See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/5_FAQ/FAQ.html) for more common issues and solutions.
+
 ## Community
 
 Join the conversation and connect with other pyorbbecsdk users to share ideas, solve problems, and help make the SDK awesome. 
@@ -168,5 +239,3 @@ Join the conversation and connect with other pyorbbecsdk users to share ideas, s
 ## License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
-
-The bundled Orbbec SDK native libraries in `sdk/lib/` are proprietary binaries distributed by Orbbec. See [sdk/lib/README.md](sdk/lib/README.md) for details.

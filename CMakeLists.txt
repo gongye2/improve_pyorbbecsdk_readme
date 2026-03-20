@@ -183,20 +183,22 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config)
           DESTINATION ${PY_PACKAGE_DIR})
 endif ()
 
-# 5. env_setup scripts 
+# 5. env_setup scripts
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup)
   if (WIN32)
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup/
             DESTINATION ${PY_PACKAGE_DIR}/shared
             FILES_MATCHING
               PATTERN "*.md"
-              PATTERN "*.ps1")
+              PATTERN "*.ps1"
+              PATTERN "setup_env.py")
   elseif (UNIX)
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/env_setup/
             DESTINATION ${PY_PACKAGE_DIR}/shared
             FILES_MATCHING
               PATTERN "*.rules"
-              PATTERN "*.sh")
+              PATTERN "*.sh"
+              PATTERN "setup_env.py")
   endif ()
 endif ()
 
