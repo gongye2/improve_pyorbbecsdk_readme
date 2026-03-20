@@ -13,7 +13,7 @@ dependencies = [
     "numpy",
     "opencv-python",
     "pygame",
-    "open3d==0.18.0",
+    "open3d==0.18.0; python_version >= '3.8' and python_version < '3.12'",
     # pynput on macOS requires pyobjc; pyobjc 11+ requires Python 3.9+
     "pynput; sys_platform != 'darwin'",
     "pynput; sys_platform == 'darwin' and python_version >= '3.9'",
