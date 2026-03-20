@@ -35,5 +35,6 @@ build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = [
     "auditwheel",
+    "pyelftools<0.30",
     "pybind11-stubgen",
 ]
