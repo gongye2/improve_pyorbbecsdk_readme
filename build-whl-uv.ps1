@@ -403,9 +403,11 @@ function Invoke-BuildVersion {
     }
 
     if (Test-Path $ENV_SETUP_SRC) {
-        Get-ChildItem -Path $ENV_SETUP_SRC -Filter "*.rules" -ErrorAction SilentlyContinue |
+        Get-ChildItem -Path $ENV_SETUP_SRC -Filter "*.ps1" -ErrorAction SilentlyContinue |
             Copy-Item -Destination $SHARED_DST_DIR -Force -ErrorAction SilentlyContinue
-        Get-ChildItem -Path $ENV_SETUP_SRC -Filter "*.sh" -ErrorAction SilentlyContinue |
+        Get-ChildItem -Path $ENV_SETUP_SRC -Filter "*.md" -ErrorAction SilentlyContinue |
+            Copy-Item -Destination $SHARED_DST_DIR -Force -ErrorAction SilentlyContinue
+        Get-ChildItem -Path $ENV_SETUP_SRC -Filter "setup_env.py" -ErrorAction SilentlyContinue |
             Copy-Item -Destination $SHARED_DST_DIR -Force -ErrorAction SilentlyContinue
     }
 

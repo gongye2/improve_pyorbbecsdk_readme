@@ -369,6 +369,7 @@ build_version() {
     if [ -d "$ENV_SETUP_SRC" ]; then
         cp "$ENV_SETUP_SRC"/*.rules "$SHARED_DST_DIR/" 2>/dev/null || true
         cp "$ENV_SETUP_SRC"/*.sh    "$SHARED_DST_DIR/" 2>/dev/null || true
+        cp "$ENV_SETUP_SRC"/setup_env.py "$SHARED_DST_DIR/" 2>/dev/null || true
     fi
 
     # Copy pyi stub files
