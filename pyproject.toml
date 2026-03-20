@@ -10,7 +10,8 @@ authors = [
 dependencies = [
     "av==12.3.0; python_version < '3.13'",
     "av==13.0.0; python_version >= '3.13'",
-    "numpy",
+    "numpy<2.0.0; python_version >= '3.8' and python_version < '3.12'",
+    "numpy; python_version >= '3.12'",
     "opencv-python",
     "pygame",
     "open3d==0.18.0; python_version >= '3.8' and python_version < '3.12'",
