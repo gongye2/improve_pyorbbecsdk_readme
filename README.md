@@ -140,10 +140,10 @@ Here is the list of all supported operating systems for the pyorbbecsdk. Pre-bui
 
 *(Click the platform icons below to download the Orbbec Viewer for your OS)*
 
-| <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_win_x64.zip" title="Download Orbbec Viewer for Windows"><img src="https://user-images.githubusercontent.com/32394882/230619282-fe2f84fb-2130-4164-a193-db2893b58272.png" width="40%" alt="Windows" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_x86_64.zip" title="Download Orbbec Viewer for Linux x64"><img src="https://user-images.githubusercontent.com/32394882/230619268-bdf66472-8bf5-41e7-9efa-ca3698ff271a.png" width="40%" alt="Linux x64" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64.zip" title="Download Orbbec Viewer for Linux ARM64"><img src="https://user-images.githubusercontent.com/32394882/230619273-feeee52b-209b-48da-b990-06630cabe323.png" width="40%" alt="Linux ARM" /></a></div> |
-| :---: | :---: | :---: |
-| **Windows (x64)** | **Linux (x64)** | **Linux (ARM64)** |
-| Windows 10+ | Ubuntu 18.04 / 20.04 / 22.04 | Ubuntu 18.04 / 20.04 / 22.04 |
+| <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_win_x64.zip" title="Download Orbbec Viewer for Windows"><img src="https://user-images.githubusercontent.com/32394882/230619282-fe2f84fb-2130-4164-a193-db2893b58272.png" width="40%" alt="Windows" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_x86_64.zip" title="Download Orbbec Viewer for Linux x64"><img src="https://user-images.githubusercontent.com/32394882/230619268-bdf66472-8bf5-41e7-9efa-ca3698ff271a.png" width="40%" alt="Linux x64" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64.zip" title="Download Orbbec Viewer for Linux ARM64"><img src="https://user-images.githubusercontent.com/32394882/230619273-feeee52b-209b-48da-b990-06630cabe323.png" width="40%" alt="Linux ARM" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_macOS_arm64.zip" title="Download Orbbec Viewer for macOS"><img src="docs/_images/mac.png" width="40%" alt="macOS" /></a></div> |
+| :---: | :---: | :---: | :---: |
+| **Windows (x64)** | **Linux (x64)** | **Linux (ARM64)** | **macOS (ARM)** |
+| Windows 10+ | Ubuntu 18.04 / 20.04 / 22.04 | Ubuntu 18.04 / 20.04 / 22.04 | macOS 13.2+ (M1/M2) |
 
 Supported Python versions: **Python 3.8 to 3.13**
 
