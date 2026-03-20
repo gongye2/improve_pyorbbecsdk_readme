@@ -1,245 +1,172 @@
-# Python Bindings for Orbbec SDK
+<h1 align="center">
+  pyorbbecsdk
+  <br>
+</h1>
 
-the v2-main branch provides Python bindings for the [Orbbec SDK v2.x](https://github.com/orbbec/OrbbecSDK_v2),  enabling developers to interface with Orbbec devices using Python. The Orbbec SDK v.2.x is an open-source cross-platform SDK library based on Orbbec RGB-D cameras. The differences between Orbbec SDK v2.x and [Orbbec SDK v1.x](https://github.com/orbbec/OrbbecSDK) can be found in the [README](https://github.com/orbbec/OrbbecSDK_v2).
+<p align="center">
+  Python Bindings for Orbbec SDK v2.x
+  <br />
+  The official Python wrapper enabling developers to interface with Orbbec RGB-D cameras (Gemini, Femto, Astra series) through a clean, Pythonic API backed by native C++ performance via pybind11.
+</p>
 
-If you are a user in China, it is recommended to use [gitee Repo](https://gitee.com/orbbecdeveloper/pyorbbecsdk).
-> [!IMPORTANT]
->
-> Welcome to the python wrapper . Before you begin using this version of python wrapper , it's crucial to check the following device support list to verify the compatibility.
+<p align="center">
+  <a href="https://orbbec.github.io/pyorbbecsdk/index.html">Documentation</a>
+  ·
+  <a href="https://pypi.org/project/pyorbbecsdk2/">PyPI Package</a>
+  ·
+  <a href="https://github.com/orbbec/pyorbbecsdk/issues">Community</a>
+  ·
+  <a href="https://github.com/orbbec/OrbbecSDK_v2">OrbbecSDK v2</a>
+  ·
+  <a href="https://gitee.com/orbbecdeveloper/pyorbbecsdk">Gitee Mirror</a>
+</p>
 
-Here is the device support list of main branch (v1.x) and v2-main branch (v2.x):
+<p align="center">
+  <a href="https://github.com/orbbec/pyorbbecsdk/actions/workflows/build.yaml"><img src="https://img.shields.io/badge/build-GitHub%20Actions-blue?logo=github" alt="Build"></a>
+  <a href="https://pypi.org/project/pyorbbecsdk2/"><img src="https://img.shields.io/pypi/v/pyorbbecsdk2" alt="PyPI"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
+</p>
 
-<table border="1" style="border-collapse: collapse; text-align: left; width: 100%;">
-  <thead>
-    <tr style="background-color: #1f4e78; color: white; text-align: center;">
-      <th>Product Series</th>
-      <th>Product</th>
-      <th><a href="https://github.com/orbbec/pyorbbecsdk/tree/main" style="color: black; text-decoration: none;">Branch main</a></th>
-      <th><a href="https://github.com/orbbec/pyorbbecsdk/tree/v2-main" style="color: black; text-decoration: none;">Branch v2-main</a></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center; font-weight: bold;">Gemini 435Le</td>
-      <td>Gemini 435Le</td>
-      <td>not supported</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td rowspan="8" style="text-align: center; font-weight: bold;">Gemini 330</td>
-      <td>Gemini 335Le</td>
-      <td>not supported</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 335</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 336</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 330</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 335L</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 336L</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 330L</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 335Lg</td>
-      <td>not supported</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td rowspan="5" style="text-align: center; font-weight: bold;">Gemini 2</td>
-      <td>Gemini 2</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 2 L</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 2 XL</td>
-      <td>recommended for new designs</td>
-      <td>to be supported</td>
-    </tr>
-    <tr>
-      <td>Gemini 215</td>
-      <td>not supported</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Gemini 210</td>
-      <td>not supported</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td rowspan="3" style="text-align: center; font-weight: bold;">Femto</td>
-      <td>Femto Bolt</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Femto Mega</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Femto Mega I</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td rowspan="3" style="text-align: center; font-weight: bold;">Astra</td>
-      <td>Astra 2</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-    <tr>
-      <td>Astra+</td>
-      <td>limited maintenance</td>
-      <td>not supported</td>
-    </tr>
-    <tr>
-      <td>Astra Pro Plus</td>
-      <td>limited maintenance</td>
-      <td>not supported</td>
-    </tr>
-    <tr>
-      <td style="text-align: center; font-weight: bold;">Astra Mini</td>
-      <td>Astra Mini (S) Pro</td>
-      <td>full maintenance</td>
-      <td>recommended for new designs</td>
-    </tr>
-  </tbody>
+---
+
+> **Branch note:** This is the `v2-main` branch (SDK v2.x). For the legacy v1.x branch, see [main](https://github.com/orbbec/pyorbbecsdk/tree/main). The differences between SDK v1.x and v2.x are described in the [OrbbecSDK_v2 README](https://github.com/orbbec/OrbbecSDK_v2).
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Supported Devices](#supported-devices)
+- [Why pyorbbecsdk?](#why-pyorbbecsdk)
+- [Getting started](#getting-started)
+- [Samples](#samples)
+- [Supported platforms](#supported-platforms)
+- [Automated Firmware Update](#automated-firmware-update)
+- [Community](#community)
+- [License](#license)
+
+## Overview
+
+<table style="width: 100%; table-layout: fixed;">
+  <tr>
+    <th style="width: 33.33%; text-align: center;">AMR Grocery Delivery</th>
+    <th style="width: 33.33%; text-align: center;">Body Health Tracking</th>
+    <th style="width: 33.33%; text-align: center;">3D Face Payment</th>
+  </tr>
+  <tr>
+    <td><img src="docs/video/arm_glocery_delivery_minsize.gif" width="100%" height="200" style="object-fit: cover;"></td>
+    <td><img src="docs/video/orbbec_pose_detect_minsize.gif" width="100%" height="200" style="object-fit: cover;"></td>
+    <td><img src="docs/video/orbbec_scan_face_minsize.gif" width="100%" height="200" style="object-fit: cover;"></td>
+  </tr>
 </table>
 
-**Note**:
-- If you do not find your device, please contact our FAE or sales representative for help.
-- Starting from October 2025 (Orbbec SDK v2.5.5), we will begin upgrading devices that use the OpenNI protocol to the UVC protocol, Already upgraded devices and future upgrade schedule and how to upgrade from openni protocol to uvc protocol,please refer to [the document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol).
+## Supported Devices
 
+> **Important:** 
+> - Most new devices come with compatible firmware pre-installed and work out-of-the-box.
+> - Starting from October 2025 (Orbbec SDK v2.5.5), devices using the OpenNI protocol will be upgraded to UVC protocol. See [the upgrade document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol) for details.
+> - For legacy v1.x device support (Astra+, Astra Pro Plus, Gemini 2 XL), use the [main branch](https://github.com/orbbec/pyorbbecsdk/tree/main).
 
-**Definition**:
+Here is the simplified device support list comparing the `v2-main` branch (v2.x) with the legacy `main` branch (v1.x):
 
-1. recommended for new designs: we will provide full supports with new features,  bug fix and performance optimization;
-2. full maintenance: we will provide bug fix support;
-3. limited maintenance: we will provide critical bug fix support;
-4. not supported: we will not support specific device in this version;
-5. to be supported: we will add support in the near future.
+| Camera Family | `v2-main` (SDK v2.x) | `main` (SDK v1.x) |
+| :--- | :---: | :---: |
+| **Gemini 330 Series** (335, 336, 330, L/Le/Lg) <br> **Gemini 435Le** | ✅ **Recommended** | ⚠️ Maintenance / None |
+| **Gemini 2 Series** (2, 2 L, 210, 215) | ✅ **Recommended** | ⚠️ Maintenance / None |
+| **Gemini 2 XL** | ⏳ *Planned* | ✅ Recommended |
+| **Femto Series** (Bolt, Mega, Mega I) | ✅ **Recommended** | ⚠️ Maintenance |
+| **Astra 2, Astra Mini (S) Pro** | ✅ **Recommended** | ⚠️ Maintenance |
+| **Legacy Astra** (+, Pro Plus) | ❌ Not Supported | ⚠️ Maintenance |
 
+*Note: "Recommended" means full support with new features. "Maintenance" means bug fixes only. "None" means not supported in that branch.*
 
-## Hardware Products Supported by Python SDK
+## Why pyorbbecsdk?
 
-| **Products List** | **Minimal Firmware Version** | **Recommended Firmware Version**    |
-|-------------------|------------------------------|-------------------------------|
-| Gemini 305        | 1.0.30                       |        1.0.30                       |
-| Gemini 345        | 1.7.04                       |        1.9.03                       |
-| Gemini 345Lg        | 1.7.04                     |        1.9.03                   |
-| Gemini 435Le        | 1.2.4                     |        1.3.6                   |
-| Gemini 335Le        | 1.5.31                     |        1.6.00                     |
-| Gemini 330        | 1.2.20                       |        1.6.00                       |
-| Gemini 330L       | 1.2.20                       |       1.6.00                      |
-| Gemini 335        | 1.2.20                       |       1.6.00                        |
-| Gemini 335L       | 1.2.20                       |        1.6.00                       |
-| Gemini 336        | 1.2.20                       |       1.6.00                        |
-| Gemini 336L       | 1.2.20                       |        1.6.00                       |
-| Gemini 335Lg      | 1.3.46                       |        1.6.00                       |
-| Femto Bolt        | 1.1.2                  |              1.1.3                       |
-| Femto Mega        | 1.3.0                  |              1.3.1                       |
-| Femto Mega I        | 2.0.4                  |            2.0.4                     |
-| Astra 2           | 2.8.20                       |         2.8.20                      |
-| Gemini 2 L        | 1.4.53                       |        1.5.2                       |
-| Gemini 2          | 1.4.92               |                1.4.98                       |
-| Gemini 215        | 1.0.9                        |        1.0.9                      |
-| Gemini 210        | 1.0.9                        |        1.0.9                      |
-| Astra mini Pro        | 2.0.03                        |        2.0.03                        |
-| Astra mini S Pro        | 2.0.03                        |        2.0.03                        |
-| Pulsar SL450        | 2.2.4.5                        |        2.2.4.5                        |
-| Pulsar ME450        | 1.0.0.6                        |        1.0.0.6                        |
+- 📷 **RGB-D streaming** — Depth, color, and infrared streams with configurable resolution and FPS.
+- 🛠️ **Post-processing filters** — Temporal, Spatial (Advanced), HoleFilling, Threshold, Decimation, Noise Removal.
+- 🎯 **Depth-color alignment** — Software `AlignFilter` and hardware D2C alignment.
+- ☁️ **Point cloud generation** — Colored 3D point clouds via `PointCloudFilter`.
+- 📐 **Camera calibration** — Intrinsics, distortion coefficients, and extrinsic transforms.
+- ⚡ **Real-time performance** — Backed by native C++ performance via pybind11.
+- 🌐 **Network cameras** — Connect to Femto Mega / Gemini 2 XL over Ethernet.
+- 📦 **Pre-built wheels** — No compilation required for Windows x64, Linux x64, and ARM64.
 
-## Supported Platforms
+## Getting started
 
-- Windows: Windows 10 (x64)
-- Linux: 18.04/20.04/22.04 (x64)
-- Arm64: Ubuntu18.04/20.04/22.04
+The pyorbbecsdk contains all the libraries that power your camera along with tools that let you experiment with its features and settings.
 
-## Supported Python Versions
+To get started:
+- **Install the package** via PyPI (recommended) or from GitHub Release:
+  ```bash
+  pip install pyorbbecsdk2
+  ```
+- **Setup the environment** (one-time OS-level configuration for metadata and udev rules):
+  ```bash
+  # Windows (PowerShell — will auto-request Administrator)
+  python scripts/env_setup/setup_env.py
+  
+  # Linux (will auto-request sudo)
+  python3 scripts/env_setup/setup_env.py
+  ```
+- **Start experimenting** with the SDK's Quick Start code:
 
-python 3.8 to python 3.13
+  ```python
+  from pyorbbecsdk import *
+  
+  pipeline = Pipeline()
+  pipeline.start()                        # uses default config from OrbbecSDKConfig.xml
+  frames = pipeline.wait_for_frames(1000) # get synchronized Color + Depth frames
+  ```
 
-## Environment Setup
+For full visualisation, check out [`examples/quick_start.py`](examples/quick_start.py). 
+**Running result:**
 
-### Windows
+![quick_start_result](docs/_images/quick_start_result.png)
 
-For windows, you need to register the metadata associated with frames (this includes things like timestamps and other information about the video frame).
+## Samples
 
-- Connect the device and confirm that the device is online;
-- Open PowerShell with administrator privileges, then use the `cd` command to enter the directory where the `obsensor_metadata_win10.ps1` script is located;
-- Execute the `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` command, and enter `Y` as prompted to confirm;
+The [examples/](examples/) directory contains **35+ scripts** organized by difficulty to start using the pyorbbecsdk with only a few lines of code.
 
-  Try to execute the `Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser` command if the previous command fails in some cases;
-- Execute `.\obsensor_metadata_win10.ps1 -op install_all` to complete the registration.
+* [**Quick Start**](examples/quick_start.py) - Zero-config RGBD viewer — first thing to run.
+* [**Beginner**](examples/beginner/) - Hello camera, depth viz, alignment, calibration, point cloud, multi-stream, IMU, network camera, and firmware update.
+* [**Advanced**](examples/advanced/) - Recording & playback, device control, filter chains, HDR, presets, depth work modes, multi-device sync, coordinate transforms, high-performance pipeline.
+* [**Applications**](examples/applications/) - YOLO object detection with depth overlay; interactive depth ruler.
+* [**LiDAR**](examples/lidar_examples/) - LiDAR streaming, control, recording, and playback.
 
+See [examples/README.md](examples/README.md) for the full list with per-script descriptions and device compatibility.
 
-*Notes: If the metadata is not registered, the device timestamp will be abnormal, thereby affecting the SDK's internal frame synchronization functionality.*
+## Supported platforms
 
+Here is the list of all supported operating systems for the pyorbbecsdk. Pre-built wheels are available for all of them.
 
-### Linux
+*(Click the platform icons below to download the Orbbec Viewer for your OS)*
 
-For Linux, we have provided a script to help you set up the environment. You can run the script as follows:
+| <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_win_x64.zip" title="Download Orbbec Viewer for Windows"><img src="https://user-images.githubusercontent.com/32394882/230619282-fe2f84fb-2130-4164-a193-db2893b58272.png" width="40%" alt="Windows" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_x86_64.zip" title="Download Orbbec Viewer for Linux x64"><img src="https://user-images.githubusercontent.com/32394882/230619268-bdf66472-8bf5-41e7-9efa-ca3698ff271a.png" width="40%" alt="Linux x64" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64.zip" title="Download Orbbec Viewer for Linux ARM64"><img src="https://user-images.githubusercontent.com/32394882/230619273-feeee52b-209b-48da-b990-06630cabe323.png" width="40%" alt="Linux ARM" /></a></div> |
+| :---: | :---: | :---: |
+| **Windows (x64)** | **Linux (x64)** | **Linux (ARM64)** |
+| Windows 10+ | Ubuntu 18.04 / 20.04 / 22.04 | Ubuntu 18.04 / 20.04 / 22.04 |
+
+Supported Python versions: **Python 3.8 to 3.13**
+
+## Automated Firmware Update
+
+If you encounter errors related to firmware version mismatch, please use the automated update assistant:
 
 ```bash
-  cd pyorbbecsdk/scripts/env_setup
-  sudo chmod +x ./install_udev_rules.sh
-  sudo ./install_udev_rules.sh
-  sudo udevadm control --reload && sudo udevadm trigger
+python scripts/auto_update_firmware.py
 ```
 
-*Notes: If this script is not executed, open the device will fail due to permission issues.*
+This script will check your current device firmware version, guide you to download the correct firmware, and perform the firmware update safely.
 
-## How to Use install package
-To make Python more user-friendly, We provide two installation methods: online installation and offline installation.
+## Community
 
+Join the conversation and connect with other pyorbbecsdk users to share ideas, solve problems, and help make the SDK awesome. 
 
-### Windows
-
-We provide both online and offline installation packages for Python versions **3.8** to **3.13**.
-
-Follow the [windows install documentation](
-https://orbbec.github.io/pyorbbecsdk/source/2_installation/install_the_package.html#windows) to install the SDK online or offline. Then verify the package and run the sample.
-
-
-### Linux
-
-We provide online installation packages for Python versions **3.9** to **3.13** and provide offline installation packages for Python versions **3.8** to **3.13**.
-
-Follow the [linux install documentation](
-https://orbbec.github.io/pyorbbecsdk/source/2_installation/install_the_package.html#linux) to install the SDK online or offline. Then verify the package and run the sample.
-
-## Documentation
-
-[Orbbec SDK V2 Python Wrapper User Guide](https://orbbec.github.io/pyorbbecsdk/index.html) provides an overview of the concepts and architecture of Orbbec SDK v2, details on the Python Wrapper installation packages and source compilation, an introduction to commonly used Python Wrapper interfaces, and a FAQ section. Please read it carefully.
-
+- **GitHub Issues** If you come across a bug or want to request a feature, please raise an issue in this [**GitHub repository**](https://github.com/orbbec/pyorbbecsdk/issues).
+- **Documentation** The comprehensive [Orbbec SDK V2 Python Wrapper User Guide](https://orbbec.github.io/pyorbbecsdk/index.html) covers architecture, API quick-starts, and usage guides.
+- **Contributing** Contributions are welcome — read [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, code style, and the PR process.
 
 ## License
-This project is licensed under the Apache License 2.0.
 
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+The bundled Orbbec SDK native libraries in `sdk/lib/` are proprietary binaries distributed by Orbbec. See [sdk/lib/README.md](sdk/lib/README.md) for details.
