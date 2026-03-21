@@ -176,10 +176,10 @@ Download the appropriate `.whl` file from [GitHub Releases](https://github.com/o
 
 | Platform | File Pattern | Example |
 |----------|--------------|---------|
-| Linux x86_64 | `pyorbbecsdk-*-cp3X-cp3X-linux_x86_64.whl` | `pyorbbecsdk-2.0.19-cp311-cp311-linux_x86_64.whl` |
-| Linux ARM64 | `pyorbbecsdk-*-cp3X-cp3X-linux_aarch64.whl` | `pyorbbecsdk-2.0.19-cp311-cp311-linux_aarch64.whl` |
-| macOS ARM64 | `pyorbbecsdk-*-cp3X-cp3X-macosx_13_0_arm64.whl` | `pyorbbecsdk-2.0.19-cp311-cp311-macosx_13_0_arm64.whl` |
-| Windows x64 | `pyorbbecsdk-*-cp3X-cp3X-win_amd64.whl` | `pyorbbecsdk-2.0.19-cp311-cp311-win_amd64.whl` |
+| Linux x86_64 | `pyorbbecsdk-*-cp3X-cp3X-linux_x86_64.whl` | `pyorbbecsdk-2.1.0-cp311-cp311-linux_x86_64.whl` |
+| Linux ARM64 | `pyorbbecsdk-*-cp3X-cp3X-linux_aarch64.whl` | `pyorbbecsdk-2.1.0-cp311-cp311-linux_aarch64.whl` |
+| macOS ARM64 | `pyorbbecsdk-*-cp3X-cp3X-macosx_13_0_arm64.whl` | `pyorbbecsdk-2.1.0-cp311-cp311-macosx_13_0_arm64.whl` |
+| Windows x64 | `pyorbbecsdk-*-cp3X-cp3X-win_amd64.whl` | `pyorbbecsdk-2.1.0-cp311-cp311-win_amd64.whl` |
 
 > **Note:** Replace `cp3X` with your Python version (e.g., `cp311` for Python 3.11).
 
@@ -189,10 +189,10 @@ Navigate to the download directory and install:
 
 ```bash
 # Linux/macOS
-python3 -m pip install pyorbbecsdk-2.0.19-cp311-cp311-linux_x86_64.whl
+python3 -m pip install pyorbbecsdk-2.1.0-cp311-cp311-linux_x86_64.whl
 
 # Windows
-python -m pip install pyorbbecsdk-2.0.19-cp311-cp311-win_amd64.whl
+python -m pip install pyorbbecsdk-2.1.0-cp311-cp311-win_amd64.whl
 ```
 
 Verify installation (package will be listed as `pyorbbecsdk2`):
@@ -204,12 +204,12 @@ pip3 show pyorbbecsdk2
 Expected output:
 ```
 Name: pyorbbecsdk2
-Version: 2.0.19
+Version: 2.1.0
 Summary: pyorbbecsdk is a python wrapper for the OrbbecSDK
 Location: /path/to/site-packages
 ```
 
-> **Note:** The wheel file name starts with `pyorbbecsdk-` (e.g., `pyorbbecsdk-2.0.19-...`), but the installed package name is `pyorbbecsdk2`. The import module remains `pyorbbecsdk`.
+> **Note:** The wheel file name starts with `pyorbbecsdk-` (e.g., `pyorbbecsdk-2.1.0-...`), but the installed package name is `pyorbbecsdk2`. The import module remains `pyorbbecsdk`.
 
 ### "Hello World" Example
 
@@ -265,7 +265,7 @@ python3 examples/beginner/02_depth_visualization.py
 sudo -E python3 examples/beginner/02_depth_visualization.py
 ```
 
-> **Note for versions < 2.0.19:** If you installed an older version, you need to manually install example dependencies:
+> **Note for versions < 2.1.0:** If you installed an older version, you need to manually install example dependencies:
 > ```bash
 > pip3 install -r /path/to/site-packages/pyorbbecsdk/examples/requirements.txt
 > ```
@@ -377,7 +377,7 @@ python3 -c "import platform; print(platform.machine()); print(platform.system())
 
 **Problem:** Examples fail with missing dependencies.
 
-**Solution:** For versions < 2.0.19, manually install dependencies:
+**Solution:** For versions < 2.1.0, manually install dependencies:
 
 ```bash
 pip3 install opencv-python numpy
