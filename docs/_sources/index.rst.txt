@@ -17,5 +17,6 @@ Orbbec SDK V2 Python Wrapper
     source/2_installation/installation.rst
     source/3_QuickStarts/QuickStarts.rst
     source/4_Application_Guide/Application_Guide.rst
-    source/5_FAQ/FAQ.rst
+    source/6_API_Reference/index.rst
+    source/7_FAQ/FAQ.md
     source/license.md

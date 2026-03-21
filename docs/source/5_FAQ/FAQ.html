@@ -16,8 +16,8 @@
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -61,62 +61,200 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../2_installation/installation.html">2. Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../2_installation/registration_script.html">2.1. Registration script (required)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/registration_script.html#install-udev-rules-script-linux">2.1.1. install udev rules script (Linux)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/registration_script.html#registering-metadata-using-a-script-windows">2.1.2. Registering Metadata Using a Script (Windows)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../2_installation/virtual_environment_guide.html">2.1. Virtual Environment Installation Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#table-of-contents">2.1.1. 📋 Table of Contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#quick-start">2.1.2. Quick Start</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux-macos-venv">2.1.2.1. Linux / macOS (venv)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#windows-venv">2.1.2.2. Windows (venv)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../2_installation/install_the_package.html">2.2. Linux</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#installation">2.2.1. Installation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#online-installation">2.2.1.1. Online installation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#offline-installation">2.2.1.2. Offline installation</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#prerequisites">2.2.1.2.1. Prerequisites</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#download-the-appropriate-whl-package">2.2.1.2.2. Download the Appropriate .whl Package</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#install-the-package">2.2.1.2.3. Install the Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#using-venv-recommended-for-beginners">2.1.3. 1. Using venv (Recommended for Beginners)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#check-python-version">2.1.3.1. 1.1 Check Python Version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#create-virtual-environment">2.1.3.2. 1.2 Create Virtual Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#activate-virtual-environment">2.1.3.3. 1.3 Activate Virtual Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#install-pyorbbecsdk2">2.1.3.4. 1.4 Install pyorbbecsdk2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#verify-installation">2.1.3.5. 1.5 Verify Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#run-examples">2.1.3.6. 1.6 Run Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#deactivate-virtual-environment">2.1.3.7. 1.7 Deactivate Virtual Environment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#using-pyenv-multiple-python-versions">2.1.4. 2. Using pyenv (Multiple Python Versions)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#install-pyenv">2.1.4.1. 2.1 Install pyenv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#install-python-3-10">2.1.4.2. 2.2 Install Python 3.10</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#set-local-python-version-in-project-directory">2.1.4.3. 2.3 Set Local Python Version in Project Directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#create-virtual-environment-and-activate">2.1.4.4. 2.4 Create Virtual Environment and Activate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#id1">2.1.4.5. 2.5 Install pyorbbecsdk2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#complete-workflow-example">2.1.4.6. 2.6 Complete Workflow Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#using-conda-data-science-users">2.1.5. 3. Using conda (Data Science Users)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#install-miniconda">2.1.5.1. 3.1 Install Miniconda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#create-conda-environment">2.1.5.2. 3.2 Create conda Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#install-dependencies-optional">2.1.5.3. 3.3 Install Dependencies (Optional)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#id2">2.1.5.4. 3.4 Install pyorbbecsdk2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#exit-environment">2.1.5.5. 3.5 Exit Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#remove-environment-if-needed">2.1.5.6. 3.6 Remove Environment (if needed)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#platform-specific-notes">2.1.6. Platform-Specific Notes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux">2.1.6.1. Linux</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#ubuntu-debian">2.1.6.1.1. Ubuntu/Debian</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#udev-rules">2.1.6.1.2. udev Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#macos">2.1.6.2. macOS</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#xcode-command-line-tools">2.1.6.2.1. Xcode Command Line Tools</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#permission-issues">2.1.6.2.2. Permission Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#windows">2.1.6.3. Windows</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#visual-c-redistributable">2.1.6.3.1. Visual C++ Redistributable</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#powershell-execution-policy">2.1.6.3.2. PowerShell Execution Policy</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#verify-the-installation">2.2.2. Verify the Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#run-the-example">2.2.3. Run the Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#troubleshooting">2.1.7. Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#externally-managed-environment-error">2.1.7.1. ❌ “externally-managed-environment” Error</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#no-module-named-venv">2.1.7.2. ❌ “No module named ‘venv’”</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#virtual-environment-activated-but-still-using-system-python">2.1.7.3. ❌ Virtual Environment Activated but Still Using System Python</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#pip-install-shows-permission-denied">2.1.7.4. ❌ pip install Shows Permission Denied</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#pyorbbec-env-bin-activate-no-such-file">2.1.7.5. ❌ “pyorbbec_env/bin/activate: No such file”</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../2_installation/install_the_package.html#windows">2.3. Windows</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#id1">2.3.1. Installation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#id2">2.3.1.1. Online installation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#id3">2.3.1.2. Offline installation</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#id4">2.3.1.2.1. Prerequisites</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#id5">2.3.1.2.2. Download the Appropriate .whl Package</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#id6">2.3.1.2.3. Install the Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#tool-selection-guide">2.1.8. 📊 Tool Selection Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#best-practices">2.1.9. 📝 Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#related-documentation">2.1.10. 🔗 Related Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_installation/registration_script.html">2.2. Registration script (required)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/registration_script.html#install-udev-rules-script-linux">2.2.1. install udev rules script (Linux)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/registration_script.html#registering-metadata-using-a-script-windows">2.2.2. Registering Metadata Using a Script (Windows)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_installation/install_the_package.html">2.3. Installation Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#system-requirements">2.3.1. 📋 System Requirements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#hardware-requirements">2.3.1.1. Hardware Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#quick-install-tl-dr">2.3.2. 🚀 Quick Install (TL;DR)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#prerequisites">2.3.3. 📦 Prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#python-version-check">2.3.3.1. Python Version Check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#virtual-environment-recommended">2.3.3.2. Virtual Environment (Recommended)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#system-specific-prerequisites">2.3.3.3. System-Specific Prerequisites</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#installation-methods">2.3.4. 🔧 Installation Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#method-1-pip-install-recommended">2.3.4.1. Method 1: pip install (Recommended)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#method-2-offline-wheel-installation">2.3.4.2. Method 2: Offline Wheel Installation</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#step-1-download-the-wheel">2.3.4.2.1. Step 1: Download the Wheel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/install_the_package.html#step-2-install-the-wheel">2.3.4.2.2. Step 2: Install the Wheel</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#id7">2.3.2. Verify the Installation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#id8">2.3.3. Run the Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#verification">2.3.5. ✅ Verification</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#check-installation">2.3.5.1. Check Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#hello-world-example">2.3.5.2. “Hello World” Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#run-an-example">2.3.5.3. Run an Example</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../2_installation/build_the_package.html">2.4. Build from Source</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#environment">2.4.1. Environment</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#compilation-platform-requirements">2.4.1.1. Compilation Platform Requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#python-version">2.4.1.2. Python Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#troubleshooting">2.3.6. 🐛 Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#no-device-found-linux">2.3.6.1. “No device found” (Linux)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#permission-denied-macos">2.3.6.2. Permission denied (macOS)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#importerror-on-windows">2.3.6.3. ImportError on Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#metadata-timestamp-issues-windows">2.3.6.4. Metadata/Timestamp Issues (Windows)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#python-version-mismatch">2.3.6.5. Python Version Mismatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#offline-installation-fails">2.3.6.6. Offline Installation Fails</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#examples-not-running">2.3.6.7. Examples Not Running</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#linux-python-sdk-compilation">2.4.2. Linux Python SDK Compilation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#install-dependencies-ubuntu">2.4.2.1. Install Dependencies (Ubuntu)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#custom-python-path-optional">2.4.2.2. Custom Python Path (Optional)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#build-the-project">2.4.2.3. Build the Project</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#run-the-examples">2.4.2.4. Run the Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#generate-python-stubs">2.4.2.5. Generate Python Stubs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#making-a-python-wheel">2.4.2.6. Making a Python Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#next-steps">2.3.7. 📚 Next Steps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/install_the_package.html#common-example-commands">2.3.7.1. Common Example Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#windows-python-sdk-compilation">2.4.3. Windows Python SDK Compilation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#download-the-python-sdk-source-code">2.4.3.1. Download the Python SDK Source Code</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#install-dependencies">2.4.3.2. Install Dependencies</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#configure-visual-studio-project">2.4.3.3. Configure Visual Studio Project</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#compile-the-python-sdk">2.4.3.4. Compile the Python SDK</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#test-examples">2.4.3.5. Test Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/install_the_package.html#additional-resources">2.3.8. 📖 Additional Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_installation/build_with_uv.html">2.4. Build from Source with UV (Recommended)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#prerequisites">2.4.1. Prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#all-platforms">2.4.1.1. All Platforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#platform-specific-requirements">2.4.1.2. Platform-Specific Requirements</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#linux">2.4.1.2.1. Linux</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#macos">2.4.1.2.2. macOS</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#windows">2.4.1.2.3. Windows</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#build-scripts">2.4.2. Build Scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#quick-start">2.4.3. Quick Start</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#id1">2.4.3.1. Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#id2">2.4.3.2. macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#id3">2.4.3.3. Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#script-options">2.4.4. Script Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#examples">2.4.4.1. Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#offline-build">2.4.5. Offline Build</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#preparing-for-offline-build">2.4.5.1. Preparing for Offline Build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#how-offline-mode-works">2.4.5.2. How Offline Mode Works</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#build-output">2.4.6. Build Output</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#installing-the-wheel">2.4.6.1. Installing the Wheel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#build-process-details">2.4.7. Build Process Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#key-differences-by-platform">2.4.7.1. Key Differences by Platform</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#troubleshooting">2.4.8. Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#common-issues">2.4.8.1. Common Issues</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#uv-command-not-found">2.4.8.1.1. “uv: command not found”</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#cmake-configuration-failed">2.4.8.1.2. “CMake configuration failed”</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#pybind11-not-found-offline-mode">2.4.8.1.3. “pybind11 not found” (Offline mode)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#permission-denied-on-macos">2.4.8.1.4. “Permission denied” on macOS</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../2_installation/build_with_uv.html#build-fails-on-windows-with-visual-studio-not-found">2.4.8.1.5. Build fails on Windows with “Visual Studio not found”</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#cleaning-build-artifacts">2.4.8.2. Cleaning Build Artifacts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#advanced-usage">2.4.9. Advanced Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#customizing-python-versions">2.4.9.1. Customizing Python Versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#parallel-builds">2.4.9.2. Parallel Builds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_with_uv.html#environment-variables">2.4.9.3. Environment Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#comparison-with-traditional-build">2.4.10. Comparison with Traditional Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#next-steps">2.4.11. Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_with_uv.html#see-also">2.4.12. See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../2_installation/build_the_package.html">2.5. Build from Source</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#environment">2.5.1. Environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#compilation-platform-requirements">2.5.1.1. Compilation Platform Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#python-version">2.5.1.2. Python Version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#linux-python-sdk-compilation">2.5.2. Linux Python SDK Compilation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#install-dependencies-ubuntu">2.5.2.1. Install Dependencies (Ubuntu)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#custom-python-path-optional">2.5.2.2. Custom Python Path (Optional)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#build-the-project">2.5.2.3. Build the Project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#run-the-examples">2.5.2.4. Run the Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#generate-python-stubs">2.5.2.5. Generate Python Stubs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#making-a-python-wheel">2.5.2.6. Making a Python Wheel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../2_installation/build_the_package.html#windows-python-sdk-compilation">2.5.3. Windows Python SDK Compilation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#download-the-python-sdk-source-code">2.5.3.1. Download the Python SDK Source Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#install-dependencies">2.5.3.2. Install Dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#configure-visual-studio-project">2.5.3.3. Configure Visual Studio Project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#compile-the-python-sdk">2.5.3.4. Compile the Python SDK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../2_installation/build_the_package.html#test-examples">2.5.3.5. Test Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -124,9 +262,71 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../3_QuickStarts/QuickStarts.html">3. QuickStarts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../3_QuickStarts/QuickStart.html">3.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#build-your-first-camera-application">3.2. Build your First Camera Application</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#sample-features">3.3. Sample Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../3_QuickStarts/QuickStart.html">3.1. QuickStart Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#overview">3.1.1. 🎯 Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#what-you-ll-learn">3.1.1.1. What You’ll Learn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#time-to-complete">3.1.1.2. Time to Complete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#final-result">3.1.1.3. Final Result</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#prerequisites">3.1.2. ✅ Prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#hardware">3.1.2.1. Hardware</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#software">3.1.2.2. Software</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#quick-verification">3.1.2.3. Quick Verification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#platform-specific-notes">3.1.2.4. Platform-Specific Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#your-first-application-30-seconds">3.1.3. 🚀 Your First Application (30 Seconds)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#step-1-quick-verification-optional">3.1.3.1. Step 1: Quick Verification (Optional)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#step-2-run-quick-start-30-sec">3.1.3.2. Step 2: Run Quick Start (30 sec)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#step-3-see-it-in-action">3.1.3.3. Step 3: See It In Action</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#how-it-works">3.1.3.4. How It Works</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#complete-runnable-script">3.1.4. 📋 Complete Runnable Script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#understanding-the-code">3.1.5. 📊 Understanding the Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#key-classes-and-concepts">3.1.5.1. Key Classes and Concepts</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#pipeline">3.1.5.1.1. 1. Pipeline</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#frameset">3.1.5.1.2. 2. FrameSet</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#frame-processing">3.1.5.1.3. 3. Frame Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#data-flow-diagram">3.1.5.2. Data Flow Diagram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#when-to-use-manual-configuration">3.1.5.3. When to Use Manual Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#common-customizations">3.1.6. 🔧 Common Customizations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#customize-via-xml-configuration">3.1.6.1. Customize via XML Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#manual-configuration-when-needed">3.1.6.2. Manual Configuration (When Needed)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#enable-only-color-or-depth">3.1.6.3. Enable Only Color or Depth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#save-frames-to-disk">3.1.6.4. Save Frames to Disk</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#troubleshooting">3.1.7. 🐛 Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#no-device-found-linux">3.1.7.1. “No device found” (Linux)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#permission-denied-macos">3.1.7.2. Permission denied (macOS)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#import-error">3.1.7.3. Import Error</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#empty-frames">3.1.7.4. Empty Frames</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#display-issues">3.1.7.5. Display Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#metadata-timestamp-issues-windows">3.1.7.6. Metadata/Timestamp Issues (Windows)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#next-steps">3.1.8. 📚 Next Steps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#recommended-learning-path">3.1.8.1. 🗺️ Recommended Learning Path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#learn-by-example">3.1.8.2. 🎓 Learn by Example</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#level-1-beginner">3.1.8.2.1. Level 1 — Beginner ⭐</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#level-2-advanced">3.1.8.2.2. Level 2 — Advanced ⭐⭐</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#level-3-applications">3.1.8.2.3. Level 3 — Applications ⭐⭐⭐</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#specialized-lidar">3.1.8.2.4. Specialized — LiDAR ⭐⭐⭐</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#additional-resources">3.1.8.3. 🔗 Additional Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#sdk-feature-overview">3.1.9. 📝 SDK Feature Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#tips-for-success">3.1.10. 💡 Tips for Success</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../4_Application_Guide/Application_Guide.html">4. Application Guide</a><ul>
@@ -355,8 +555,50 @@ pyorbbecsdk.OBError: usbEnumerator createUsbDevice failed!
 <p><code class="docutils literal notranslate"><span class="pre">you_device_name_here</span></code> is the name of the device you want to create, for example <code class="docutils literal notranslate"><span class="pre">Astra</span></code>.</p>
 <p>Then restart the udev service</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>service<span class="w"> </span>udev<span class="w"> </span>restart<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+
+
+<span class="m">3</span>、<span class="w"> </span>How<span class="w"> </span>to<span class="w"> </span>configure<span class="w"> </span>or<span class="w"> </span>disable<span class="w"> </span>SDK<span class="w"> </span>logging?
+
+Answer:<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>modify<span class="w"> </span>the<span class="w"> </span>log<span class="w"> </span>level<span class="w"> </span>by<span class="w"> </span>editing<span class="w"> </span>the<span class="w"> </span><span class="sb">`</span>OrbbecSDKConfig.xml<span class="sb">`</span><span class="w"> </span>configuration<span class="w"> </span>file.
+
+Steps:
+
+**Locate<span class="w"> </span>the<span class="w"> </span>OrbbecSDKConfig.xml<span class="w"> </span>file:**
+
+For<span class="w"> </span>pip-installed<span class="w"> </span>package:<span class="w"> </span>Run<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="sb">`</span><span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span>the<span class="w"> </span>installation<span class="w"> </span>path
+The<span class="w"> </span>XML<span class="w"> </span>file<span class="w"> </span>is<span class="w"> </span>located<span class="w"> </span>at<span class="w"> </span><span class="sb">`</span>&lt;Location&gt;/OrbbecSDKConfig.xml<span class="sb">`</span>
+
+Example:
+
+<span class="sb">```</span>bash
+pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2
+<span class="c1"># Output: Location: /Users/me/.../site-packages</span>
+<span class="c1"># Full path: /Users/me/.../site-packages/OrbbecSDKConfig.xml</span>
 </pre></div>
 </div>
+<p><strong>Open the XML file and find the <code class="docutils literal notranslate"><span class="pre">&lt;Log&gt;</span></code> section:</strong></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Log&gt;</span>
+<span class="w">    </span><span class="nt">&lt;FileLogLevel&gt;</span>1<span class="nt">&lt;/FileLogLevel&gt;</span><span class="w">          </span><span class="cm">&lt;!-- Change this from 1 to 5 --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;ConsoleLogLevel&gt;</span>3<span class="nt">&lt;/ConsoleLogLevel&gt;</span>
+<span class="nt">&lt;/Log&gt;</span>
+</pre></div>
+</div>
+<p><strong>Change <code class="docutils literal notranslate"><span class="pre">FileLogLevel</span></code> to 5:</strong></p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;Log&gt;</span>
+<span class="w">    </span><span class="nt">&lt;FileLogLevel&gt;</span>5<span class="nt">&lt;/FileLogLevel&gt;</span><span class="w">          </span><span class="cm">&lt;!-- 5 = NONE, disables logging --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;ConsoleLogLevel&gt;</span>3<span class="nt">&lt;/ConsoleLogLevel&gt;</span>
+<span class="nt">&lt;/Log&gt;</span>
+</pre></div>
+</div>
+<p><strong>Log Level Values:</strong></p>
+<ul class="simple">
+<li><p>0 = DEBUG</p></li>
+<li><p>1 = INFO</p></li>
+<li><p>2 = WARN</p></li>
+<li><p>3 = ERROR</p></li>
+<li><p>4 = FATAL</p></li>
+<li><p>5 = NONE (disables logging)</p></li>
+</ul>
 </section>
 
 
@@ -371,7 +613,7 @@ pyorbbecsdk.OBError: usbEnumerator createUsbDevice failed!
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-01-20 15:56:16.
+      <span class="lastupdated">Last updated on 2026-03-20 21:28:40.
       </span></p>
   </div>
 

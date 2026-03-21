@@ -1,0 +1,46 @@
+API Reference
+=============
+
+This section contains the complete API reference for the pyorbbecsdk Python wrapper.
+The API is organized into the following modules:
+
+.. toctree::
+   :maxdepth: 2
+
+   core
+   device
+   pipeline
+   frame
+   stream_profile
+   filter
+   utils
+
+Quick Links
+-----------
+
+* :class:`~pyorbbecsdk.Context` - Entry point for device management
+* :class:`~pyorbbecsdk.Pipeline` - Data streaming and processing pipeline
+* :class:`~pyorbbecsdk.Device` - Device configuration and control
+* :class:`~pyorbbecsdk.Frame` - Base class for all frame types
+* :class:`~pyorbbecsdk.Filter` - Post-processing filters
+
+Module Overview
+---------------
+
+Core Classes
+    Core classes for the pyorbbecsdk including Context, Device, Config, and related classes.
+
+Pipeline
+    Pipeline and FrameSet classes for streaming and processing data from Orbbec devices.
+
+Frame
+    All frame-related classes for working with video, depth, IMU, and point cloud data.
+
+Stream Profile
+    Classes for configuring and working with stream profiles.
+
+Filter
+    Post-processing filters for enhancing and processing frames.
+
+Utils
+    Utility functions and classes for working with the pyorbbecsdk.

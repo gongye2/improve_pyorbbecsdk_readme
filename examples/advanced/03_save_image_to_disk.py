@@ -78,8 +78,16 @@ def main():
             config.enable_stream(depth_profile)
         config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
     except OBError as e:
-        print(e)
-    pipeline.start(config)
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
+
+    try:
+        pipeline.start(config)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
     
     print("Waiting for sensor to stabilize...")
     for _ in range(15):

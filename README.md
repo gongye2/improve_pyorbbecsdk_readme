@@ -122,11 +122,15 @@ pip install --upgrade pyorbbecsdk2
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
 ```bash
+# From the repository
+
 # Windows (PowerShell — will auto-request Administrator)
 python scripts/env_setup/setup_env.py
-
 # Linux (will auto-request sudo)
 python3 scripts/env_setup/setup_env.py
+
+# Or from the installed package
+python $(python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))")/shared/setup_env.py
 ```
 
 **3. Start experimenting** with the SDK's Quick Start code:
@@ -204,7 +208,31 @@ chmod +x build-whl-uv-macos.sh
 .\build-whl-uv.ps1
 ```
 
-The built wheel packages will be in the `wheel/` directory. See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions including offline builds and troubleshooting.
+The built wheel packages will be in the `wheel/` directory.
+
+**Generate Type Stubs (Optional but Recommended)**
+
+To generate `.pyi` type stub files for IDE autocomplete support:
+
+```bash
+# Activate your virtual environment
+source orbbec_env/bin/activate  # Linux/macOS
+# .\orbbec_env\Scripts\Activate.ps1  # Windows PowerShell
+
+# Install pybind11-stubgen
+pip install pybind11-stubgen
+
+# Generate pyi file
+pybind11-stubgen pyorbbecsdk -o .
+
+# Fix the generated pyi file
+python scripts/fix_pyi.py pyorbbecsdk.pyi
+
+# Copy the fixed pyi file to the package directory
+cp pyorbbecsdk.pyi $(python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))")/
+```
+
+See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions including offline builds and troubleshooting.
 
 ## FAQ
 

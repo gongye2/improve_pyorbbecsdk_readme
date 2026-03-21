@@ -1,81 +1,804 @@
-# Introduction
+# QuickStart Guide
 
-The Python Wrapper primarily includes the following features:
+Get started with the Orbbec Python SDK in **30 seconds** using the **zero-configuration** approach.
 
-* Obtain Depth, IR, and Color data streams.
-* Obtain IMU data streams.
-* Hardware D2C, Software D2C, and Software C2D.
-* Obtain Depth point cloud and RGBD point cloud.
-* Obtain multiple devices data and  multi-device synchronization.
-* Coordinate transformations between different coordinate systems.
-* Post-processing filters and HDR merge functionality (supported by the Gemini 330 series).
-* Depth work modes (supported by Gemini 2/2L, Astra 2).
-* Presets (supported by Gemini 330 series).
-* Update Firmware .
-* Network functionality (supported by the Femto Mega, Gemini 335Le，Gemini 435Le).
-* Record and playback.
+---
 
-# Build your First Camera Application
+## 🎯 Overview
 
-quick_start.py show how to use the SDK to capture video streams with minimal code.
+This guide will walk you through your first camera application using the `pyorbbecsdk` library.
 
-* The data flow diagram for quick start sample is as follows:
-![quick_start](../image/quick_start.png)
+### What You'll Learn
 
-* Quick start sample introduction
+- How to connect to an Orbbec camera with zero configuration
+- How to capture and display synchronized color and depth streams
+- The basics of the Pipeline API and frame processing
+- Where to find the structured learning path (beginner → advanced → applications)
 
-    ```python
-    # 1.Prerequisites
-    # Make sure you have already installed the pyorbbecsdk library in your local Python environment using the steps in Installation above.
+### Time to Complete
 
-    from pyorbbecsdk import *
-    # 2.create pipeline 
+⏱️ **30 seconds** (zero-config quick start) or **5 minutes** (learning the concepts)
+
+### Final Result
+
+You'll have a working Python script that displays live color and depth streams from your Orbbec camera:
+
+![quick_start_result](../image/quick_start_result.png)
+
+---
+
+## ✅ Prerequisites
+
+Before starting, ensure you have the following:
+
+### Hardware
+
+- An Orbbec 3D depth camera (Gemini series, Astra series, Femto series, etc.)
+- USB 3.0 port (recommended for best performance)
+
+### Software
+
+- Python 3.8 or higher
+- `pyorbbecsdk2` package installed (see [Installation Guide](../2_installation/install_the_package.md))
+
+### Quick Verification
+
+Run this command to verify your installation:
+
+```bash
+# Linux/Windows/macOS
+pip3 show pyorbbecsdk2 | grep Version
+```
+
+You should see the SDK version printed without errors.
+
+### Platform-Specific Notes
+
+| Platform | Special Requirements |
+|----------|---------------------|
+| **Linux** | Install udev rules for USB permissions (see [Troubleshooting](#no-device-found-linux)) |
+| **macOS** | Use `sudo -E` to run scripts (preserves environment variables) |
+| **Windows** | Run metadata registration script once per device (see [Troubleshooting](#metadata-issues-windows)) |
+
+---
+
+## 🚀 Your First Application (30 Seconds)
+
+Get your camera running in three simple steps using the **zero-configuration** approach.
+
+---
+
+### Step 1: Quick Verification (Optional)
+
+Verify your camera is detected (optional but recommended for first-time setup):
+
+```bash
+# Linux/Windows
+python examples/beginner/01_hello_camera.py
+
+# macOS
+sudo -E python examples/beginner/01_hello_camera.py
+```
+
+**Expected output:**
+```
+✅ Found 1 camera(s)
+   Model: Gemini 335
+   Serial: AQxxxxxxxxx
+```
+
+---
+
+### Step 2: Run Quick Start (30 sec)
+
+The SDK provides a ready-to-run quick start example that works with zero configuration:
+
+```bash
+# Linux/Windows
+python examples/quick_start.py
+
+# macOS
+sudo -E python examples/quick_start.py
+```
+
+**What this does:**
+- `Pipeline()` creates a pipeline that automatically loads default settings from `config/OrbbecSDKConfig.xml`
+- `pipeline.start()` begins streaming with pre-configured color and depth streams
+- No manual configuration needed — the SDK handles stream profiles automatically
+
+**The Zero-Config Concept:**
+
+```
+Old way (manual):                    New way (zero-config):
+┌─────────┐    ┌─────────┐          ┌─────────┐
+│ Context │───▶│ Device  │          │Pipeline │
+└─────────┘    └────┬────┘          └────┬────┘
+                    │                     │
+┌─────────┐    ┌────┴────┐               │ auto-loads
+│  Config │◀───│ Sensors │               │ from XML
+└────┬────┘    └─────────┘               │
+     │                                    │
+     ▼                              ┌────┴────┐
+┌─────────┐                         │ Frames  │
+│Pipeline │───────────────────────▶│ Flowing │
+│.start() │                         └─────────┘
+└─────────┘
+```
+
+---
+
+### Step 3: See It In Action
+
+A window will appear showing **live color and depth streams side-by-side**:
+
+- **Left side**: Color video from the RGB camera
+- **Right side**: Depth data rendered with 3D relief lighting
+
+![quick_start_result](../image/quick_start_result.png)
+
+Press **Q** or **ESC** to quit.
+
+---
+
+### How It Works
+
+The quick start uses the simplest possible API:
+
+```python
+from pyorbbecsdk import Pipeline
+
+# Create and start pipeline — loads defaults automatically
+pipeline = Pipeline()
+pipeline.start()  # Uses config/OrbbecSDKConfig.xml
+
+# Get synchronized frames
+frames = pipeline.wait_for_frames(1000)
+color = frames.get_color_frame()
+depth = frames.get_depth_frame()
+
+# ... process and display ...
+
+pipeline.stop()
+```
+
+**Key Concepts:**
+- `Pipeline`: Manages data flow from camera to your code
+- `config/OrbbecSDKConfig.xml`: Contains default stream profiles per device model
+- `wait_for_frames()`: Returns synchronized color + depth frames
+- `frame_to_bgr_image()`: Converts to OpenCV-compatible format
+
+---
+
+## 📋 Complete Runnable Script
+
+Here's the complete `quick_start.py` script from the examples directory:
+
+```python
+#!/usr/bin/env python3
+"""
+pyorbbecsdk Quick Start — RGB-D Viewer in ~30 Lines
+
+What this example demonstrates:
+  1. How to use Pipeline with zero-config — the SDK loads the default stream
+     configuration from config/OrbbecSDKConfig.xml automatically.
+  2. How to retrieve synchronized Color + Depth frames.
+  3. How to render depth with 3D relief lighting (gamma + Scharr gradient).
+  4. How to display Color and Depth side-by-side in a single window.
+
+Prerequisites:
+  pip install --upgrade pyorbbecsdk2 opencv-python numpy
+  Connect an Orbbec camera via USB before running.
+
+Run:
+  python examples/quick_start.py
+
+Controls:
+  ESC / Q  —  Quit
+"""
+
+import cv2
+import numpy as np
+
+from pyorbbecsdk import Pipeline, OBFormat  # type: ignore
+from utils import frame_to_bgr_image
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+ESC_KEY = 27
+MIN_DEPTH = 20      # mm — ignore noisy near-range readings
+MAX_DEPTH = 5000   # mm — ignore far-range readings
+
+WINDOW_NAME = "QuickStart Viewer"
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
+
+
+def render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
+    """
+    Convert a float32 depth-in-mm array into a 3D-looking BGR image.
+
+    Pipeline:
+      clip [MIN, MAX] → gamma 0.8 → uint8 → Scharr gradient lighting → colormap
+    """
+    # 1. Clip to fixed range (keeps colors stable across frames)
+    depth_clipped = np.clip(depth_mm, MIN_DEPTH, MAX_DEPTH)
+
+    # 2. Normalize to [0, 1] then apply gamma correction
+    #    γ < 1 stretches near-field gradients for better detail
+    depth_norm = (depth_clipped - MIN_DEPTH) / (MAX_DEPTH - MIN_DEPTH + 1e-6)
+    depth_gamma = np.power(depth_norm, 0.8)
+
+    # 3. Map to uint8
+    depth_8bit = (depth_gamma * 255).astype(np.uint8)
+
+    # 4. Surface-normal lighting via Scharr gradient
+    #    Simulates a directional light from top-left for 3D relief
+    grad_x = cv2.Scharr(depth_8bit, cv2.CV_32F, 1, 0)
+    grad_y = cv2.Scharr(depth_8bit, cv2.CV_32F, 0, 1)
+    mag = cv2.magnitude(grad_x, grad_y) + 1.0
+
+    lighting = -0.707 * (grad_x + grad_y) / mag   # diffuse term
+    lighting = lighting * 0.15 + 0.85               # ambient 85% + diffuse 15%
+    np.clip(lighting, 0.7, 1.0, out=lighting)
+
+    # 5. Apply colormap then multiply by lighting
+    depth_colored = cv2.applyColorMap(depth_8bit, cv2.COLORMAP_JET)
+    depth_colored = (depth_colored * lighting[..., np.newaxis]).astype(np.uint8)
+
+    return depth_colored
+
+
+def main():
+    # ------------------------------------------------------------------
+    # Step 1: Create a Pipeline and start with the default configuration.
+    #
+    #   No Config object is passed, so the SDK loads settings from
+    #   config/OrbbecSDKConfig.xml (stream profiles, filters, etc.).
+    #   This is the simplest way to get RGBD data flowing.
+    # ------------------------------------------------------------------
     pipeline = Pipeline()
-
-    # 3.start pipeline
     pipeline.start()
+    print("Pipeline started (default config). Press 'Q' or ESC to exit.")
 
-    # 4.wait for frames
-    frames = pipeline.wait_for_frames(100)
+    cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    # 5.get frames
-    color_frame = frames.get_color_frame()
-    depth_frame = frames.get_depth_frame()
+    while True:
+        try:
+            # ----------------------------------------------------------
+            # Step 2: Wait for a synchronized set of frames (Color + Depth).
+            # ----------------------------------------------------------
+            frames = pipeline.wait_for_frames(1000)
+            if frames is None:
+                continue
 
-    # 6.Render frames using OpenCV
+            # ----------------------------------------------------------
+            # Step 3: Get the Color frame and convert to BGR for OpenCV.
+            # ----------------------------------------------------------
+            color_frame = frames.get_color_frame()
+            if color_frame is None:
+                continue
+            color_image = frame_to_bgr_image(color_frame)
 
-    # 7.stop pipeline
+            # ----------------------------------------------------------
+            # Step 4: Get the Depth frame and apply scale + range filter.
+            # ----------------------------------------------------------
+            depth_frame = frames.get_depth_frame()
+            if depth_frame is None:
+                continue
+
+            width = depth_frame.get_width()
+            height = depth_frame.get_height()
+            scale = depth_frame.get_depth_scale()
+
+            depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+            depth_data = depth_data.reshape((height, width))
+            depth_mm = depth_data.astype(np.float32) * scale
+
+            # ----------------------------------------------------------
+            # Step 5: Render depth with 3D relief lighting.
+            #
+            #   Uses gamma correction + Scharr surface-normal lighting
+            #   for a more visually informative depth display.
+            # ----------------------------------------------------------
+            depth_image = render_depth_3d(depth_mm)
+
+            half_w = WINDOW_WIDTH // 2
+            color_resized = cv2.resize(color_image, (half_w, WINDOW_HEIGHT))
+            depth_resized = cv2.resize(depth_image, (half_w, WINDOW_HEIGHT))
+            combined = np.hstack((color_resized, depth_resized))
+
+            cv2.imshow(WINDOW_NAME, combined)
+
+            if cv2.waitKey(1) in (ord('q'), ord('Q'), ESC_KEY):
+                break
+
+        except KeyboardInterrupt:
+            break
+
+    # ------------------------------------------------------------------
+    # Step 6: Clean up.
+    # ------------------------------------------------------------------
+    cv2.destroyAllWindows()
     pipeline.stop()
-    ```
+    print("Pipeline stopped.")
 
-    ![quick_start](../image/quick_start_result.png)
 
-# Sample Features
+if __name__ == "__main__":
+    main()
+```
 
-| Example                   | Description                                                                                                                       | Notes                                               | Level  |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------ |
-| [enumerate.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/enumerate.py)              | Use the SDK interface to obtain camera-related information, including model, various sensors, and sensor-related configurations . |                                                     | ⭐     |
-| [hot_plug.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/hot_plug.py)               | Demonstrates how to detect hot plug events.                                                                                       |                                                     | ⭐     |
-| [logger.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/logger.py)                 | Use the SDK interface to set the log output level and customize the output path.                                                  |                                                     | ⭐     |
-| [quick_start.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/quick_start.py)            | Demonstrates how to use the SDK.                                                                                                  |                                                     | ⭐     |
-| [callback.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/callback.py)               | Displays the video stream from the camera using a callback.                                                                       |                                                     | ⭐⭐   |
-| [color.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/color.py)                  | Displays the color stream from the camera.                                                                                        |                                                     | ⭐⭐   |
-| [depth.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/depth.py)                  | Displays the depth stream from the camera.                                                                                        |                                                     | ⭐⭐   |
-| [imu.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/imu.py)                    | Demonstrates how to read IMU data.                                                                                                |                                                     | ⭐⭐   |
-| [infrared.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/infrared.py)               | Displays the infrared stream from the camera.                                                                                     |                                                     | ⭐⭐   |
-| [multi_device.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/multi_device.py)           | Demonstrates how to use multiple devices.                                                                                         |                                                     | ⭐⭐   |
-| [net_device.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/net_device.py)             | Demonstrates how to use network functions.                                                                                        | Supported by Femto Mega and Gemini 2 XL.            | ⭐⭐   |
-|[recorder.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/recorder.py)                |Demonstrates how to record the streams to a file.        |                      |    ⭐⭐     |
-|[playback.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/playback.py)               |Demonstrates how to play back recorded streams.        |                      |    ⭐⭐     |
-|[device_optional_depth_presets_update.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/device_optional_depth_presets_update.py)| This sample shows how to read a BIN file to perform optional depth presets upgrades on the device. | Supported by Gemini 330 series  | ⭐⭐  |
-| [coordinate_transform.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/coordinate_transform.py)   | Use the SDK interface to transform different coordinate systems.                                                                  |                                                     | ⭐⭐⭐ |
-| [device_firmware_update.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/device_firmware_update.py) | This sample demonstrates how to read a firmware file to perform firmware upgrades on the device.                                  |                                                     | ⭐⭐⭐ |
-| [depth_work_mode.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/depth_work_mode.py)        | Demonstrates how to set the depth work mode.                                                                                      | Supported by Gemini2、Gemini2L、Astra2、Gemini 2 XL | ⭐⭐⭐ |
-| [hdr.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/hdr.py)                    | In this sample, user can get the HDR merge image. Also supports user to toggle HDR merge and toggle alternate show origin frame.  | Supported by the Gemini 330 series.                 | ⭐⭐⭐ |
-| [hw_d2c_align.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/hw_d2c_align.py)           | Demonstrates how to use hardware D2C.                                                                                             |                                                     | ⭐⭐⭐ |
-| [point_cloud.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/point_cloud.py)            | Demonstrates how to save the point cloud to disk using a point cloud filter.                                                      |                                                     | ⭐⭐⭐ |
-| [post_processing.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/post_processing.py)        | Demonstrates how to use post-processing filters.                                                                                  | Supported by the Gemini 330 series.                 | ⭐⭐⭐ |
-| [preset.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/preset.py)                 | Use the SDK interface to set and get the preset value.                                                                            | Supported by the Gemini 330 series.                 | ⭐⭐⭐ |
-| [sync_align.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/sync_align.py)             | Demonstrates how to use the align filter.                                                                                         |                                                     | ⭐⭐⭐ |
-| [two_devices_sync.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/two_devices_sync.py)       | Demonstrates how to synchronize two devices.                                                                                      |                                                     | ⭐⭐⭐ |
-| [object_detection_sw_align.py](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/object_detection/object_detection_sw_align.py)  | Integrate the Orbbec Depth Sensing Camera with the YOLOv5 object detection algorithm for enhanced object detection accuracy and performance.  |   | ⭐⭐⭐ |
+---
+
+## 📊 Understanding the Code
+
+### Key Classes and Concepts
+
+#### 1. Pipeline
+The central class for data streaming. With zero-config, it automatically loads settings from `config/OrbbecSDKConfig.xml`:
+
+```python
+pipeline = Pipeline()      # Create pipeline
+pipeline.start()           # Start with default config from XML
+frames = pipeline.wait_for_frames(1000)  # Get synchronized frames
+pipeline.stop()            # Stop streaming
+```
+
+**What's in the XML config?**
+The `config/OrbbecSDKConfig.xml` file contains default stream profiles (resolution, FPS, format) for each supported camera model. This means:
+- No manual configuration needed for most use cases
+- Consistent behavior across different camera models
+- Easy customization by editing the XML file
+
+#### 2. FrameSet
+`wait_for_frames()` returns a `FrameSet` containing synchronized frames from all enabled streams:
+
+```python
+frames = pipeline.wait_for_frames(1000)   # Wait up to 1000ms
+color_frame = frames.get_color_frame()     # Extract color frame
+depth_frame = frames.get_depth_frame()     # Extract depth frame
+```
+
+#### 3. Frame Processing
+Raw frames need conversion for display:
+
+```python
+from utils import frame_to_bgr_image
+
+# Convert camera format to OpenCV-compatible BGR
+color_image = frame_to_bgr_image(color_frame)
+
+# Process depth data (uint16 → mm → visualization)
+depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+depth_mm = depth_data.astype(np.float32) * depth_frame.get_depth_scale()
+```
+
+### Data Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     ZERO-CONFIG PIPELINE                        │
+│                                                                 │
+│   ┌─────────────────┐                                           │
+│   │ OrbbecSDKConfig │                                           │
+│   │    .xml         │──┐                                        │
+│   └─────────────────┘  │  Auto-load defaults                    │
+│                        │                                        │
+│   Camera Hardware ────▶│──┐                                     │
+│                        │  │  ┌──────────┐    ┌─────────────┐   │
+│                        └──▶│ Pipeline   │───▶│  FrameSet   │   │
+│                            │ (Streaming)│    │(Synchronized)│   │
+│                            └────────────┘    └─────────────┘   │
+│                                                       │         │
+│                          ┌────────────────────────────┘         │
+│                          ▼                                      │
+│                 ┌────────────────┐   ┌────────────────┐        │
+│                 │  Color Frame   │   │  Depth Frame   │        │
+│                 │  (RGB → BGR)   │   │  (mm + 3D vis) │        │
+│                 └────────────────┘   └────────────────┘        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### When to Use Manual Configuration
+
+While zero-config is great for getting started, you may want manual configuration when:
+
+1. **Specific resolution/FPS needed:**
+   ```python
+   from pyorbbecsdk import Config, OBSensorType
+
+   config = Config()
+   color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+   color_profile = color_profiles.get_video_stream_profile(1280, 720, OBFormat.RGB, 30)
+   config.enable_stream(color_profile)
+   pipeline.start(config)  # Use custom config instead of defaults
+   ```
+
+2. **Only one stream needed:**
+   ```python
+   config = Config()
+   # Only enable color, skip depth
+   config.enable_stream(color_profile)
+   pipeline.start(config)
+   ```
+
+3. **Advanced features:** Multi-device sync, hardware D2C alignment, etc.
+
+---
+
+## 🔧 Common Customizations
+
+### Customize via XML Configuration
+
+The easiest way to change defaults without modifying code is to edit `config/OrbbecSDKConfig.xml`:
+
+```xml
+<Pipeline>
+  <Stream>
+    <!-- Change default color stream -->
+    <Color Width="1280" Height="720" FPS="30" Format="RGB"/>
+    <!-- Change default depth stream -->
+    <Depth Width="640" Height="480" FPS="30" Format="Y16"/>
+  </Stream>
+</Pipeline>
+```
+
+### Manual Configuration (When Needed)
+
+For programmatic control, use `Config`:
+
+```python
+from pyorbbecsdk import Config, OBSensorType, OBFormat
+
+config = Config()
+
+# Get available profiles
+profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+
+# Use default
+color_profile = profiles.get_default_video_stream_profile()
+
+# Or request specific settings
+try:
+    color_profile = profiles.get_video_stream_profile(1280, 720, OBFormat.RGB, 30)
+except:
+    color_profile = profiles.get_default_video_stream_profile()
+
+config.enable_stream(color_profile)
+pipeline.start(config)  # Use custom config
+```
+
+### Enable Only Color or Depth
+
+```python
+from pyorbbecsdk import Config, OBSensorType
+
+# Color only
+config = Config()
+color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+color_profile = color_profiles.get_default_video_stream_profile()
+config.enable_stream(color_profile)
+pipeline.start(config)
+
+# Depth only
+config = Config()
+depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+depth_profile = depth_profiles.get_default_video_stream_profile()
+config.enable_stream(depth_profile)
+pipeline.start(config)
+```
+
+### Save Frames to Disk
+
+```python
+import os
+from datetime import datetime
+
+# Create output directory
+output_dir = "captured_frames"
+os.makedirs(output_dir, exist_ok=True)
+
+# Inside your capture loop:
+if color_frame and depth_frame:
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # Save color image
+    color_image = frame_to_bgr_image(color_frame)
+    cv2.imwrite(f"{output_dir}/color_{timestamp}.png", color_image)
+
+    # Save depth as 16-bit PNG (preserves raw depth values)
+    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+    depth_data = depth_data.reshape((depth_frame.get_height(), depth_frame.get_width()))
+    cv2.imwrite(f"{output_dir}/depth_{timestamp}.png", depth_data)
+
+    print(f"Saved frame at {timestamp}")
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### "No device found" (Linux)
+
+**Problem:** Camera not detected or permission denied.
+
+**Solution:** Install udev rules:
+
+```bash
+# Download the udev rules from the SDK repository
+cd /path/to/pyorbbecsdk/scripts/env_setup
+sudo chmod +x ./install_udev_rules.sh
+sudo ./install_udev_rules.sh
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+> **Note:** Without udev rules, you'll need to run scripts with `sudo` every time.
+
+**Quick test:** Run the hello camera example:
+```bash
+python examples/beginner/01_hello_camera.py
+```
+
+### Permission denied (macOS)
+
+**Problem:** `Permission denied` or `Library not loaded` errors.
+
+**Solution:** Use `sudo -E` to preserve environment variables:
+
+```bash
+sudo -E python3 hello_camera.py
+```
+
+The `-E` flag preserves your Python environment (virtualenv, etc.).
+
+### Import Error
+
+**Problem:** `ModuleNotFoundError: No module named 'pyorbbecsdk'`
+
+**Solution:**
+
+```bash
+# Install the SDK and dependencies
+pip3 install --upgrade pyorbbecsdk2
+
+# Verify installation
+pip3 show pyorbbecsdk2 | grep Version
+```
+
+### Empty Frames
+
+**Problem:** `frames` is always `None` or frames don't contain data.
+
+**Solutions:**
+
+1. **Check timeout:** Increase the timeout in `wait_for_frames()`:
+   ```python
+   frames = pipeline.wait_for_frames(5000)  # Wait up to 5 seconds
+   ```
+
+2. **Verify streams are available:** Run the hello camera example to check supported streams:
+   ```bash
+   python examples/beginner/01_hello_camera.py
+   ```
+
+3. **Try the quick start:** The zero-config approach handles defaults automatically:
+   ```bash
+   python examples/quick_start.py
+   ```
+
+### Display Issues
+
+**Problem:** OpenCV window doesn't appear or shows blank images.
+
+**Solutions:**
+
+1. **Check OpenCV installation:**
+   ```bash
+   python3 -c "import cv2; print(cv2.__version__)"
+   ```
+
+2. **Ensure frames are valid before displaying:**
+   ```python
+   if color_frame is not None:
+       color_image = frame_to_bgr_image(color_frame)
+       if color_image is not None:
+           cv2.imshow("Color", color_image)
+   ```
+
+### Metadata/Timestamp Issues (Windows)
+
+**Problem:** Timestamps are abnormal or frame synchronization fails.
+
+**Solution:** Run the metadata registration script once per device:
+
+```powershell
+# Open PowerShell as Administrator
+cd C:\path\to\pyorbbecsdk\scripts\env_setup
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\obsensor_metadata_win10.ps1 -op install_all
+```
+
+See [Registration Script](../2_installation/registration_script.md) for details.
+
+---
+
+## 📚 Next Steps
+
+Now that you have a working camera application, explore these topics:
+
+### 🗺️ Recommended Learning Path
+
+```
+First time?        →  examples/quick_start.py (30 seconds to first frame)
+                          ↓
+Basics             →  examples/beginner/01 → 02 → 03 → 04 → 05
+                          ↓
+Specific Feature   →  examples/advanced/ (pick by category)
+                          ↓
+Build an App       →  examples/applications/ruler.py
+                          ↓
+Multi-device/Sync  →  examples/advanced/14_two_devices_sync.py
+                     examples/advanced/15_high_performance_pipeline.py
+
+LiDAR?             →  examples/lidar_examples/lidar_quick_start.py
+```
+
+---
+
+### 🎓 Learn by Example
+
+Our examples are organized by difficulty into four levels:
+
+#### Level 1 — Beginner ⭐
+
+Nine numbered tutorials, designed to be **run in order: 01 → 02 → … → 09**.
+Each script is heavily commented and teaches one concept.
+
+| # | Script | What You Learn | Dependencies |
+|---|--------|---------------|--------------|
+| 01 | `beginner/01_hello_camera.py` | SDK logging, device discovery, print device info | none |
+| 02 | `beginner/02_depth_visualization.py` | Depth stream, gamma correction, 3D lighting | numpy, opencv |
+| 03 | `beginner/03_color_and_depth_aligned.py` | Color + depth streams, software/hardware alignment | numpy, opencv |
+| 04 | `beginner/04_camera_calibration.py` | Read camera intrinsics, distortion, extrinsics | numpy |
+| 05 | `beginner/05_point_cloud.py` | Generate colored 3D point clouds, save to PLY | numpy |
+| 06 | `beginner/06_multi_streams.py` | All streams simultaneously (color, depth, IR, IMU) | numpy, opencv |
+| 07 | `beginner/07_imu.py` | Enable ACCEL + GYRO, read real-time data | none |
+| 08 | `beginner/08_net_device.py` | Connect to network cameras, decode H.264/MJPG | av, pygame |
+| 09 | `beginner/09_device_firmware_update.py` | OTA firmware upgrade with progress callback | none |
+
+```bash
+# Run any beginner example
+python examples/beginner/01_hello_camera.py
+python examples/beginner/03_color_and_depth_aligned.py        # software align
+python examples/beginner/03_color_and_depth_aligned.py --hw   # hardware D2C
+```
+
+#### Level 2 — Advanced ⭐⭐
+
+Single-feature scripts organized by category:
+
+**Recording & Playback**
+
+| Script | Description |
+|--------|-------------|
+| `advanced/01_recorder.py` | Record all streams to `.bag`; GUI preview or headless |
+| `advanced/02_playback.py` | Replay a `.bag` file; auto-loop; dynamic grid |
+| `advanced/03_save_image_to_disk.py` | Capture frames and save as PNG/16-bit PNG |
+
+**Device & System**
+
+| Script | Description |
+|--------|-------------|
+| `advanced/04_enumerate.py` | List all devices, sensors, supported profiles |
+| `advanced/05_hot_plug.py` | Detect camera connect/disconnect events |
+| `advanced/06_control.py` | Enumerate and set device properties |
+| `advanced/07_metadata.py` | Read per-frame metadata (exposure, gain, timestamp) |
+
+**Depth Processing & Alignment**
+
+| Script | Description |
+|--------|-------------|
+| `advanced/08_custom_filter_chain.py` | Chain Temporal + Spatial + HoleFilling filters |
+| `advanced/09_post_processing.py` | Full post-processing stack; raw vs filtered |
+| `advanced/10_hdr.py` | HDR merge with alternating exposures |
+| `advanced/11_preset.py` | Load depth presets (Default, Hand, High Accuracy) |
+| `advanced/12_depth_work_mode.py` | Switch depth work modes at runtime |
+| `advanced/13_confidence.py` | Access and visualize depth confidence map |
+
+**Multi-Device & Network**
+
+| Script | Description |
+|--------|-------------|
+| `advanced/14_two_devices_sync.py` | Two cameras with hardware frame sync |
+| `advanced/15_high_performance_pipeline.py` | Async callbacks; bounded queue; FPS/latency |
+| `advanced/16_coordinate_transform.py` | 2D↔3D coordinate transformations |
+| `advanced/17_laser_interleave.py` | Reduce multi-camera IR interference |
+| `advanced/18_forceip.py` | Assign static IP to network camera |
+| `advanced/19_device_optional_depth_presets_update.py` | Write depth presets to device |
+
+```bash
+python examples/advanced/01_recorder.py              # with live preview
+python examples/advanced/01_recorder.py --no-gui     # headless
+python examples/advanced/08_custom_filter_chain.py
+```
+
+#### Level 3 — Applications ⭐⭐⭐
+
+Complete working applications combining multiple SDK features:
+
+| Script | Description | Dependencies |
+|--------|-------------|--------------|
+| `applications/ruler.py` | **Interactive depth ruler** — drag to measure 3D distance | numpy, opencv |
+| `applications/object_detection.py` | Real-time YOLO object detection with depth overlay | onnxruntime, opencv |
+
+```bash
+python examples/applications/ruler.py
+python examples/applications/object_detection.py
+```
+
+#### Specialized — LiDAR ⭐⭐⭐
+
+For Orbbec LiDAR devices in `examples/lidar_examples/`:
+
+| Script | Description |
+|--------|-------------|
+| `lidar_quick_start.py` | Minimal LiDAR streaming |
+| `lidar_stream.py` | Continuous point cloud viewer |
+| `lidar_device_control.py` | LiDAR-specific properties and controls |
+| `lidar_record.py` | Record LiDAR data to `.bag` |
+| `lidar_playback.py` | Replay recorded LiDAR session |
+
+---
+
+### 🔗 Additional Resources
+
+- **[Examples README](https://github.com/orbbec/pyorbbecsdk/blob/v2-main/examples/README.md)**: Complete example documentation
+- **[API Reference](https://pyorbbecsdk.readthedocs.io/)**: Complete Python API documentation
+- **[GitHub Repository](https://github.com/orbbec/pyorbbecsdk)**: Source code and issue tracker
+- **[Installation Guide](../2_installation/install_the_package.md)**: Detailed installation instructions
+- **[Build from Source](../2_installation/build_the_package.md)**: Compile the SDK yourself
+
+---
+
+## 📝 SDK Feature Overview
+
+The Python wrapper provides access to these major features:
+
+| Feature | Description | Example |
+|---------|-------------|---------|
+| **Quick Start** | Zero-config RGB-D streaming | `quick_start.py` |
+| **Depth Stream** | 16-bit depth data in millimeters | `beginner/02_depth_visualization.py` |
+| **Multi-Stream** | Infrared camera data | `beginner/06_multi_streams.py` |
+| **IMU Data** | Accelerometer and gyroscope | `beginner/07_imu.py` |
+| **D2C Alignment** | Align depth to color coordinates | `beginner/03_color_and_depth_aligned.py` |
+| **Point Cloud** | Generate 3D point clouds | `beginner/05_point_cloud.py` |
+| **Multi-Device** | Use multiple cameras | `advanced/14_two_devices_sync.py` |
+| **Coordinate Transform** | Convert between 2D/3D coordinates | `advanced/16_coordinate_transform.py` |
+| **Post-Processing** | Depth filters (Temporal, Spatial, HoleFilling) | `advanced/08_custom_filter_chain.py`, `advanced/09_post_processing.py` |
+| **HDR** | High dynamic range depth merge | `advanced/10_hdr.py` |
+| **Recording** | Record and playback streams | `advanced/01_recorder.py`, `advanced/02_playback.py` |
+| **Network Camera** | Connect over Ethernet | `beginner/08_net_device.py` |
+| **Firmware Update** | Update camera firmware | `beginner/09_device_firmware_update.py` |
+| **Depth Presets** | Load processing presets | `advanced/11_preset.py` |
+| **Hot Plug** | Detect connect/disconnect | `advanced/05_hot_plug.py` |
+| **LiDAR** | LiDAR-specific features | `lidar_examples/lidar_quick_start.py` |
+
+---
+
+## 💡 Tips for Success
+
+1. **Start Simple**: Run `examples/quick_start.py` first to verify your camera works
+2. **Follow the Path**: Begin with `examples/beginner/01_hello_camera.py` and work through 01→09
+3. **Check Support**: Not all features work on all camera models — check the example notes in Level 2
+4. **Use Try/Except**: Wrap stream configuration in try/except for robust error handling
+5. **Always Cleanup**: Call `pipeline.stop()` and `cv2.destroyAllWindows()` before exiting
+6. **Platform Awareness**: Remember macOS may require `sudo -E`, Linux may need udev rules
+7. **Virtual Environments**: Use `venv` or `conda` to avoid package conflicts
+8. **Zero-Config First**: Start with `pipeline.start()` before adding manual configuration
+
+---
+
+**Happy Coding!** 🎉
+
+If you encounter issues not covered here, please [open an issue on GitHub](https://github.com/orbbec/pyorbbecsdk/issues).

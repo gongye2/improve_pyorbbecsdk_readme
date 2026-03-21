@@ -82,3 +82,48 @@ Then restart the udev service
 ```bash
 sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
 
+
+3、 How to configure or disable SDK logging?
+
+Answer: You can modify the log level by editing the `OrbbecSDKConfig.xml` configuration file.
+
+Steps:
+
+**Locate the OrbbecSDKConfig.xml file:**
+
+For pip-installed package: Run `pip show pyorbbecsdk2` to get the installation path
+The XML file is located at `<Location>/OrbbecSDKConfig.xml`
+
+Example:
+
+```bash
+pip show pyorbbecsdk2
+# Output: Location: /Users/me/.../site-packages
+# Full path: /Users/me/.../site-packages/OrbbecSDKConfig.xml
+```
+
+**Open the XML file and find the `<Log>` section:**
+
+```xml
+<Log>
+    <FileLogLevel>1</FileLogLevel>          <!-- Change this from 1 to 5 -->
+    <ConsoleLogLevel>3</ConsoleLogLevel>
+</Log>
+```
+
+**Change `FileLogLevel` to 5:**
+
+```xml
+<Log>
+    <FileLogLevel>5</FileLogLevel>          <!-- 5 = NONE, disables logging -->
+    <ConsoleLogLevel>3</ConsoleLogLevel>
+</Log>
+```
+
+**Log Level Values:**
+- 0 = DEBUG
+- 1 = INFO
+- 2 = WARN
+- 3 = ERROR
+- 4 = FATAL
+- 5 = NONE (disables logging)

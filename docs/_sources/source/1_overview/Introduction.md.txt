@@ -17,27 +17,32 @@ The Python Wrapper uses pybind11 to convert the interfaces of the Orbbec SDK int
 This document is based on the v2-main branch code, which is a Python Wrapper built on Orbbec SDK v2. It supports the following devices.
 If your device is included in this supported list, we recommend using the v2-main branch. If not, you can use the main branch instead.
 
-| **Products List** | **Minimal Firmware Version** |
-|-------------------|------------------------------|
-| Gemini 435Le        | 1.2.04                       |
-| Gemini 335Le        | 1.5.31                       |
-| Gemini 330        | 1.2.20                       |
-| Gemini 330L       | 1.2.20                       |
-| Gemini 335        | 1.2.20                       |
-| Gemini 335L       | 1.2.20                       |
-| Gemini 336        | 1.2.20                       |
-| Gemini 336L       | 1.2.20                       |
-| Gemini 335Lg      | 1.3.46                       |
-| Femto Bolt        | 1.1.2                  |
-| Femto Mega        | 1.3.0                  |
-| Femto Mega I        | 2.0.4                  |
-| Astra 2           | 2.8.20                       |
-| Gemini 2 L        | 1.4.53                       |
-| Gemini 2          | 1.4.92               |
-| Gemini 215        | 1.0.9                        |
-| Gemini 210        | 1.0.9                        |
-| Astra Mini Pro  | 2.0.03                      |
-| Astra Mini S Pro  | 2.0.03                      |
+| **Products List** | **Minimal Firmware Version** | **Recommended Firmware Version** |
+|-------------------|------------------------------|----------------------------------|
+| Gemini 305        | 1.0.30                       | 1.0.30                           |
+| Gemini 345        | 1.7.04                       | 1.9.03                           |
+| Gemini 345Lg      | 1.7.04                       | 1.9.03                           |
+| Gemini 435Le      | 1.2.4                        | 1.3.6                            |
+| Gemini 335Le      | 1.5.31                       | 1.6.00                           |
+| Gemini 330        | 1.2.20                       | 1.6.00                           |
+| Gemini 330L       | 1.2.20                       | 1.6.00                           |
+| Gemini 335        | 1.2.20                       | 1.6.00                           |
+| Gemini 335L       | 1.2.20                       | 1.6.00                           |
+| Gemini 336        | 1.2.20                       | 1.6.00                           |
+| Gemini 336L       | 1.2.20                       | 1.6.00                           |
+| Gemini 335Lg      | 1.3.46                       | 1.6.00                           |
+| Femto Bolt        | 1.1.2                        | 1.1.3                            |
+| Femto Mega        | 1.3.0                        | 1.3.1                            |
+| Femto Mega I      | 2.0.4                        | 2.0.4                            |
+| Astra 2           | 2.8.20                       | 2.8.20                           |
+| Gemini 2 L        | 1.4.53                       | 1.5.2                            |
+| Gemini 2          | 1.4.92                       | 1.4.98                           |
+| Gemini 215        | 1.0.9                        | 1.0.9                            |
+| Gemini 210        | 1.0.9                        | 1.0.9                            |
+| Astra Mini Pro    | 2.0.03                       | 2.0.03                           |
+| Astra Mini S Pro  | 2.0.03                       | 2.0.03                           |
+| Pulsar SL450      | 2.2.4.5                      | 2.2.4.5                          |
+| Pulsar ME450      | 1.0.0.6                      | 1.0.0.6                          |
 
 the main branch supports the following devices:
 

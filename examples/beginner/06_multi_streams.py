@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import cv2
 import numpy as np
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFrameType, OBFormat  # type: ignore
+from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFrameType, OBFormat, OBError  # type: ignore
 from utils import frame_to_bgr_image, is_astra_mini_device
 import threading
 import math
@@ -82,23 +82,33 @@ def setup_camera():
             if sensor_type in video_sensors:
                 if is_astra_mini_device(device_info.get_vid(), device_info.get_pid()) and sensor_type == OBSensorType.IR_SENSOR:
                     continue
-            try: 
+            try:
                 config.enable_stream(sensor_type)
-            except: 
+            except:
                 continue
 
-    pipeline.start(config, video_frame_callback)
+    try:
+        pipeline.start(config, video_frame_callback)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return None
     return pipeline
 
 def setup_imu():
     """Setup IMU configuration"""
     if not state.support_imu:
         return None
-    pipeline = Pipeline()   
+    pipeline = Pipeline()
     config = Config()
     config.enable_accel_stream()
     config.enable_gyro_stream()
-    pipeline.start(config, imu_frame_callback)
+    try:
+        pipeline.start(config, imu_frame_callback)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return None
     return pipeline
 
 def process_color(frame):

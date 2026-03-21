@@ -43,6 +43,84 @@ cd docs
 
 <br>
 
+# API Reference 自动生成
+
+本项目的 API Reference 文档是从 pyi stub 文件自动生成的。
+
+## 生成 API 文档
+
+API 文档 RST 文件通常已经生成，只有修改了脚本或添加新类时才需要重新生成：
+
+```bash
+# 从项目根目录（目前许手动修改pyi路径，因为使用的是绝对路径）
+python scripts/generate_api_docs.py
+```
+
+脚本参数：
+- `--dry-run`: 预览生成的内容，不写入文件
+- `--check`: 检查文件是否最新（用于 CI）
+- `--stubs-dir PATH`: 指定 stubs 目录路径
+
+## 添加新类到 API Reference
+
+1. 编辑 `scripts/generate_api_docs.py`，在 `MODULES` 字典中添加类名：
+   ```python
+   MODULES = {
+       "core": {
+           "title": "Core Classes",
+           "classes": [
+               # ... 现有类 ...
+               "NewClass",  # 添加新类
+           ],
+       },
+   }
+   ```
+
+2. 运行脚本生成新的 RST 文件：
+   ```bash
+   python scripts/generate_api_docs.py
+   ```
+
+3. 重新构建文档：
+   ```bash
+   cd docs && make html
+   ```
+
+## 目录结构
+
+```
+docs/source/6_API_Reference/     # API 参考（从 pyi 自动生成）
+├── index.rst
+├── core.rst                     # 核心类（Context, Device, Config 等）
+├── pipeline.rst                 # Pipeline 和 FrameSet
+├── frame.rst                    # 各类 Frame
+├── stream_profile.rst           # 流配置
+├── filter.rst                   # 过滤器
+└── utils.rst                    # 工具函数和枚举
+```
+
+## API Reference 与 Application Guide 的关系
+
+| 文档类型 | 维护方式 | 内容特点 |
+|---------|---------|---------|
+| **Application Guide** | 手动编写 | 教程式，解决具体问题，包含使用场景和案例 |
+| **API Reference** | 自动生成 | 参考式，查阅类/方法定义，从 pyi 文件生成 |
+
+### 交叉引用
+
+在 Application Guide 中引用 API：
+```rst
+查看 :class:`~pyorbbecsdk.Context` 获取更多信息。
+```
+
+在 API Reference 中引用教程：
+```rst
+.. seealso::
+   查看 :doc:`../4_Application_Guide/basic_usage` 了解用法。
+```
+
+<br>
+
 # 文档编写规范
 
 1、框图、软件框架建议原则上采用processon、visio工具绘图，目的是为了保持风格统一（特殊图除外）
