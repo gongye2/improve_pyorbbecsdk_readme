@@ -15,7 +15,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pyorbbecsdk import Pipeline, OBFrameMetadataType  # type: ignore
+from pyorbbecsdk import Pipeline, OBFrameMetadataType, OBError  # type: ignore
 
 ESC_KEY = 27
 
@@ -23,8 +23,13 @@ def main():
     # Initialize Pipeline
     pipeline = Pipeline()
     # Start Pipeline
-    pipeline.start()
-    print("Pipeline started. Press Ctrl+C to exit.")
+    try:
+        pipeline.start()
+        print("Pipeline started. Press Ctrl+C to exit.")
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
 
     frame_counter = 0  # Add frame counter
     

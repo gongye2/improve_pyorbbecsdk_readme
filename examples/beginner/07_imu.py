@@ -14,7 +14,7 @@
 #    python examples/beginner/07_imu.py
 # ******************************************************************************
 import cv2
-from pyorbbecsdk import Config, Pipeline, OBSensorType, OBFrameType, OBFrameAggregateOutputMode  # type: ignore
+from pyorbbecsdk import Config, Pipeline, OBSensorType, OBFrameType, OBFrameAggregateOutputMode, OBError  # type: ignore
 
 ESC_KEY = 27
 
@@ -33,7 +33,12 @@ def main():
     config.enable_accel_stream()
     config.enable_gyro_stream()
     config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
-    pipeline.start(config)
+    try:
+        pipeline.start(config)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
 
     frame_counter = 0
 

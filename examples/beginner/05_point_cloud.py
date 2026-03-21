@@ -368,8 +368,13 @@ def main():
     except OBError as e:
         print(f"[INFO] Color sensor unavailable: {e}")
 
-    pipeline.enable_frame_sync()
-    pipeline.start(config)
+    try:
+        pipeline.enable_frame_sync()
+        pipeline.start(config)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
 
     # ----- Build filter pipeline -----
     align_filter = AlignFilter(align_to_stream=OBStreamType.COLOR_STREAM)

@@ -1,0 +1,217 @@
+Stream Profile
+==============
+
+Classes for configuring and working with stream profiles.
+
+Classes
+-------
+
+StreamProfile
+^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.StreamProfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+StreamProfileList
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.StreamProfileList
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+VideoStreamProfile
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.VideoStreamProfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AccelStreamProfile
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.AccelStreamProfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GyroStreamProfile
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.GyroStreamProfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+LiDARStreamProfile
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.LiDARStreamProfile
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Enumerations
+------------
+
+OBSensorType
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBSensorType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBStreamType
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBStreamType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDepthWorkMode
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDepthWorkMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDepthWorkModeList
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDepthWorkModeList
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDepthWorkModeTag
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDepthWorkModeTag
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPresetResolutionConfig
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBPresetResolutionConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBAlignMode
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBAlignMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFrameAggregateOutputMode
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFrameAggregateOutputMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCompressionMode
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCompressionMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCompressionParams
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCompressionParams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBHardwareDecimationConfig
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBHardwareDecimationConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBHdrConfig
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBHdrConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBSyncMode
+^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBSyncMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBMultiDeviceSyncMode
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBMultiDeviceSyncMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBGyroSampleRate
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBGyroSampleRate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Constants
+---------
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_UNKNOWN
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_1_5625_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_3_125_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_6_25_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_12_5_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_25_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_50_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_100_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_200_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_400_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_500_HZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_1_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_2_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_4_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_8_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_16_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_32_KHZ
+
+.. autodata:: pyorbbecsdk.SAMPLE_RATE_800_HZ

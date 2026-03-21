@@ -48,7 +48,7 @@
 import cv2
 import numpy as np
 
-from pyorbbecsdk import Pipeline, OBFormat  # type: ignore
+from pyorbbecsdk import Pipeline, OBFormat, OBError  # type: ignore
 from utils import frame_to_bgr_image
 
 # ---------------------------------------------------------------------------
@@ -106,8 +106,14 @@ def main():
     #   config/OrbbecSDKConfig.xml (stream profiles, filters, etc.).
     #   This is the simplest way to get RGBD data flowing.
     # ------------------------------------------------------------------
-    pipeline = Pipeline()
-    pipeline.start()
+    try:
+        pipeline = Pipeline()
+        pipeline.start()
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        return
+
     print("Pipeline started (default config). Press 'Q' or ESC to exit.")
 
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)

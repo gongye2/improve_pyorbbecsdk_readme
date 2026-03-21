@@ -20,7 +20,7 @@ import numpy as np
 import threading
 import sys
 
-from pyorbbecsdk import SequenceIdFilter, Pipeline, Config, OBSensorType, OBFrameAggregateOutputMode, OBPropertyID, OBFrameType, OBFormat  # type: ignore
+from pyorbbecsdk import SequenceIdFilter, Pipeline, Config, OBSensorType, OBFrameAggregateOutputMode, OBPropertyID, OBFrameType, OBFormat, OBError  # type: ignore
 
 cached_frames = {
     'depth' : None,
@@ -78,7 +78,12 @@ def setup_camera():
     device.loadFrameInterleave("Laser On-Off")
     device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL,True)
 
-    pipeline.start(config)
+    try:
+        pipeline.start(config)
+    except OBError as e:
+        print(f"Error: {e}")
+        print("Please connect an Orbbec camera and try again.")
+        sys.exit(1)
     return pipeline
 
 def set_filter_value(frame):

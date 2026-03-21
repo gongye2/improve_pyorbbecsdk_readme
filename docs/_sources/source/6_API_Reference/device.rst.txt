@@ -1,0 +1,158 @@
+Device
+======
+
+This module contains device-specific classes and enumerations for working with
+Orbbec devices.
+
+.. note::
+   The main device classes (Device, DeviceInfo, DeviceList) are documented in the
+   :doc:`core` module. This section covers additional device-related enumerations
+   and structures.
+
+Enumerations
+------------
+
+OBDeviceType
+~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDeviceAccessMode
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceAccessMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDeviceDevelopmentMode
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceDevelopmentMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Structures
+----------
+
+OBDeviceTemperature
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceTemperature
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDeviceIpAddrConfig
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceIpAddrConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDeviceSyncConfig
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceSyncConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDeviceTimestampResetConfig
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBDeviceTimestampResetConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBMultiDeviceSyncConfig
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBMultiDeviceSyncConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Property Types
+--------------
+
+OBPropertyID
+~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBPropertyID
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPropertyItem
+~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBPropertyItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPropertyType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBPropertyType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPermissionType
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBPermissionType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Property Ranges
+---------------
+
+OBIntPropertyRange
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBIntPropertyRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFloatPropertyRange
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBFloatPropertyRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBBoolPropertyRange
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBBoolPropertyRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBUint8PropertyRange
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBUint8PropertyRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBUint16PropertyRange
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pyorbbecsdk.OBUint16PropertyRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
