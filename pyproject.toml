@@ -1,6 +1,6 @@
 [project]
 name = "pyorbbecsdk2"
-version = "2.0.16"
+version = "2.1.0"
 description = "pyorbbecsdk is a python wrapper for the OrbbecSDK"
 readme = "README.md"
 requires-python = ">=3.8"

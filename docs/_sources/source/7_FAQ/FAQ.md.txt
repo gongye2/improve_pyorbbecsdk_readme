@@ -367,7 +367,7 @@ Required components:
            cv2.imshow("Color", color_image)
    ```
 
-3. **Install dependencies** (for versions < 2.0.19):
+3. **Install dependencies** (for versions < 2.1.0):
    ```bash
    pip3 install opencv-python numpy
    ```
