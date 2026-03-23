@@ -177,6 +177,14 @@ pytest test/ -m "not performance"           -v
 
 ### Category key: `F` = functional · `S` = stability · `P` = performance
 
+### Basic tests (no camera needed)
+
+| File | Category | What it tests |
+|------|----------|---------------|
+| `test_basic_import.py` | F | Basic module import and attributes |
+| `test_basic_device.py` | F | Context creation and device enumeration (without hardware) |
+| `test_basic_capture.py` | F | Pipeline creation and frame capture basics |
+
 ### Generic tests (any Orbbec camera)
 
 | File | Category | What it tests |

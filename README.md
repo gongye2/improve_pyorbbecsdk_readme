@@ -41,7 +41,6 @@
 - [Samples](#samples)
 - [Supported platforms](#supported-platforms)
 - [Automated Firmware Update](#automated-firmware-update)
-- [Build from Source](#build-from-source)
 - [FAQ](#faq)
 - [Community](#community)
 - [License](#license)
@@ -119,6 +118,9 @@ pip install --upgrade pyorbbecsdk2
 > ```
 > See [Virtual Environment Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/virtual_environment_guide.html) for more options (venv, pyenv, conda).
 
+> 🔧 **Building from Source?**
+> See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions.
+
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
 ```bash
@@ -183,78 +185,9 @@ python scripts/auto_update_firmware.py
 
 This script will check your current device firmware version, guide you to download the correct firmware, and perform the firmware update safely.
 
-## Build from Source
-
-To build pyorbbecsdk from source, you need:
-
-- **CMake** (3.15.0+)
-- **C++ compiler** (GCC 5.4+ on Linux, Clang on macOS, MSVC 2019+ on Windows)
-- **uv** - A fast Python package manager ([install guide](https://docs.astral.sh/uv/getting-started/installation/))
-
-Then run the build script for your platform:
-
-```bash
-# Linux
-chmod +x build-whl-uv.sh
-./build-whl-uv.sh        # Build for Python 3.10 (default)
-./build-whl-uv.sh 3.11   # Build for specific version
-./build-whl-uv.sh all    # Build all supported versions (3.8-3.13)
-
-# macOS
-chmod +x build-whl-uv-macos.sh
-./build-whl-uv-macos.sh
-
-# Windows PowerShell
-.\build-whl-uv.ps1
-```
-
-The built wheel packages will be in the `wheel/` directory.
-
-**Generate Type Stubs (Optional but Recommended)**
-
-To generate `.pyi` type stub files for IDE autocomplete support:
-
-```bash
-# Activate your virtual environment
-source orbbec_env/bin/activate  # Linux/macOS
-# .\orbbec_env\Scripts\Activate.ps1  # Windows PowerShell
-
-# Install pybind11-stubgen
-pip install pybind11-stubgen
-
-# Generate pyi file
-pybind11-stubgen pyorbbecsdk -o .
-
-# Fix the generated pyi file
-python scripts/fix_pyi.py pyorbbecsdk.pyi
-
-# Copy the fixed pyi file to the package directory
-cp pyorbbecsdk.pyi $(python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))")/
-```
-
-See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions including offline builds and troubleshooting.
-
 ## FAQ
 
-**How to configure or disable SDK logging?**
-
-You can modify the log level by editing the `OrbbecSDKConfig.xml` configuration file:
-
-```bash
-# Locate the config file (for pip-installed package)
-pip show pyorbbecsdk2
-# Edit: <Location>/OrbbecSDKConfig.xml
-```
-
-Change the log levels in the `<Log>` section:
-```xml
-<Log>
-    <FileLogLevel>5</FileLogLevel>      <!-- 5 = NONE (disable file logging) -->
-    <ConsoleLogLevel>3</ConsoleLogLevel>  <!-- 0=DEBUG, 1=INFO, 2=WARN, 3=ERROR, 4=FATAL, 5=NONE -->
-</Log>
-```
-
-See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/5_FAQ/FAQ.html) for more common issues and solutions.
+See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/5_FAQ/FAQ.html) for common issues and solutions.
 
 ## Community
 
