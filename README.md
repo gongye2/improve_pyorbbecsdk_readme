@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://orbbec.github.io/pyorbbecsdk/index.html">Documentation</a>
+  <a href="https://gongye2.github.io/improve_pyorbbecsdk_readme/index.html">Documentation</a>
   ·
   <a href="https://pypi.org/project/pyorbbecsdk2/">PyPI Package</a>
   ·
@@ -68,7 +68,7 @@
 > - Starting from October 2025 (Orbbec SDK v2.5.5), devices using the OpenNI protocol will be upgraded to UVC protocol. See [the upgrade document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol) for details.
 > - For legacy v1.x device support (Astra+, Astra Pro Plus, Gemini 2 XL), use the [main branch](https://github.com/orbbec/pyorbbecsdk/tree/main).
 
-For detailed branch comparison and device support matrix, see [Introduction - Device Support Comparison](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html#device-support-comparison).
+For detailed branch comparison and device support matrix, see [Introduction - Device Support Comparison](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/1_overview/Introduction.html#v2-main-branch).
 
 ## Why pyorbbecsdk?
 
@@ -106,10 +106,10 @@ pip install --upgrade pyorbbecsdk2
 > # Install SDK in virtual environment
 > pip install --upgrade pyorbbecsdk2
 > ```
-> See [Virtual Environment Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/virtual_environment_guide.html) for more options (venv, pyenv, conda).
+> See [Virtual Environment Guide](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/2_installation/virtual_environment_guide.html) for more options (venv, pyenv, conda).
 
 > 🔧 **Building from Source?**
-> See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html) for detailed instructions.
+> See the [Build with UV Guide](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/4_Package/build_with_uv.html) for detailed instructions.
 
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
@@ -154,7 +154,7 @@ The [examples/](examples/) directory contains **35+ scripts** organized by diffi
 
 See [examples/README.md](examples/README.md) for the full list with per-script descriptions and device compatibility.
 
-**📚 Next Steps**: Explore our structured learning path from beginner to advanced → [Quick Start Guide - Next Steps](https://orbbec.github.io/pyorbbecsdk/source/3_QuickStarts/QuickStart.html#next-steps)
+**📚 Next Steps**: Explore our structured learning path from beginner to advanced → [Quick Start Guide - Next Steps](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/3_QuickStarts/QuickStart.html#next-steps)
 
 ## Supported Platforms
 
@@ -183,18 +183,18 @@ python scripts/auto_update_firmware.py
 
 This script will check your current device firmware version, guide you to download the correct firmware, and perform the firmware update safely.
 
-For detailed device support and firmware compatibility information, see [Introduction — v2-main Branch](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html#v2-main-branch).
+For detailed device support and firmware compatibility information, see [Introduction — v2-main Branch](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/1_overview/Introduction.html#v2-main-branch).
 
 ## FAQ
 
-See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/7_FAQ/FAQ.html) for common issues and solutions.
+See the [full FAQ](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/7_FAQ/FAQ.html) for common issues and solutions.
 
 ## Community
 
 Join the conversation and connect with other pyorbbecsdk users to share ideas, solve problems, and help make the SDK awesome. 
 
 - **GitHub Issues** If you come across a bug or want to request a feature, please raise an issue in this [**GitHub repository**](https://github.com/orbbec/pyorbbecsdk/issues).
-- **Documentation** The comprehensive [Orbbec SDK V2 Python Wrapper User Guide](https://orbbec.github.io/pyorbbecsdk/index.html) covers architecture, API quick-starts, and usage guides.
+- **Documentation** The comprehensive [Orbbec SDK V2 Python Wrapper User Guide](https://gongye2.github.io/improve_pyorbbecsdk_readme/index.html) covers architecture, API quick-starts, and usage guides.
 - **Contributing** Contributions are welcome — read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for build instructions, code style, and the PR process.
 
 ## Changelog

@@ -120,7 +120,7 @@ chmod +x scripts/build_whl/build-whl-uv-macos.sh
 
 Wheels are output to `wheel/` directory.
 
-> See [Build with UV](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html) for detailed instructions including offline builds, script options, and troubleshooting.
+> See [Build with UV](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/4_Package/build_with_uv.html) for detailed instructions including offline builds, script options, and troubleshooting.
 
 ---
 
@@ -304,7 +304,7 @@ When modifying the public API (adding or changing C++ binding signatures), updat
 Before opening an issue, please check:
 
 - The existing [issues list](https://github.com/orbbec/pyorbbecsdk/issues) for duplicates.
-- The [FAQ / Troubleshooting](https://orbbec.github.io/pyorbbecsdk/index.html) in the documentation.
+- The [FAQ / Troubleshooting](https://gongye2.github.io/improve_pyorbbecsdk_readme/index.html) in the documentation.
 - Your device firmware meets the minimum version in [README.md — Automated Firmware Update](../README.md#automated-firmware-update).
 - On Linux: udev rules are installed.
 - On Windows: metadata registration was completed.
