@@ -43,6 +43,7 @@
 - [Automated Firmware Update](#automated-firmware-update)
 - [FAQ](#faq)
 - [Community](#community)
+- [Changelog](#changelog)
 - [License](#license)
 
 ## Overview
@@ -108,7 +109,7 @@ pip install --upgrade pyorbbecsdk2
 > See [Virtual Environment Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/virtual_environment_guide.html) for more options (venv, pyenv, conda).
 
 > 🔧 **Building from Source?**
-> See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/2_installation/build_with_uv.html) for detailed instructions.
+> See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html) for detailed instructions.
 
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
@@ -182,9 +183,11 @@ python scripts/auto_update_firmware.py
 
 This script will check your current device firmware version, guide you to download the correct firmware, and perform the firmware update safely.
 
+For detailed device support and firmware compatibility information, see [Introduction — v2-main Branch](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html#v2-main-branch).
+
 ## FAQ
 
-See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/5_FAQ/FAQ.html) for common issues and solutions.
+See the [full FAQ](https://orbbec.github.io/pyorbbecsdk/source/7_FAQ/FAQ.html) for common issues and solutions.
 
 ## Community
 
@@ -192,7 +195,11 @@ Join the conversation and connect with other pyorbbecsdk users to share ideas, s
 
 - **GitHub Issues** If you come across a bug or want to request a feature, please raise an issue in this [**GitHub repository**](https://github.com/orbbec/pyorbbecsdk/issues).
 - **Documentation** The comprehensive [Orbbec SDK V2 Python Wrapper User Guide](https://orbbec.github.io/pyorbbecsdk/index.html) covers architecture, API quick-starts, and usage guides.
-- **Contributing** Contributions are welcome — read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for build instructions, code style, and the PR process.
+- **Contributing** Contributions are welcome — read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for build instructions, code style, and the PR process.
+
+## Changelog
+
+See [CHANGELOG.md](docs/CHANGELOG.md) for a detailed history of changes.
 
 ## License
 

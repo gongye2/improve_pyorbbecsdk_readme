@@ -1,7 +1,7 @@
 Pipeline
 ========
 
-Pipeline and FrameSet classes for streaming and processing data from Orbbec devices.
+Pipeline for data streaming and processing configuration.
 
 Classes
 -------
@@ -14,26 +14,10 @@ Pipeline
    :undoc-members:
    :show-inheritance:
 
-FrameSet
-^^^^^^^^
+Config
+^^^^^^
 
-.. autoclass:: pyorbbecsdk.FrameSet
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-RecordDevice
-^^^^^^^^^^^^
-
-.. autoclass:: pyorbbecsdk.RecordDevice
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PlaybackDevice
-^^^^^^^^^^^^^^
-
-.. autoclass:: pyorbbecsdk.PlaybackDevice
+.. autoclass:: pyorbbecsdk.Config
    :members:
    :undoc-members:
    :show-inheritance:

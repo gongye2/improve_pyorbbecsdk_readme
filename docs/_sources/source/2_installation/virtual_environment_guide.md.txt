@@ -460,5 +460,5 @@ pip install --upgrade pyorbbecsdk2
 ## 🔗 Related Documentation
 
 - [Installing pyorbbecsdk](install_the_package.md) - Basic installation guide
-- [Building with UV](../3_Package/build_with_uv.md) - Building from source
-- [Troubleshooting FAQ](../6_FAQ/FAQ.md) - More problem solutions
+- [Building with UV](../4_Package/build_with_uv.md) - Building from source
+- [Troubleshooting FAQ](../7_FAQ/FAQ.md) - More problem solutions
