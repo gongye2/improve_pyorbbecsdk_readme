@@ -82,9 +82,9 @@ The project provides platform-specific UV build scripts:
 
 | Platform | Script |
 |----------|--------|
-| Linux | `build-whl-uv.sh` |
-| macOS | `build-whl-uv-macos.sh` |
-| Windows | `build-whl-uv.ps1` |
+| Linux | `scripts/build_whl/build-whl-uv.sh` |
+| macOS | `scripts/build_whl/build-whl-uv-macos.sh` |
+| Windows | `scripts/build_whl/build-whl-uv.ps1` |
 
 > **Note**: These scripts are available in the `feature/uv_cli` branch. To use them, switch to that branch or copy the scripts to your working directory.
 
@@ -94,45 +94,45 @@ The project provides platform-specific UV build scripts:
 
 ```bash
 # Make the script executable
-chmod +x build-whl-uv.sh
+chmod +x scripts/build_whl/build-whl-uv.sh
 
 # Build for Python 3.10 (default)
-./build-whl-uv.sh
+./scripts/build_whl/build-whl-uv.sh
 
 # Build for specific Python version
-./build-whl-uv.sh 3.11
+./scripts/build_whl/build-whl-uv.sh 3.11
 
 # Build for multiple Python versions
-./build-whl-uv.sh 3.9 3.10 3.11
+./scripts/build_whl/build-whl-uv.sh 3.9 3.10 3.11
 
 # Build all supported versions (3.8-3.13)
-./build-whl-uv.sh all
+./scripts/build_whl/build-whl-uv.sh all
 ```
 
 ### macOS
 
 ```bash
 # Make the script executable
-chmod +x build-whl-uv-macos.sh
+chmod +x scripts/build_whl/build-whl-uv-macos.sh
 
 # Build for Python 3.10 (default)
-./build-whl-uv-macos.sh
+./scripts/build_whl/build-whl-uv-macos.sh
 
 # Build for specific Python version
-./build-whl-uv-macos.sh 3.11
+./scripts/build_whl/build-whl-uv-macos.sh 3.11
 
 # Build for multiple Python versions
-./build-whl-uv-macos.sh 3.9 3.10 3.11
+./scripts/build_whl/build-whl-uv-macos.sh 3.9 3.10 3.11
 
 # Build all supported versions (3.8-3.13)
-./build-whl-uv-macos.sh all
+./scripts/build_whl/build-whl-uv-macos.sh all
 ```
 
 ### Windows
 
 ```powershell
 # Build for Python 3.10 (default)
-.\build-whl-uv.ps1
+.\scripts\build_whl\build-whl-uv.ps1
 
 # Note: The Windows script currently builds configured versions in the script
 # Edit $PythonVersions array in the script to change target versions
@@ -154,16 +154,16 @@ All build scripts support the following command-line options:
 
 ```bash
 # Offline build for Python 3.10
-./build-whl-uv.sh --offline 3.10
+./scripts/build_whl/build-whl-uv.sh --offline 3.10
 
 # Clean and build all versions
-./build-whl-uv.sh --clean all
+./scripts/build_whl/build-whl-uv.sh --clean all
 
 # Only clean build artifacts
-./build-whl-uv.sh --clean-only
+./scripts/build_whl/build-whl-uv.sh --clean-only
 
 # Build without cleaning (incremental build)
-./build-whl-uv.sh --no-clean 3.11
+./scripts/build_whl/build-whl-uv.sh --no-clean 3.11
 ```
 
 ## Offline Build
@@ -194,7 +194,7 @@ done
 3. **Run the offline build**:
 
 ```bash
-./build-whl-uv.sh --offline 3.10
+./scripts/build_whl/build-whl-uv.sh --offline 3.10
 ```
 
 ### How Offline Mode Works
@@ -318,7 +318,7 @@ uv pip install pybind11 --python venv310/bin/python
 **Solution**: Fix library permissions:
 
 ```bash
-chmod +x build-whl-uv-macos.sh
+chmod +x scripts/build_whl/build-whl-uv-macos.sh
 ```
 
 #### Build fails on Windows with "Visual Studio not found"
@@ -336,7 +336,7 @@ If you encounter persistent build issues, perform a full clean:
 
 ```bash
 # Using the script
-./build-whl-uv.sh --clean-only
+./scripts/build_whl/build-whl-uv.sh --clean-only
 
 # Manual cleanup
 rm -rf build build_* dist install wheel src/*.egg-info
@@ -349,7 +349,7 @@ rm -rf build build_* dist install wheel src/*.egg-info
 Edit the build script to change default Python versions:
 
 ```bash
-# In build-whl-uv.sh, modify:
+# In scripts/build_whl/build-whl-uv.sh, modify:
 PYTHON_VERSIONS=("3.10" "3.11")  # Your desired versions
 ```
 
