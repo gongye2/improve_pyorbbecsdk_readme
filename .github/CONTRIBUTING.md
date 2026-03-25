@@ -39,7 +39,7 @@ Please read this guide before submitting changes, and ensure you follow the [Cod
 ### Runtime Dependencies
 
 ```bash
-pip install pyorbbecsdk2
+pip install --upgrade pyorbbecsdk2
 ```
 
 For running the object detection example:
