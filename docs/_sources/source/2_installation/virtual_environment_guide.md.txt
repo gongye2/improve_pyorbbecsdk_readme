@@ -21,6 +21,17 @@
 
 ---
 
+## 📊 Tool Selection Guide
+
+| Scenario | Recommended Tool | Reason |
+|----------|-----------------|--------|
+| Quick start, minimal configuration | **venv** | Built into Python, no installation needed |
+| Multiple projects, multiple Python versions | **pyenv + venv** | Flexible Python version management |
+| Data science, complex dependencies | **conda** | Excellent at handling non-Python dependencies |
+| CI/CD automation | **venv** | Lightweight, standard tool |
+
+---
+
 ## Quick Start
 
 ### Linux / macOS (venv)
@@ -431,17 +442,6 @@ pip install --upgrade pyorbbecsdk2
 
 ---
 
-## 📊 Tool Selection Guide
-
-| Scenario | Recommended Tool | Reason |
-|----------|-----------------|--------|
-| Quick start, minimal configuration | **venv** | Built into Python, no installation needed |
-| Multiple projects, multiple Python versions | **pyenv + venv** | Flexible Python version management |
-| Data science, complex dependencies | **conda** | Excellent at handling non-Python dependencies |
-| CI/CD automation | **venv** | Lightweight, standard tool |
-
----
-
 ## 📝 Best Practices
 
 1. **One environment per project**: Create separate virtual environments for each pyorbbecsdk project
@@ -460,5 +460,5 @@ pip install --upgrade pyorbbecsdk2
 ## 🔗 Related Documentation
 
 - [Installing pyorbbecsdk](install_the_package.md) - Basic installation guide
-- [Building with UV](build_with_uv.md) - Building from source
-- [Troubleshooting FAQ](../7_FAQ/FAQ.md) - More problem solutions
+- [Building with UV](../3_Package/build_with_uv.md) - Building from source
+- [Troubleshooting FAQ](../6_FAQ/FAQ.md) - More problem solutions

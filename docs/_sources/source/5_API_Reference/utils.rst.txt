@@ -1,0 +1,397 @@
+Utils
+=====
+
+Utility functions and classes for working with the pyorbbecsdk.
+
+Functions
+---------
+
+get_version
+^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.get_version
+
+save_point_cloud_to_ply
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.save_point_cloud_to_ply
+
+save_lidar_point_cloud_to_ply
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.save_lidar_point_cloud_to_ply
+
+transformation2dto2d
+^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.transformation2dto2d
+
+transformation2dto3d
+^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.transformation2dto3d
+
+transformation3dto2d
+^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.transformation3dto2d
+
+transformation3dto3d
+^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pyorbbecsdk.transformation3dto3d
+
+Enumerations
+------------
+
+OBLogLevel
+^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBLogLevel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBError
+^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBError
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBException
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBException
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBStatus
+^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBStatus
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCameraParam
+^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCameraParam
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCameraIntrinsic
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCameraIntrinsic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCameraDistortion
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCameraDistortion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCameraDistortionModel
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCameraDistortionModel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBExtrinsic
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBExtrinsic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBBaselineCalibrationParam
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBBaselineCalibrationParam
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCalibrationParam
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCalibrationParam
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBAccelIntrinsic
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBAccelIntrinsic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBGyroIntrinsic
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBGyroIntrinsic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBAccelFullScaleRange
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBAccelFullScaleRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBGyroFullScaleRange
+^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBGyroFullScaleRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBAccelValue
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBAccelValue
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBGyroValue
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBGyroValue
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFloat3D
+^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFloat3D
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPoint2f
+^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBPoint2f
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPoint3f
+^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBPoint3f
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBRect
+^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBRect
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBRegionOfInterest
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBRegionOfInterest
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBLiDARPoint
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBLiDARPoint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBLiDARScanPoint
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBLiDARScanPoint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBLiDARSpherePoint
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBLiDARSpherePoint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBLiDARScanRate
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBLiDARScanRate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBColorPoint
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBColorPoint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPixelType
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBPixelType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBPowerLineFreqMode
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBPowerLineFreqMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDCPowerState
+^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDCPowerState
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBUSBPowerState
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBUSBPowerState
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCommunicationType
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCommunicationType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBProtocolVersion
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBProtocolVersion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCmdVersion
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCmdVersion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBCoordinateSystemType
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBCoordinateSystemType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBRotateDegreeType
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBRotateDegreeType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDepthPrecisionLevel
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDepthPrecisionLevel
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDepthCroppingMode
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDepthCroppingMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBTofFilterRange
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBTofFilterRange
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBTofExposureThresholdControl
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBTofExposureThresholdControl
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBSequenceIdItem
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBSequenceIdItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBUpgradeState
+^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBUpgradeState
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDataTranState
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDataTranState
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFileTranState
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFileTranState
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,194 @@
+Filter
+======
+
+Post-processing filters for enhancing and processing frames.
+
+Classes
+-------
+
+Filter
+^^^^^^
+
+.. autoclass:: pyorbbecsdk.Filter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AlignFilter
+^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.AlignFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+DecimationFilter
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.DecimationFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+HoleFillingFilter
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.HoleFillingFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+NoiseRemovalFilter
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.NoiseRemovalFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SpatialAdvancedFilter
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.SpatialAdvancedFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+TemporalFilter
+^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.TemporalFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PointCloudFilter
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.PointCloudFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SequenceIdFilter
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.SequenceIdFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+HDRMergeFilter
+^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.HDRMergeFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ThresholdFilter
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.ThresholdFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+FormatConvertFilter
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.FormatConvertFilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+DisparityTransform
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.DisparityTransform
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Enumerations
+------------
+
+OBFilterList
+^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFilterList
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFilterConfigSchemaItem
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFilterConfigSchemaItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBFilterConfigValueType
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBFilterConfigValueType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBHoleFillingMode
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBHoleFillingMode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBNoiseRemovalFilterParams
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBNoiseRemovalFilterParams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBEdgeNoiseRemovalType
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBEdgeNoiseRemovalType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBEdgeNoiseRemovalFilterParams
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBEdgeNoiseRemovalFilterParams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBDDONoiseRemovalType
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBDDONoiseRemovalType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBSpatialAdvancedFilterParams
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBSpatialAdvancedFilterParams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+OBConvertFormat
+^^^^^^^^^^^^^^^
+
+.. autoclass:: pyorbbecsdk.OBConvertFormat
+   :members:
+   :undoc-members:
+   :show-inheritance:

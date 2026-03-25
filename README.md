@@ -67,7 +67,7 @@
 > - Starting from October 2025 (Orbbec SDK v2.5.5), devices using the OpenNI protocol will be upgraded to UVC protocol. See [the upgrade document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol) for details.
 > - For legacy v1.x device support (Astra+, Astra Pro Plus, Gemini 2 XL), use the [main branch](https://github.com/orbbec/pyorbbecsdk/tree/main).
 
-For detailed branch comparison and device support matrix, see [Introduction - Branch Comparison](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html).
+For detailed branch comparison and device support matrix, see [Introduction - Device Support Comparison](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html#device-support-comparison).
 
 ## Why pyorbbecsdk?
 
@@ -143,13 +143,17 @@ For full visualisation, check out [`examples/quick_start.py`](examples/quick_sta
 
 The [examples/](examples/) directory contains **35+ scripts** organized by difficulty to start using the pyorbbecsdk with only a few lines of code.
 
-* [**Quick Start**](examples/quick_start.py) - Zero-config RGBD viewer — first thing to run.
-* [**Beginner**](examples/beginner/) - Hello camera, depth viz, alignment, calibration, point cloud, multi-stream, IMU, network camera, and firmware update.
-* [**Advanced**](examples/advanced/) - Recording & playback, device control, filter chains, HDR, presets, depth work modes, multi-device sync, coordinate transforms, high-performance pipeline.
-* [**Applications**](examples/applications/) - YOLO object detection with depth overlay; interactive depth ruler.
-* [**LiDAR**](examples/lidar_examples/) - LiDAR streaming, control, recording, and playback.
+| Level | Category | Description |
+|-------|----------|-------------|
+| ⭐ | [**Quick Start**](examples/quick_start.py) | Zero-config RGBD viewer — first thing to run. |
+| ⭐⭐ | [**Beginner**](examples/beginner/) | Hello camera, depth viz, alignment, calibration, point cloud, multi-stream, IMU, network camera, and firmware update. |
+| ⭐⭐⭐ | [**Advanced**](examples/advanced/) | Recording & playback, device control, filter chains, HDR, presets, depth work modes, multi-device sync, coordinate transforms, high-performance pipeline. |
+| ⭐⭐⭐⭐ | [**Applications**](examples/applications/) | YOLO object detection with depth overlay; interactive depth ruler. |
+| ⭐⭐⭐⭐ | [**LiDAR**](examples/lidar_examples/) | LiDAR streaming, control, recording, and playback. |
 
 See [examples/README.md](examples/README.md) for the full list with per-script descriptions and device compatibility.
+
+**📚 Next Steps**: Explore our structured learning path from beginner to advanced → [Quick Start Guide - Next Steps](https://orbbec.github.io/pyorbbecsdk/source/3_QuickStarts/QuickStart.html#next-steps)
 
 ## Supported Platforms
 

@@ -26,54 +26,9 @@
 
 ---
 
-## 🚀 Quick Install (TL;DR)
+## 📖 Detailed Installation
 
-> **ℹ️ Package Name Note**
->
-> Starting from version 2.0.18, both online (PyPI) and offline packages use the name **`pyorbbecsdk2`**.
->
-> - PyPI: `pip install --upgrade pyorbbecsdk2`
-> - Offline wheel: `pip install pyorbbecsdk2-2.x.x-xxx.whl` → installs as `pyorbbecsdk2`
->
-> **Import in code:** `import pyorbbecsdk` (module name remains unchanged)
-
-> **💡 Virtual environments are recommended**
->
-> To avoid permission issues and package conflicts, **strongly recommended** to use a virtual environment for installation. The following commands use Python's built-in `venv`:
->
-> **Detailed Guide** → [Virtual Environment Installation Guide](virtual_environment_guide.md)
-
-**Linux/macOS:**
-
-```bash
-# Create and activate virtual environment
-python3 -m venv orbbec_env
-source orbbec_env/bin/activate
-
-# Install SDK
-pip3 install --upgrade pyorbbecsdk2
-
-# Verify installation
-pip3 show pyorbbecsdk2 | grep Version
-```
-
-**Windows:**
-
-```powershell
-# Create and activate virtual environment
-python -m venv orbbec_env
-.\orbbec_env\Scripts\activate
-
-# Install SDK
-pip install --upgrade pyorbbecsdk2
-
-# Verify installation
-pip show pyorbbecsdk2 | findstr Version
-```
-
----
-
-## 📦 Prerequisites
+### Prerequisites
 
 ### Python Version Check
 
@@ -147,7 +102,7 @@ python -m pyorbbecsdk.setup_env
 
 ---
 
-## 🔧 Installation Methods
+### Installation Methods
 
 ### Method 1: pip install (Recommended)
 
@@ -267,8 +222,55 @@ sudo -E python3 examples/beginner/02_depth_visualization.py
 
 > **Note for versions < 2.1.0:** If you installed an older version, you need to manually install example dependencies:
 > ```bash
-> pip3 install -r /path/to/site-packages/pyorbbecsdk/examples/requirements.txt
+> pip3 install opencv-python numpy
 > ```
+
+---
+
+## 🚀 Quick Install (TL;DR)
+
+> **ℹ️ Package Name Note**
+>
+> Starting from version 2.0.18, both online (PyPI) and offline packages use the name **`pyorbbecsdk2`**.
+>
+> - PyPI: `pip install --upgrade pyorbbecsdk2`
+> - Offline wheel: `pip install pyorbbecsdk2-2.x.x-xxx.whl` → installs as `pyorbbecsdk2` (download from [GitHub Releases](https://github.com/orbbec/pyorbbecsdk/releases))
+>
+> **Import in code:** `import pyorbbecsdk` (module name remains unchanged)
+
+> **💡 Virtual environments are recommended**
+>
+> To avoid permission issues and package conflicts, **strongly recommended** to use a virtual environment for installation. The following commands use Python's built-in `venv`:
+>
+> **Detailed Guide** → [Virtual Environment Installation Guide](virtual_environment_guide.md)
+
+**Linux/macOS:**
+
+```bash
+# Create and activate virtual environment
+python3 -m venv orbbec_env
+source orbbec_env/bin/activate
+
+# Install SDK
+pip3 install --upgrade pyorbbecsdk2
+
+# Verify installation
+pip3 show pyorbbecsdk2 | grep Version
+```
+
+**Windows:**
+
+```powershell
+# Create and activate virtual environment
+python -m venv orbbec_env
+.\orbbec_env\Scripts\activate
+
+# Install SDK
+pip install --upgrade pyorbbecsdk2
+
+# Verify installation
+pip show pyorbbecsdk2 | findstr Version
+```
 
 ---
 
@@ -377,12 +379,15 @@ python3 -c "import platform; print(platform.machine()); print(platform.system())
 
 **Problem:** Examples fail with missing dependencies.
 
-**Solution:** For versions < 2.1.0, manually install dependencies:
+**Solution:** Manually install dependencies:
 
 ```bash
 pip3 install opencv-python numpy
-# Or from requirements file
-pip3 install -r /path/to/site-packages/pyorbbecsdk/examples/requirements.txt
+```
+
+For the object detection example, also install:
+```bash
+pip3 install onnxruntime
 ```
 
 ---
@@ -413,7 +418,7 @@ python3 examples/quick_start.py
 
 ## 📖 Additional Resources
 
-- [Build from Source](build_the_package.md) - Instructions for building the package from source
+- [Build from Source](../3_Package/build_with_uv.md) - Instructions for building the package from source
 - [Environment Setup Guide](registration_script.md) - One-time configuration for device permissions and metadata registration
 - [Orbbec SDK Documentation](https://www.orbbec.com/documentation/)
 - [GitHub Issues](https://github.com/orbbec/pyorbbecsdk/issues) - Report bugs and get help

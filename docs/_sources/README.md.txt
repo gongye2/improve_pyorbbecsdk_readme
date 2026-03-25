@@ -52,7 +52,7 @@ cd docs
 API 文档 RST 文件通常已经生成，只有修改了脚本或添加新类时才需要重新生成：
 
 ```bash
-# 从项目根目录（目前许手动修改pyi路径，因为使用的是绝对路径）
+# 从项目根目录（目前许手动修改pyi路径，因为使用的是绝对路径; 此外必须要在安装了pyorbbecsdk2的虚拟环境）
 python scripts/generate_api_docs.py
 ```
 
@@ -89,7 +89,7 @@ python scripts/generate_api_docs.py
 ## 目录结构
 
 ```
-docs/source/6_API_Reference/     # API 参考（从 pyi 自动生成）
+docs/source/5_API_Reference/     # API 参考（从 pyi 自动生成）
 ├── index.rst
 ├── core.rst                     # 核心类（Context, Device, Config 等）
 ├── pipeline.rst                 # Pipeline 和 FrameSet
