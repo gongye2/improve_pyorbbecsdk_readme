@@ -20,7 +20,7 @@ export UV_LINK_MODE=copy
 # Set UV offline mode if requested
 UV_OFFLINE="${UV_OFFLINE:-}"
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 # ============================================================
 # Default configuration

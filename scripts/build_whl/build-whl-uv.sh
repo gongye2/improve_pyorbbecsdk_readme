@@ -16,7 +16,7 @@ export UV_LINK_MODE=copy
 # Set UV offline mode if requested
 UV_OFFLINE="${UV_OFFLINE:-}"
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 # ============================================================
 # Default configuration
@@ -329,9 +329,7 @@ build_version() {
         -DCMAKE_BUILD_TYPE=Release \
         -DPython3_EXECUTABLE="$PYTHON_EXE" \
         -Dpybind11_DIR="$PYBIND11_DIR" \
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-        -DCMAKE_C_COMPILER=gcc \
-        -DCMAKE_CXX_COMPILER=g++
+        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
 
     cmake --build . --target install -j"$(nproc)"
 
