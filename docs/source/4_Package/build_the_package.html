@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1.1. Introduction &mdash; OrbbecSDK V2 Python Wrapper  documentation</title>
+  <title>4.2. Build from Source (Traditional CMake Method - Deprecated) &mdash; OrbbecSDK V2 Python Wrapper  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -22,8 +22,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="1.2. Orbbec SDK Overview" href="OrbbecSDK_Overview.html" />
-    <link rel="prev" title="1. Overview" href="overview.html" /> 
+    <link rel="next" title="5. Application Guide" href="../5_Application_Guide/Application_Guide.html" />
+    <link rel="prev" title="4.1. Build from Source with UV (Recommended)" href="build_with_uv.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,23 +46,23 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="overview.html">1. Overview</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">1.1. Introduction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#device-support-comparison">1.1.1. Device Support Comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#supported-platforms">1.1.2. Supported Platforms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#support-hardware-products">1.1.3. Support Hardware Products</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#v2-main-branch">1.1.3.1. v2-main Branch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#main-branch-v1-x">1.1.3.2. main Branch (v1.x)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../1_overview/overview.html">1. Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../1_overview/Introduction.html">1.1. Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/Introduction.html#device-support-comparison">1.1.1. Device Support Comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/Introduction.html#supported-platforms">1.1.2. Supported Platforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/Introduction.html#support-hardware-products">1.1.3. Support Hardware Products</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../1_overview/Introduction.html#v2-main-branch">1.1.3.1. v2-main Branch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../1_overview/Introduction.html#main-branch-v1-x">1.1.3.2. main Branch (v1.x)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#support-platforms">1.1.4. Support Platforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/Introduction.html#support-platforms">1.1.4. Support Platforms</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="OrbbecSDK_Overview.html">1.2. Orbbec SDK Overview</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="OrbbecSDK_Overview.html#terms">1.2.1. Terms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OrbbecSDK_Overview.html#orbbec-sdk-v2-architecture-overview">1.2.2. Orbbec SDK v2 Architecture Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OrbbecSDK_Overview.html#sdk-concept-overview">1.2.3. SDK Concept Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OrbbecSDK_Overview.html#sdk-programming-model">1.2.4. SDK Programming Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../1_overview/OrbbecSDK_Overview.html">1.2. Orbbec SDK Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/OrbbecSDK_Overview.html#terms">1.2.1. Terms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/OrbbecSDK_Overview.html#orbbec-sdk-v2-architecture-overview">1.2.2. Orbbec SDK v2 Architecture Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/OrbbecSDK_Overview.html#sdk-concept-overview">1.2.3. SDK Concept Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../1_overview/OrbbecSDK_Overview.html#sdk-programming-model">1.2.4. SDK Programming Model</a></li>
 </ul>
 </li>
 </ul>
@@ -250,87 +250,87 @@
 <li class="toctree-l2"><a class="reference internal" href="../3_QuickStarts/QuickStart.html#tips-for-success">3.7. 💡 Tips for Success</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../4_Package/Package.html">4. Package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../4_Package/build_with_uv.html">4.1. Build from Source with UV (Recommended)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#prerequisites">4.1.1. Prerequisites</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#all-platforms">4.1.1.1. All Platforms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#platform-specific-requirements">4.1.1.2. Platform-Specific Requirements</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#linux">4.1.1.2.1. Linux</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#macos">4.1.1.2.2. macOS</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#windows">4.1.1.2.3. Windows</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Package.html">4. Package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="build_with_uv.html">4.1. Build from Source with UV (Recommended)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#prerequisites">4.1.1. Prerequisites</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#all-platforms">4.1.1.1. All Platforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#platform-specific-requirements">4.1.1.2. Platform-Specific Requirements</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#linux">4.1.1.2.1. Linux</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#macos">4.1.1.2.2. macOS</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#windows">4.1.1.2.3. Windows</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#build-scripts">4.1.2. Build Scripts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#quick-start">4.1.3. Quick Start</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#id1">4.1.3.1. Linux</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#id2">4.1.3.2. macOS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#id3">4.1.3.3. Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#build-scripts">4.1.2. Build Scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#quick-start">4.1.3. Quick Start</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#id1">4.1.3.1. Linux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#id2">4.1.3.2. macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#id3">4.1.3.3. Windows</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#script-options">4.1.4. Script Options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#examples">4.1.4.1. Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#script-options">4.1.4. Script Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#examples">4.1.4.1. Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#offline-build">4.1.5. Offline Build</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#preparing-for-offline-build">4.1.5.1. Preparing for Offline Build</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#how-offline-mode-works">4.1.5.2. How Offline Mode Works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#offline-build">4.1.5. Offline Build</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#preparing-for-offline-build">4.1.5.1. Preparing for Offline Build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#how-offline-mode-works">4.1.5.2. How Offline Mode Works</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#build-output">4.1.6. Build Output</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#installing-the-wheel">4.1.6.1. Installing the Wheel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#generate-type-stubs-optional-but-recommended">4.1.6.2. Generate Type Stubs (Optional but Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#build-output">4.1.6. Build Output</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#installing-the-wheel">4.1.6.1. Installing the Wheel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#generate-type-stubs-optional-but-recommended">4.1.6.2. Generate Type Stubs (Optional but Recommended)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#build-process-details">4.1.7. Build Process Details</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#key-differences-by-platform">4.1.7.1. Key Differences by Platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#build-process-details">4.1.7. Build Process Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#key-differences-by-platform">4.1.7.1. Key Differences by Platform</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#troubleshooting">4.1.8. Troubleshooting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#common-issues">4.1.8.1. Common Issues</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#uv-command-not-found">4.1.8.1.1. “uv: command not found”</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#cmake-configuration-failed">4.1.8.1.2. “CMake configuration failed”</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#pybind11-not-found-offline-mode">4.1.8.1.3. “pybind11 not found” (Offline mode)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#permission-denied-on-macos">4.1.8.1.4. “Permission denied” on macOS</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../4_Package/build_with_uv.html#build-fails-on-windows-with-visual-studio-not-found">4.1.8.1.5. Build fails on Windows with “Visual Studio not found”</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#troubleshooting">4.1.8. Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#common-issues">4.1.8.1. Common Issues</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#uv-command-not-found">4.1.8.1.1. “uv: command not found”</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#cmake-configuration-failed">4.1.8.1.2. “CMake configuration failed”</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#pybind11-not-found-offline-mode">4.1.8.1.3. “pybind11 not found” (Offline mode)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#permission-denied-on-macos">4.1.8.1.4. “Permission denied” on macOS</a></li>
+<li class="toctree-l5"><a class="reference internal" href="build_with_uv.html#build-fails-on-windows-with-visual-studio-not-found">4.1.8.1.5. Build fails on Windows with “Visual Studio not found”</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#cleaning-build-artifacts">4.1.8.2. Cleaning Build Artifacts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#cleaning-build-artifacts">4.1.8.2. Cleaning Build Artifacts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#advanced-usage">4.1.9. Advanced Usage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#customizing-python-versions">4.1.9.1. Customizing Python Versions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#parallel-builds">4.1.9.2. Parallel Builds</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_with_uv.html#environment-variables">4.1.9.3. Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#advanced-usage">4.1.9. Advanced Usage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#customizing-python-versions">4.1.9.1. Customizing Python Versions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#parallel-builds">4.1.9.2. Parallel Builds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build_with_uv.html#environment-variables">4.1.9.3. Environment Variables</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#comparison-with-traditional-build">4.1.10. Comparison with Traditional Build</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#next-steps">4.1.11. Next Steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_with_uv.html#see-also">4.1.12. See Also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#comparison-with-traditional-build">4.1.10. Comparison with Traditional Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#next-steps">4.1.11. Next Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_with_uv.html#see-also">4.1.12. See Also</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../4_Package/build_the_package.html">4.2. Build from Source (Traditional CMake Method - Deprecated)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_the_package.html#environment">4.2.1. Environment</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#compilation-platform-requirements">4.2.1.1. Compilation Platform Requirements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#python-version">4.2.1.2. Python Version</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4.2. Build from Source (Traditional CMake Method - Deprecated)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment">4.2.1. Environment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#compilation-platform-requirements">4.2.1.1. Compilation Platform Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-version">4.2.1.2. Python Version</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_the_package.html#linux-python-sdk-compilation">4.2.2. Linux Python SDK Compilation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#install-dependencies-ubuntu">4.2.2.1. Install Dependencies (Ubuntu)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#custom-python-path-optional">4.2.2.2. Custom Python Path (Optional)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#build-the-project">4.2.2.3. Build the Project</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#run-the-examples">4.2.2.4. Run the Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#generate-python-stubs">4.2.2.5. Generate Python Stubs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#making-a-python-wheel">4.2.2.6. Making a Python Wheel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-python-sdk-compilation">4.2.2. Linux Python SDK Compilation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#install-dependencies-ubuntu">4.2.2.1. Install Dependencies (Ubuntu)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-python-path-optional">4.2.2.2. Custom Python Path (Optional)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-the-project">4.2.2.3. Build the Project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-the-examples">4.2.2.4. Run the Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generate-python-stubs">4.2.2.5. Generate Python Stubs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#making-a-python-wheel">4.2.2.6. Making a Python Wheel</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../4_Package/build_the_package.html#windows-python-sdk-compilation">4.2.3. Windows Python SDK Compilation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#download-the-python-sdk-source-code">4.2.3.1. Download the Python SDK Source Code</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#install-dependencies">4.2.3.2. Install Dependencies</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#configure-visual-studio-project">4.2.3.3. Configure Visual Studio Project</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#compile-the-python-sdk">4.2.3.4. Compile the Python SDK</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../4_Package/build_the_package.html#test-examples">4.2.3.5. Test Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-python-sdk-compilation">4.2.3. Windows Python SDK Compilation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#download-the-python-sdk-source-code">4.2.3.1. Download the Python SDK Source Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#install-dependencies">4.2.3.2. Install Dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-visual-studio-project">4.2.3.3. Configure Visual Studio Project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compile-the-python-sdk">4.2.3.4. Compile the Python SDK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test-examples">4.2.3.5. Test Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -1040,10 +1040,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="overview.html"><span class="section-number">1. </span>Overview</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">1.1. </span>Introduction</li>
+          <li class="breadcrumb-item"><a href="Package.html"><span class="section-number">4. </span>Package</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2. </span>Build from Source (Traditional CMake Method - Deprecated)</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/source/1_overview/Introduction.md.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/source/4_Package/build_the_package.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -1051,441 +1051,176 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="introduction">
-<h1><span class="section-number">1.1. </span>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
-<p>Python Wrapper bindings for the Orbbec SDK, enabling developers to interface with Orbbec devices using Python.
-With the major update of the new branch v2-main in October 2024, Python Wrapper is connected to the open source version of <a class="reference external" href="https://github.com/orbbec/OrbbecSDK_v2">Orbbec SDK v2</a>,  which will make Python Wrapper more flexible and extensible.</p>
-<p>This update in v2-main ensures compatibility with all new Orbbec USB products that comply with the UVC standard. However, Python Wrapper v2 no longer supports Orbbec’s traditional OpenNI protocol devices. We encourage you to check whether your device is supported by Python Wrapper v2 and use the new version if supported.</p>
-<p>The Python Wrapper uses pybind11 to convert the interfaces of the Orbbec SDK into Python interfaces.</p>
+  <section id="build-from-source-traditional-cmake-method-deprecated">
+<h1><span class="section-number">4.2. </span>Build from Source (Traditional CMake Method - Deprecated)<a class="headerlink" href="#build-from-source-traditional-cmake-method-deprecated" title="Link to this heading"></a></h1>
+<p>Before you start: Normally, installing with the provided .whl package is sufficient. If the installation fails or you need custom features, you can build the Python Wrapper from source.</p>
+<section id="environment">
+<h2><span class="section-number">4.2.1. </span>Environment<a class="headerlink" href="#environment" title="Link to this heading"></a></h2>
+<section id="compilation-platform-requirements">
+<h3><span class="section-number">4.2.1.1. </span>Compilation Platform Requirements<a class="headerlink" href="#compilation-platform-requirements" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>The implementation principle of the Python Wrapper is as follows:</p></li>
-</ul>
-<p><img alt="python_principle" src="../../_images/python_principle.png" /></p>
-<section id="device-support-comparison">
-<h2><span class="section-number">1.1.1. </span>Device Support Comparison<a class="headerlink" href="#device-support-comparison" title="Link to this heading"></a></h2>
-<table border="1" class="docutils align-default">
-  <thead>
-    <tr style="background-color: #f0f0f0; text-align: left;">
-      <th>Product Series</th>
-      <th>Product</th>
-      <th>main (v1.x)</th>
-      <th>v2-main (v2.x)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Gemini 305</strong></td>
-      <td>Gemini 305</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="2"><strong>Gemini 340</strong></td>
-      <td>Gemini 345</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 345Lg</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td><strong>Gemini 435Le</strong></td>
-      <td>Gemini 435Le</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="8"><strong>Gemini 330</strong></td>
-      <td>Gemini 335Le</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 335</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 336</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 330</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 335L</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 336L</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 330L</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 335Lg</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="5"><strong>Gemini 2</strong></td>
-      <td>Gemini 2</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 2 L</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 2 XL</td>
-      <td>✅ Recommended</td>
-      <td>⏳ Planned</td>
-    </tr>
-    <tr>
-      <td>Gemini 215</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Gemini 210</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="3"><strong>Femto</strong></td>
-      <td>Femto Bolt</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Femto Mega</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Femto Mega I</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="3"><strong>Astra</strong></td>
-      <td>Astra 2</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Astra+</td>
-      <td>⚠️ Maintenance</td>
-      <td>❌ Not Supported</td>
-    </tr>
-    <tr>
-      <td>Astra Pro Plus</td>
-      <td>⚠️ Maintenance</td>
-      <td>❌ Not Supported</td>
-    </tr>
-    <tr>
-      <td rowspan="2"><strong>Astra Mini</strong></td>
-      <td>Astra Mini Pro</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Astra Mini S Pro</td>
-      <td>⚠️ Maintenance</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td rowspan="2"><strong>LiDAR</strong></td>
-      <td>Pulsar ME450</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-    <tr>
-      <td>Pulsar SL450</td>
-      <td>❌ Not Supported</td>
-      <td>✅ Recommended</td>
-    </tr>
-  </tbody>
-</table><p><strong>Legend:</strong></p>
-<ul class="simple">
-<li><p>✅ <strong>Recommended</strong>: Full support with new features, bug fixes, and performance optimization</p></li>
-<li><p>⚠️ <strong>Maintenance</strong>: Bug fix support only</p></li>
-<li><p>❌ <strong>Not Supported</strong>: Device not supported in this version</p></li>
-<li><p>⏳ <strong>Planned</strong>: Support will be added in the near future</p></li>
+<li><p>Windows: Visual Studio 2017 and above</p></li>
+<li><p>Linux: gcc 5.4.0 and above</p></li>
+<li><p>cmake: 3.15.0 and above</p></li>
+<li><p>pybind11 2.10.3 and above</p></li>
 </ul>
 </section>
-<section id="supported-platforms">
-<h2><span class="section-number">1.1.2. </span>Supported Platforms<a class="headerlink" href="#supported-platforms" title="Link to this heading"></a></h2>
-<p>pyorbbecsdk supports the following operating systems and architectures:</p>
-<table border="1" class="docutils align-default">
-  <thead>
-    <tr style="background-color: #f0f0f0; text-align: left;">
-      <th>Platform</th>
-      <th>OS Version</th>
-      <th>Architecture</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Windows</strong></td>
-      <td>Windows 10+</td>
-      <td>x64</td>
-    </tr>
-    <tr>
-      <td rowspan="2"><strong>Linux</strong></td>
-      <td rowspan="2">Ubuntu 18.04 / 20.04 / 22.04</td>
-      <td>x64</td>
-    </tr>
-    <tr>
-      <td>ARM64</td>
-    </tr>
-    <tr>
-      <td><strong>macOS</strong></td>
-      <td>macOS 13.2+</td>
-      <td>Apple Silicon (M1 and later)</td>
-    </tr>
-  </tbody>
-</table><p><strong>Supported Python versions: 3.8 to 3.13</strong></p>
-<p>Pre-built wheels are available for all platforms via <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--upgrade</span> <span class="pre">pyorbbecsdk2</span></code>.</p>
-</section>
-<section id="support-hardware-products">
-<h2><span class="section-number">1.1.3. </span>Support Hardware Products<a class="headerlink" href="#support-hardware-products" title="Link to this heading"></a></h2>
-<p>This document is based on the v2-main branch code, which is a Python Wrapper built on Orbbec SDK v2. It supports the following devices.
-If your device is included in this supported list, we recommend using the v2-main branch. If not, you can use the main branch instead.</p>
-<section id="v2-main-branch">
-<h3><span class="section-number">1.1.3.1. </span>v2-main Branch<a class="headerlink" href="#v2-main-branch" title="Link to this heading"></a></h3>
-<table border="1" class="docutils">
-<thead>
-<tr>
-<th><strong>Products List</strong></th>
-<th><strong>Minimal Firmware Version</strong></th>
-<th><strong>Recommended Firmware Version</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Gemini 305</td>
-<td>1.0.30</td>
-<td>1.0.30</td>
-</tr>
-<tr>
-<td>Gemini 345</td>
-<td>1.7.04</td>
-<td>1.9.03</td>
-</tr>
-<tr>
-<td>Gemini 345Lg</td>
-<td>1.7.04</td>
-<td>1.9.03</td>
-</tr>
-<tr>
-<td>Gemini 435Le</td>
-<td>1.2.4</td>
-<td>1.3.6</td>
-</tr>
-<tr>
-<td>Gemini 335Le</td>
-<td>1.5.31</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 330</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 330L</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 335</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 335L</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 336</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 336L</td>
-<td>1.2.20</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Gemini 335Lg</td>
-<td>1.3.46</td>
-<td>1.6.00</td>
-</tr>
-<tr>
-<td>Femto Bolt</td>
-<td>1.1.2</td>
-<td>1.1.3</td>
-</tr>
-<tr>
-<td>Femto Mega</td>
-<td>1.3.0</td>
-<td>1.3.1</td>
-</tr>
-<tr>
-<td>Femto Mega I</td>
-<td>2.0.4</td>
-<td>2.0.4</td>
-</tr>
-<tr>
-<td>Astra 2</td>
-<td>2.8.20</td>
-<td>2.8.20</td>
-</tr>
-<tr>
-<td>Gemini 2 L</td>
-<td>1.4.53</td>
-<td>1.5.2</td>
-</tr>
-<tr>
-<td>Gemini 2</td>
-<td>1.4.92</td>
-<td>1.4.98</td>
-</tr>
-<tr>
-<td>Gemini 215</td>
-<td>1.0.9</td>
-<td>1.0.9</td>
-</tr>
-<tr>
-<td>Gemini 210</td>
-<td>1.0.9</td>
-<td>1.0.9</td>
-</tr>
-<tr>
-<td>Astra Mini Pro</td>
-<td>2.0.03</td>
-<td>2.0.03</td>
-</tr>
-<tr>
-<td>Astra Mini S Pro</td>
-<td>2.0.03</td>
-<td>2.0.03</td>
-</tr>
-<tr>
-<td>Pulsar SL450</td>
-<td>2.2.4.5</td>
-<td>2.2.4.5</td>
-</tr>
-<tr>
-<td>Pulsar ME450</td>
-<td>1.0.0.6</td>
-<td>1.0.0.6</td>
-</tr>
-</tbody>
-</table></section>
-<section id="main-branch-v1-x">
-<h3><span class="section-number">1.1.3.2. </span>main Branch (v1.x)<a class="headerlink" href="#main-branch-v1-x" title="Link to this heading"></a></h3>
-<p>the main branch supports the following devices with maintenance only:</p>
-<table border="1" class="docutils">
-<thead>
-<tr>
-<th><strong>Products List</strong></th>
-<th><strong>Minimal Firmware Version</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Gemini 330</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 330L</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 335</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 335L</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 336</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 336L</td>
-<td>1.2.20</td>
-</tr>
-<tr>
-<td>Gemini 2</td>
-<td>1.4.60</td>
-</tr>
-<tr>
-<td>Gemini 2 L</td>
-<td>1.4.32</td>
-</tr>
-<tr>
-<td>Gemini 2 XL</td>
-<td>Obox: V1.2.5  VL:1.4.54</td>
-</tr>
-<tr>
-<td>Femto Bolt</td>
-<td>1.0.6</td>
-</tr>
-<tr>
-<td>Femto Mega</td>
-<td>1.1.7</td>
-</tr>
-<tr>
-<td>Femto Mega I</td>
-<td>2.0.2</td>
-</tr>
-<tr>
-<td>Astra 2</td>
-<td>2.8.20</td>
-</tr>
-<tr>
-<td>Astra+</td>
-<td>1.0.19</td>
-</tr>
-<tr>
-<td>Astra Pro Plus</td>
-<td>1.0.19</td>
-</tr>
-<tr>
-<td>Astra Mini Pro</td>
-<td>1007</td>
-</tr>
-<tr>
-<td>Astra Mini S Pro</td>
-<td>1005</td>
-</tr>
-</tbody>
-</table></section>
-</section>
-<section id="support-platforms">
-<h2><span class="section-number">1.1.4. </span>Support Platforms<a class="headerlink" href="#support-platforms" title="Link to this heading"></a></h2>
+<section id="python-version">
+<h3><span class="section-number">4.2.1.2. </span>Python Version<a class="headerlink" href="#python-version" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Windows: Windows 10 (x64)</p></li>
-<li><p>Linux: 18.04/20.04/22.04/24.04 (x64)</p></li>
-<li><p>Arm64: Ubuntu18.04/20.04/22.04</p></li>
+<li><p>Python 3.8 and above</p></li>
 </ul>
+</section>
+</section>
+<section id="linux-python-sdk-compilation">
+<h2><span class="section-number">4.2.2. </span>Linux Python SDK Compilation<a class="headerlink" href="#linux-python-sdk-compilation" title="Link to this heading"></a></h2>
+<p>This section provides a comprehensive guide to installing, compiling, and running the Orbbec SDK for Python, covering all necessary steps for setup.</p>
+<!-- TOC --><ul class="simple">
+<li><p>Contents:</p>
+<ul>
+<li><p>Install Dependencies (Ubuntu)</p></li>
+<li><p>Custom Python Path (Optional)</p></li>
+<li><p>Build the Project</p></li>
+<li><p>Run the Examples</p></li>
+<li><p>Generate Python Stubs</p></li>
+<li><p>Making a Python Wheel</p></li>
+</ul>
+</li>
+</ul>
+<p>Clone the repository to get the latest version:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w">   </span>https://github.com/orbbec/pyorbbecsdk.git
+<span class="nb">cd</span><span class="w"> </span>pyorbbecsdk
+git<span class="w"> </span>checkout<span class="w"> </span>v2-main
+</pre></div>
+</div>
+<section id="install-dependencies-ubuntu">
+<h3><span class="section-number">4.2.2.1. </span>Install Dependencies (Ubuntu)<a class="headerlink" href="#install-dependencies-ubuntu" title="Link to this heading"></a></h3>
+<p>Install the necessary Python development packages</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-dev<span class="w"> </span>python3-venv<span class="w"> </span>python3-pip<span class="w"> </span>python3-opencv
+</pre></div>
+</div>
+</section>
+<section id="custom-python-path-optional">
+<h3><span class="section-number">4.2.2.2. </span>Custom Python Path (Optional)<a class="headerlink" href="#custom-python-path-optional" title="Link to this heading"></a></h3>
+<p>If you use Anaconda, update the Python path in <code class="docutils literal notranslate"><span class="pre">pyorbbecsdk/CMakeLists.txt</span></code> before the <code class="docutils literal notranslate"><span class="pre">find_package(Python3</span> <span class="pre">REQUIRED</span> <span class="pre">COMPONENTS</span> <span class="pre">Interpreter</span> <span class="pre">Development)</span></code> line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>set<span class="o">(</span>Python3_ROOT_DIR<span class="w"> </span><span class="s2">&quot;/home/anaconda3/envs/py3.6.8&quot;</span><span class="o">)</span><span class="w"> </span><span class="c1"># Replace with your Python path</span>
+set<span class="o">(</span>pybind11_DIR<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">Python3_ROOT_DIR</span><span class="si">}</span><span class="s2">/lib/python3.6/site-packages/pybind11/share/cmake/pybind11&quot;</span><span class="o">)</span><span class="w"> </span><span class="c1"># Replace with your Pybind11 path</span>
+</pre></div>
+</div>
+</section>
+<section id="build-the-project">
+<h3><span class="section-number">4.2.2.3. </span>Build the Project<a class="headerlink" href="#build-the-project" title="Link to this heading"></a></h3>
+<p>Create a virtual environment and build the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pyorbbecsdk
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>./venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-Dpybind11_DIR<span class="o">=</span><span class="sb">`</span>pybind11-config<span class="w"> </span>--cmakedir<span class="sb">`</span><span class="w"> </span>..
+make<span class="w"> </span>-j4
+make<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
+<section id="run-the-examples">
+<h3><span class="section-number">4.2.2.4. </span>Run the Examples<a class="headerlink" href="#run-the-examples" title="Link to this heading"></a></h3>
+<p>Set up the environment and run the examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pyorbbecsdk
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/install/lib/
+sudo<span class="w"> </span>bash<span class="w"> </span>./scripts/env_setup/install_udev_rules.sh
+sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+</pre></div>
+</div>
+</section>
+<section id="generate-python-stubs">
+<h3><span class="section-number">4.2.2.5. </span>Generate Python Stubs<a class="headerlink" href="#generate-python-stubs" title="Link to this heading"></a></h3>
+<p>Generate stubs for better IntelliSense support in your IDE</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>env.sh
+pip3<span class="w"> </span>install<span class="w"> </span>pybind11-stubgen
+pybind11-stubgen<span class="w"> </span>pyorbbecsdk
+</pre></div>
+</div>
+</section>
+<section id="making-a-python-wheel">
+<h3><span class="section-number">4.2.2.6. </span>Making a Python Wheel<a class="headerlink" href="#making-a-python-wheel" title="Link to this heading"></a></h3>
+<p>To generate a wheel package for easy distribution</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pyorbbecsdk
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>./venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>-Dpybind11_DIR<span class="o">=</span><span class="sb">`</span>pybind11-config<span class="w"> </span>--cmakedir<span class="sb">`</span><span class="w"> </span>..
+make<span class="w"> </span>-j4
+make<span class="w"> </span>install
+<span class="nb">cd</span><span class="w"> </span>..
+pip3<span class="w"> </span>install<span class="w"> </span>wheel
+python3<span class="w"> </span>setup.py<span class="w"> </span>bdist_wheel
+pip3<span class="w"> </span>install<span class="w"> </span>dist/*.whl
+</pre></div>
+</div>
+</section>
+</section>
+<section id="windows-python-sdk-compilation">
+<h2><span class="section-number">4.2.3. </span>Windows Python SDK Compilation<a class="headerlink" href="#windows-python-sdk-compilation" title="Link to this heading"></a></h2>
+<section id="download-the-python-sdk-source-code">
+<h3><span class="section-number">4.2.3.1. </span>Download the Python SDK Source Code<a class="headerlink" href="#download-the-python-sdk-source-code" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">orbbec</span><span class="o">/</span><span class="n">pyorbbecsdk</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">pyorbbecsdk</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">v2</span><span class="o">-</span><span class="n">main</span>
+</pre></div>
+</div>
+</section>
+<section id="install-dependencies">
+<h3><span class="section-number">4.2.3.2. </span>Install Dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>Here, it is assumed that you have installed Python 3 correctly. If you have not installed Python 3, you can refer to
+the <a class="reference external" href="https://www.python.org/downloads/">Python official website</a> and choose your Python 3 version for installation.</p>
+</section>
+<section id="configure-visual-studio-project">
+<h3><span class="section-number">4.2.3.3. </span>Configure Visual Studio Project<a class="headerlink" href="#configure-visual-studio-project" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Open Cmake, set the source code path, and set the “build” folder as the path for generating binary files, as shown in
+the following figure.
+<img alt="Multi_camera1" src="../../_images/Win_Config_image1.png" /></p></li>
+<li><p>Click “Configure” and select the corresponding Visual Studio version and platform version. Then click “Finish”, as
+shown below:
+<img alt="Multi_camera1" src="../../_images/Win_Config_image2.png" /></p></li>
+<li><p>Here, it is assumed that you have installed Cmake correctly. If you have not installed Cmake, you can refer to the Cmake official website for installation.</p>
+<p>Click “Generate”, as shown below:
+<img alt="Multi_camera1" src="../../_images/Win_Config_image3.png" /></p>
+</li>
+</ul>
+</section>
+<section id="compile-the-python-sdk">
+<h3><span class="section-number">4.2.3.4. </span>Compile the Python SDK<a class="headerlink" href="#compile-the-python-sdk" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">You</span> <span class="n">can</span> <span class="nb">open</span> <span class="n">the</span> <span class="n">Python</span> <span class="n">SDK</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">two</span> <span class="n">ways</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Method 1: Use Cmake, click the “Open Project” button, and open the Visual Studio project.</p>
+<p><img alt="Multi_camera1" src="../../_images/Win_Config_image4.png" /></p>
+<p>Method 2: Use the file explorer to directly start the Visual Studio project in the build directory, as shown in the following figure:</p>
+<p><img alt="Multi_camera1" src="../../_images/Win_Config_image5.png" /></p>
+<p>Open the Python SDK project, as shown below:</p>
+<p><img alt="Multi_camera1" src="../../_images/Win_Config_image6.png" /></p>
+<p>Open the Python SDK project, as shown below:</p>
+<p><img alt="Multi_camera1" src="../../_images/Win_Config_image7.png" /></p>
+<p>Right-click “INSTALL”, as shown below:</p>
+<p><img alt="Multi_camera1" src="../../_images/Win_Config_image8.png" /></p>
+<p>The compiled files will be copied to the install/lib directory, as shown below:
+<img alt="Multi_camera1" src="../../_images/Win_Config_image9.png" /></p>
+<p>Copy the files in the install/lib directory to the examples directory, as shown below:
+<img alt="Multi_camera1" src="../../_images/Win_Config_image10.png" /></p>
+</section>
+<section id="test-examples">
+<h3><span class="section-number">4.2.3.5. </span>Test Examples<a class="headerlink" href="#test-examples" title="Link to this heading"></a></h3>
+<p>In the examples directory, execute test examples such as python examples/beginner/02_depth_visualization.py, as shown below:
+<img alt="Multi_camera1" src="../../_images/Win_Config_image11.png" /></p>
+</section>
 </section>
 </section>
 
@@ -1493,8 +1228,8 @@ If your device is included in this supported list, we recommend using the v2-mai
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="overview.html" class="btn btn-neutral float-left" title="1. Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="OrbbecSDK_Overview.html" class="btn btn-neutral float-right" title="1.2. Orbbec SDK Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="build_with_uv.html" class="btn btn-neutral float-left" title="4.1. Build from Source with UV (Recommended)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../5_Application_Guide/Application_Guide.html" class="btn btn-neutral float-right" title="5. Application Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

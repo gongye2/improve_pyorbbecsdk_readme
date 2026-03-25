@@ -91,7 +91,7 @@ A window will appear showing **live color and depth streams** side-by-side. Pres
 
 The quick start uses these core API calls:
 
-> 📚 **API Reference**: See [API Documentation](../5_API_Reference/index.html) for complete API details
+> 📚 **API Reference**: See [API Documentation](../6_API_Reference/index.html) for complete API details
 
 ```python
 from pyorbbecsdk import Pipeline
@@ -413,7 +413,7 @@ For Orbbec LiDAR devices in `examples/lidar_examples/`:
 - **[API Reference](https://pyorbbecsdk.readthedocs.io/)**: Complete Python API documentation
 - **[GitHub Repository](https://github.com/orbbec/pyorbbecsdk)**: Source code and issue tracker
 - **[Installation Guide](../2_installation/install_the_package.md)**: Detailed installation instructions
-- **[Build from Source](../3_Package/build_with_uv.md)**: Compile the SDK yourself
+- **[Build from Source](../4_Package/build_with_uv.md)**: Compile the SDK yourself
 
 ---
 

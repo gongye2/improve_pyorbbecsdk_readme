@@ -679,7 +679,7 @@ The update process:
 ## Additional Resources
 
 - [Installation Guide](../2_installation/install_the_package.md) - Detailed installation instructions
-- [Build with UV Guide](../2_installation/build_with_uv.md) - Building from source with uv
+- [Build with UV Guide](../4_Package/build_with_uv.md) - Building from source with uv
 - [QuickStart Guide](../3_QuickStarts/QuickStart.md) - Getting started with your first application
 - [Environment Setup Guide](../2_installation/registration_script.md) - One-time device configuration
 - [GitHub Issues](https://github.com/orbbec/pyorbbecsdk/issues) - Report bugs and get community help

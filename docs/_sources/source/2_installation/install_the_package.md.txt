@@ -418,7 +418,7 @@ python3 examples/quick_start.py
 
 ## 📖 Additional Resources
 
-- [Build from Source](../3_Package/build_with_uv.md) - Instructions for building the package from source
+- [Build from Source](../4_Package/build_with_uv.md) - Instructions for building the package from source
 - [Environment Setup Guide](registration_script.md) - One-time configuration for device permissions and metadata registration
 - [Orbbec SDK Documentation](https://www.orbbec.com/documentation/)
 - [GitHub Issues](https://github.com/orbbec/pyorbbecsdk/issues) - Report bugs and get help

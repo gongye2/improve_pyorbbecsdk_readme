@@ -7,7 +7,7 @@ Tests cover device discovery, sensor controls, stream validation, post-processin
 
 ## Prerequisites
 
-1. **Install pyorbbecsdk** (or build from source — see [CONTRIBUTING.md](../docs/CONTRIBUTING.md#building-from-source))
+1. **Install pyorbbecsdk** (or build from source — see [CONTRIBUTING.md](../.github/CONTRIBUTING.md#building-from-source))
 2. **Install test dependencies:**
    ```bash
    pip install -r test/requirements_test.txt
