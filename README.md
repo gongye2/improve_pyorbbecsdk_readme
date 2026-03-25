@@ -67,18 +67,7 @@
 > - Starting from October 2025 (Orbbec SDK v2.5.5), devices using the OpenNI protocol will be upgraded to UVC protocol. See [the upgrade document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol) for details.
 > - For legacy v1.x device support (Astra+, Astra Pro Plus, Gemini 2 XL), use the [main branch](https://github.com/orbbec/pyorbbecsdk/tree/main).
 
-Here is the simplified device support list comparing the `v2-main` branch (v2.x) with the legacy `main` branch (v1.x):
-
-| Camera Family | `v2-main` (SDK v2.x) | `main` (SDK v1.x) |
-| :--- | :---: | :---: |
-| **Gemini 330 Series** (335, 336, 330, L/Le/Lg) <br> **Gemini 435Le** | ✅ **Recommended** | ⚠️ Maintenance / None |
-| **Gemini 2 Series** (2, 2 L, 210, 215) | ✅ **Recommended** | ⚠️ Maintenance / None |
-| **Gemini 2 XL** | ⏳ *Planned* | ✅ Recommended |
-| **Femto Series** (Bolt, Mega, Mega I) | ✅ **Recommended** | ⚠️ Maintenance |
-| **Astra 2, Astra Mini (S) Pro** | ✅ **Recommended** | ⚠️ Maintenance |
-| **Legacy Astra** (+, Pro Plus) | ❌ Not Supported | ⚠️ Maintenance |
-
-*Note: "Recommended" means full support with new features. "Maintenance" means bug fixes only. "None" means not supported in that branch.*
+For detailed branch comparison and device support matrix, see [Introduction - Branch Comparison](https://orbbec.github.io/pyorbbecsdk/source/1_overview/Introduction.html).
 
 ## Why pyorbbecsdk?
 
@@ -86,7 +75,7 @@ Here is the simplified device support list comparing the `v2-main` branch (v2.x)
 - 🛠️ **Post-processing filters** — Temporal, Spatial (Advanced), HoleFilling, Threshold, Decimation, Noise Removal.
 - 🎯 **Depth-color alignment** — Software `AlignFilter` and hardware D2C alignment.
 - ☁️ **Point cloud generation** — Colored 3D point clouds via `PointCloudFilter`.
-- 📐 **Camera calibration** — Intrinsics, distortion coefficients, and extrinsic transforms.
+- 📐 **Camera calibration data** — Access intrinsics, distortion coefficients, and extrinsic transforms.
 - ⚡ **Real-time performance** — Backed by native C++ performance via pybind11.
 - 🌐 **Network cameras** — Connect to Femto Mega / Gemini 2 XL over Ethernet.
 - 📦 **Pre-built wheels** — No compilation required for Windows x64, Linux x64, and ARM64.
@@ -162,16 +151,20 @@ The [examples/](examples/) directory contains **35+ scripts** organized by diffi
 
 See [examples/README.md](examples/README.md) for the full list with per-script descriptions and device compatibility.
 
-## Supported platforms
+## Supported Platforms
 
-Here is the list of all supported operating systems for the pyorbbecsdk. Pre-built wheels are available for all of them.
+pyorbbecsdk supports the following operating systems and architectures. Pre-built wheels are available for all platforms via `pip install --upgrade pyorbbecsdk2`.
 
-*(Click the platform icons below to download the Orbbec Viewer for your OS)*
+### Quick Camera Evaluation
+
+Want to test your camera without writing code? Download **Orbbec Viewer** — a standalone GUI application that lets you immediately view camera streams, adjust settings, and verify device functionality.
+
+*(Click a platform icon below to download Orbbec Viewer for your OS)*
 
 | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_win_x64.zip" title="Download Orbbec Viewer for Windows"><img src="https://user-images.githubusercontent.com/32394882/230619282-fe2f84fb-2130-4164-a193-db2893b58272.png" width="40%" alt="Windows" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_x86_64.zip" title="Download Orbbec Viewer for Linux x64"><img src="https://user-images.githubusercontent.com/32394882/230619268-bdf66472-8bf5-41e7-9efa-ca3698ff271a.png" width="40%" alt="Linux x64" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602021245_20730ef_linux_arm64.zip" title="Download Orbbec Viewer for Linux ARM64"><img src="https://user-images.githubusercontent.com/32394882/230619273-feeee52b-209b-48da-b990-06630cabe323.png" width="40%" alt="Linux ARM" /></a></div> | <div align="center"><a href="https://github.com/orbbec/OrbbecSDK_v2/releases/download/v2.7.6/OrbbecViewer_v2.7.6_202602022045_20730ef_macOS_arm64.zip" title="Download Orbbec Viewer for macOS"><img src="docs/_images/mac.png" width="40%" alt="macOS" /></a></div> |
 | :---: | :---: | :---: | :---: |
 | **Windows (x64)** | **Linux (x64)** | **Linux (ARM64)** | **macOS (ARM)** |
-| Windows 10+ | Ubuntu 18.04 / 20.04 / 22.04 | Ubuntu 18.04 / 20.04 / 22.04 | macOS 13.2+ (M1/M2) |
+| Windows 10+ | Ubuntu 18.04 / 20.04 / 22.04 | Ubuntu 18.04 / 20.04 / 22.04 | macOS 13.2+ (Apple Silicon / M1 and later) |
 
 Supported Python versions: **Python 3.8 to 3.13**
 
@@ -195,7 +188,7 @@ Join the conversation and connect with other pyorbbecsdk users to share ideas, s
 
 - **GitHub Issues** If you come across a bug or want to request a feature, please raise an issue in this [**GitHub repository**](https://github.com/orbbec/pyorbbecsdk/issues).
 - **Documentation** The comprehensive [Orbbec SDK V2 Python Wrapper User Guide](https://orbbec.github.io/pyorbbecsdk/index.html) covers architecture, API quick-starts, and usage guides.
-- **Contributing** Contributions are welcome — read [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, code style, and the PR process.
+- **Contributing** Contributions are welcome — read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for build instructions, code style, and the PR process.
 
 ## License
 

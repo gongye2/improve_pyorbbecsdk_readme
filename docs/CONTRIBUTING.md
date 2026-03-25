@@ -39,7 +39,12 @@ Please read this guide before submitting changes, and ensure you follow the [Cod
 ### Runtime Dependencies
 
 ```bash
-pip install -r examples/requirements.txt
+pip install pyorbbecsdk2
+```
+
+For running the object detection example:
+```bash
+pip install onnxruntime
 ```
 
 Key dependency note: the SDK supports numpy 2.x.
