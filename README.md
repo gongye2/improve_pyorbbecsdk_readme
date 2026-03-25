@@ -68,7 +68,7 @@
 > - Starting from October 2025 (Orbbec SDK v2.5.5), devices using the OpenNI protocol will be upgraded to UVC protocol. See [the upgrade document](https://github.com/orbbec/OrbbecSDK_v2?tab=readme-ov-file#12-upgrading-from-openni-protocol-to-uvc-protocol) for details.
 > - For legacy v1.x device support (Astra+, Astra Pro Plus, Gemini 2 XL), use the [main branch](https://github.com/orbbec/pyorbbecsdk/tree/main).
 
-For detailed branch comparison and device support matrix, see [Introduction - Device Support Comparison](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/1_overview/Introduction.html#v2-main-branch).
+For detailed branch comparison and device support matrix, see [Introduction - Device Support Comparison](https://gongye2.github.io/improve_pyorbbecsdk_readme/source/1_overview/Introduction.html#device-support-comparison).
 
 ## Why pyorbbecsdk?
 
