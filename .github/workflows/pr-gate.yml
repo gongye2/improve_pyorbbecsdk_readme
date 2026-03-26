@@ -94,7 +94,7 @@ jobs:
 
       - name: Check Python formatting
         run: |
-          black --check .
+          black --check --target-version py38 .
           isort --check .
 
       - name: Run flake8

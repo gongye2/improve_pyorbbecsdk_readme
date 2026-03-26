@@ -358,6 +358,7 @@ install_python_version() {
 # ============================================================
 
 get_pybind11_dir() {
+    if [ "${OFFLINE_MODE:-false}" = true ]; then
         # Offline mode: use local venv pybind11
         local VENV_PYBIND11="$ROOT_DIR/venv$(echo "$PYVER" | tr -d '.')/share/cmake/pybind11"
         if [ -d "$VENV_PYBIND11" ]; then
