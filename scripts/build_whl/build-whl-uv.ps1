@@ -86,7 +86,8 @@ if ($Offline) {
     $env:UV_OFFLINE = "1"
 }
 
-$ROOT_DIR = $PSScriptRoot
+# ROOT_DIR: scripts/build_whl/ -> up 2 levels = repo root
+$ROOT_DIR = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 # Build options
 $OFFLINE_MODE = $Offline.IsPresent
@@ -98,7 +99,7 @@ $WHEEL_DIR = Join-Path $ROOT_DIR "wheel"
 $INSTALL_DIR = Join-Path $ROOT_DIR "install"
 $INSTALL_LIB_DIR = Join-Path $INSTALL_DIR "lib\pyorbbecsdk"
 $SHARED_DST_DIR = Join-Path $INSTALL_LIB_DIR "shared"
-$ENV_SETUP_SRC = Join-Path $ROOT_DIR "scripts\env_setup"
+$ENV_SETUP_SRC = Join-Path $ROOT_DIR (Join-Path "scripts" "env_setup")
 
 # Parse Python versions
 $PYTHON_VERSIONS = @()
@@ -299,13 +300,103 @@ function Invoke-PerVersionCleanup {
     New-Item -ItemType Directory -Force $SHARED_DST_DIR | Out-Null
 }
 
+function Install-PythonVersion {
+    <#
+    .SYNOPSIS
+        Ensures the specified Python version is installed via uv.
+    .DESCRIPTION
+        Checks if the Python version is available via 'uv python list'.
+        If not installed, automatically installs it using 'uv python install'.
+    .PARAMETER PyVer
+        Python version to ensure (e.g., "3.10", "3.11")
+    .EXAMPLE
+        $pythonExe = Install-PythonVersion -PyVer "3.10"
+    #>
+    param(
+        [string]$PyVer
+    )
+
+    # Check if Python version is already installed using uv python list
+    $isInstalled = $false
+    $installedVersions = $null
+    try {
+        $installedVersions = uv python list 2>$null
+    }
+    catch {
+        $installedVersions = $null
+    }
+
+    if ($installedVersions) {
+        foreach ($line in $installedVersions) {
+            if ($line -match "\b$([regex]::Escape($PyVer))\b") {
+                $isInstalled = $true
+                break
+            }
+        }
+    }
+
+    # If already installed, just find and return the executable
+    if ($isInstalled) {
+        try {
+            $pythonExe = uv python find $PyVer 2>$null
+            if ($pythonExe -and (Test-Path $pythonExe)) {
+                return $pythonExe
+            }
+        }
+        catch {
+            # uv python find may fail even if list shows it, continue to install
+            $pythonExe = $null
+        }
+    }
+
+    # Not found - auto-install
+    Write-Host ""
+    Write-Host "Python ${PyVer} not found. Installing via uv..."
+    Write-Host "  (This may take a few minutes depending on network speed)"
+
+    # Execute installation - show progress by not suppressing output
+    uv python install ${PyVer}
+    $installExitCode = $LASTEXITCODE
+
+    if ($installExitCode -ne 0) {
+        Write-Error @"
+Failed to install Python ${PyVer} via uv.
+
+Possible causes:
+- Network connectivity issues
+- Invalid Python version: ${PyVer}
+- uv tool not properly installed
+
+To manually install, run:
+  uv python install ${PyVer}
+"@
+        exit 1
+    }
+
+    Write-Host "Python ${PyVer} installed successfully."
+
+    # Verify installation and return executable path
+    try {
+        $pythonExe = uv python find ${PyVer} 2>$null
+    }
+    catch {
+        $pythonExe = $null
+    }
+    if (-not $pythonExe -or -not (Test-Path $pythonExe)) {
+        Write-Error "Python ${PyVer} was reported as installed but cannot be found."
+        exit 1
+    }
+
+    return $pythonExe
+}
+
 function Get-Pybind11Dir {
     param([string]$PyVer)
 
     if ($OFFLINE_MODE) {
         # Offline mode: use local venv pybind11
         $venvSuffix = $PyVer.Replace(".", "")
-        $venvPybind11 = Join-Path $ROOT_DIR "venv$venvSuffix\share\cmake\pybind11"
+        $venvPybind11 = Join-Path $ROOT_DIR (Join-Path "venv$venvSuffix" (Join-Path "share" (Join-Path "cmake" "pybind11")))
 
         if (Test-Path $venvPybind11) {
             return $venvPybind11
@@ -328,6 +419,69 @@ To set up offline environment, run:
     }
 }
 
+function Get-VSGenerator {
+    <#
+    .SYNOPSIS
+        Detects installed Visual Studio version and returns CMake generator.
+    .DESCRIPTION
+        Uses vswhere.exe to find installed VS versions (2017, 2019, 2022, 2026).
+        Falls back to cmake --help if vswhere is not available.
+    .OUTPUTS
+        String - CMake generator name (e.g., "Visual Studio 17 2022")
+    #>
+    $VSGenerator = $null
+    $VSInstallPath = $null
+
+    # vswhere is included with VS2017+ and located at fixed path
+    $vswherePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+
+    if (Test-Path $vswherePath) {
+        # Check for VS2022 (v17)
+        $VSInstallPath = & $vswherePath -version "[17.0,18.0)" -products "*" -property installationPath 2>$null | Select-Object -First 1
+        if ($VSInstallPath) {
+            $VSGenerator = "Visual Studio 17 2022"
+        } else {
+            # Check for VS2019 (v16)
+            $VSInstallPath = & $vswherePath -version "[16.0,17.0)" -products "*" -property installationPath 2>$null | Select-Object -First 1
+            if ($VSInstallPath) {
+                $VSGenerator = "Visual Studio 16 2019"
+            } else {
+                # Check for VS2017 (v15)
+                $VSInstallPath = & $vswherePath -version "[15.0,16.0)" -products "*" -property installationPath 2>$null | Select-Object -First 1
+                if ($VSInstallPath) {
+                    $VSGenerator = "Visual Studio 15 2017"
+                } else {
+                    # Check for VS2026 (v18) - future version
+                    $VSInstallPath = & $vswherePath -version "[18.0,19.0)" -products "*" -property installationPath 2>$null | Select-Object -First 1
+                    if ($VSInstallPath) {
+                        $VSGenerator = "Visual Studio 18 2026"
+                    }
+                }
+            }
+        }
+    }
+
+    # If vswhere not available or no VS found, try cmake --help as fallback
+    if (-not $VSGenerator) {
+        $VSGenerators = @(
+            "Visual Studio 17 2022",
+            "Visual Studio 16 2019",
+            "Visual Studio 15 2017",
+            "Visual Studio 18 2026"
+        )
+
+        foreach ($gen in $VSGenerators) {
+            $result = cmake --help 2>&1 | Select-String $gen
+            if ($result) {
+                $VSGenerator = $gen
+                break
+            }
+        }
+    }
+
+    return $VSGenerator
+}
+
 function Invoke-BuildVersion {
     param([string]$PyVer)
 
@@ -346,9 +500,9 @@ function Invoke-BuildVersion {
         New-Item -ItemType Directory -Force $SHARED_DST_DIR | Out-Null
     }
 
-    # Resolve Python interpreter
+    # Resolve Python interpreter (auto-install if needed)
     Write-Host "Resolving Python interpreter..."
-    $PYTHON_EXE = uv python find $PyVer
+    $PYTHON_EXE = Install-PythonVersion -PyVer $PyVer
     Write-Host "Using Python: $PYTHON_EXE"
 
     # Resolve pybind11 CMake directory
@@ -360,12 +514,26 @@ function Invoke-BuildVersion {
     Push-Location $BUILD_DIR
 
     try {
-        cmake -G "Visual Studio 17 2022" -A x64 `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DPython3_EXECUTABLE="$PYTHON_EXE" `
-            -Dpybind11_DIR="$PYBIND11_DIR" `
-            -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
-            "$ROOT_DIR"
+        # Detect installed Visual Studio
+        $VSGenerator = Get-VSGenerator
+
+        if (-not $VSGenerator) {
+            Write-Warning "Visual Studio 2017/2019/2022/2026 not found, trying default generator"
+            cmake `
+                -DCMAKE_BUILD_TYPE=Release `
+                -DPython3_EXECUTABLE="$PYTHON_EXE" `
+                -Dpybind11_DIR="$PYBIND11_DIR" `
+                -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
+                "$ROOT_DIR"
+        } else {
+            Write-Host "Using generator: $VSGenerator"
+            cmake -G $VSGenerator -A x64 `
+                -DCMAKE_BUILD_TYPE=Release `
+                -DPython3_EXECUTABLE="$PYTHON_EXE" `
+                -Dpybind11_DIR="$PYBIND11_DIR" `
+                -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
+                "$ROOT_DIR"
+        }
 
         if ($LASTEXITCODE -ne 0) {
             throw "CMake configuration failed (Python $PyVer)"
