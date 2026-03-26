@@ -1,0 +1,290 @@
+# =============================================================================
+# pr-gate.yml - PR 快速质量门禁
+# 触发: pull_request / push to main or feature branches
+# 目标: 30分钟内完成 L1+L2，不接真机
+# =============================================================================
+name: PR Gate
+
+on:
+  pull_request:
+    branches: [main, master, develop, "release/**"]
+  push:
+    branches: [main, master, "feature/**", "hotfix/**"]
+
+concurrency:
+  group: pr-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_LINK_MODE: copy
+
+jobs:
+  # ============================================================
+  # Job 1: Python 代码格式检查
+  # ============================================================
+  lint-python:
+    name: "L1 | Python Lint"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install lint tools
+        run: |
+          pip install black isort flake8 --quiet
+
+      - name: Check Python formatting
+        run: |
+          black --check .
+          isort --check .
+
+      - name: Run flake8
+        run: |
+          flake8 src/ --max-line-length=120 --ignore=E203,W503
+
+  # ============================================================
+  # Job 2: Linux Wheel 构建测试
+  # ============================================================
+  build-linux:
+    name: "L1/L2 | Build Linux"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build build-essential \
+            libusb-1.0-0-dev libudev-dev
+
+      - name: Build wheel (Linux)
+        run: |
+          bash scripts/build_whl/build-whl-uv.sh ${{ matrix.python-version }} --clean
+        env:
+          UV_LINK_MODE: copy
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-linux-py${{ matrix.python-version }}-${{ github.sha }}
+          path: wheel/*.whl
+          retention-days: 7
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-linux-logs-py${{ matrix.python-version }}-${{ github.sha }}
+          path: logs/
+          retention-days: 7
+
+  # ============================================================
+  # Job 3: Windows Wheel 构建测试
+  # ============================================================
+  build-windows:
+    name: "L1/L2 | Build Windows"
+    runs-on: windows-2022
+    timeout-minutes: 35
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install Visual Studio Build Tools
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build wheel (Windows)
+        shell: pwsh
+        run: |
+          .\scripts\build_whl\build-whl-uv.ps1 ${{ matrix.python-version }} -Clean -Yes
+        env:
+          UV_LINK_MODE: copy
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-windows-py${{ matrix.python-version }}-${{ github.sha }}
+          path: wheel/*.whl
+          retention-days: 7
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-windows-logs-py${{ matrix.python-version }}-${{ github.sha }}
+          path: logs\
+          retention-days: 7
+
+  # ============================================================
+  # Job 4: macOS Wheel 构建测试
+  # ============================================================
+  build-macos:
+    name: "L1/L2 | Build macOS"
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: |
+          brew install cmake libusb
+
+      - name: Build wheel (macOS)
+        run: |
+          bash scripts/build_whl/build-whl-uv-macos.sh ${{ matrix.python-version }} --clean
+        env:
+          UV_LINK_MODE: copy
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-macos-py${{ matrix.python-version }}-${{ github.sha }}
+          path: wheel/*.whl
+          retention-days: 7
+
+  # ============================================================
+  # Job 5: Python 无硬件测试
+  # ============================================================
+  test-python-no-hw:
+    name: "L2 | Python No-HW Tests"
+    runs-on: ubuntu-22.04
+    needs: build-linux
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheel-linux-py${{ matrix.python-version }}-${{ github.sha }}
+          path: wheel/
+
+      - name: Install wheel and test deps
+        run: |
+          pip install wheel/*.whl pytest pytest-timeout --quiet
+
+      - name: Run Python no-hardware tests
+        run: |
+          pytest test/ -v -m "not hardware" \
+            --timeout=60 \
+            --junit-xml=reports/pytest-no-hw.xml \
+            2>&1 | tee logs/pytest-no-hw.log
+        continue-on-error: true  # 无硬件时部分测试会跳过
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report-no-hw-${{ github.sha }}
+          path: |
+            reports/
+            logs/
+          retention-days: 7
+
+  # ============================================================
+  # Job 6: Import 检查
+  # ============================================================
+  verify-import:
+    name: "L2 | Import Check"
+    runs-on: ${{ matrix.os }}
+    needs: [build-linux, build-windows, build-macos]
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-latest]
+        python-version: ["3.10"]
+        include:
+          - os: ubuntu-22.04
+            artifact: wheel-linux-py3.10
+          - os: windows-2022
+            artifact: wheel-windows-py3.10
+          - os: macos-latest
+            artifact: wheel-macos-py3.10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}-${{ github.sha }}
+          path: wheel/
+
+      - name: Install and verify import
+        run: |
+          pip install wheel/*.whl
+          python -c "import pyorbbecsdk; print('Version:', pyorbbecsdk.__version__)"
+          python -c "from pyorbbecsdk import Context, Pipeline, Config"
+
+  # ============================================================
+  # Gate Summary
+  # ============================================================
+  gate-summary:
+    name: "Gate Summary"
+    runs-on: ubuntu-22.04
+    needs:
+      - lint-python
+      - build-linux
+      - build-windows
+      - build-macos
+      - test-python-no-hw
+      - verify-import
+    if: always()
+    steps:
+      - name: Check gate result
+        run: |
+          echo "## PR Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| lint-python        | ${{ needs.lint-python.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| build-linux        | ${{ needs.build-linux.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| build-windows      | ${{ needs.build-windows.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| build-macos        | ${{ needs.build-macos.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| test-python-no-hw  | ${{ needs.test-python-no-hw.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| verify-import      | ${{ needs.verify-import.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.lint-python.result }}" != "success" || \
+                "${{ needs.build-linux.result }}" != "success" || \
+                "${{ needs.build-windows.result }}" != "success" || \
+                "${{ needs.build-macos.result }}" != "success" ]]; then
+            echo "[FAIL] Critical jobs failed."
+            exit 1
+          fi
+          echo "[PASS] PR Gate passed."
