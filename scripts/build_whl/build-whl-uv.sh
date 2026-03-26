@@ -29,6 +29,11 @@ PYTHON_VERSIONS=()
 OFFLINE_MODE=false
 CLEAN_BUILD=true
 CLEAN_ONLY=false
+AUTO_CONFIRM=false
+
+# Cleanup tracking arrays
+CLEANUP_FAILED=()
+CLEANUP_SKIPPED=()
 
 # Directory paths
 WHEEL_DIR="$ROOT_DIR/wheel"
@@ -52,6 +57,7 @@ Options:
   --no-clean      Don't clean build directories before building
   --clean         Clean build directories before building (default)
   --clean-only    Only clean, don't build
+  --yes, -y       Auto-confirm all cleanup prompts (non-interactive)
   -h, --help      Show this help message
 
 Arguments:
@@ -64,6 +70,7 @@ Examples:
   $(basename "$0") --offline 3.10          # Offline build
   $(basename "$0") --clean all             # Clean and build all versions
   $(basename "$0") --clean-only            # Clean only, don't build
+  $(basename "$0") all --yes               # Build all versions, auto-confirm cleanups
 EOF
 }
 
@@ -89,6 +96,10 @@ parse_args() {
                 ;;
             --clean-only)
                 CLEAN_ONLY=true
+                shift
+                ;;
+            --yes|-y)
+                AUTO_CONFIRM=true
                 shift
                 ;;
             -h|--help)
@@ -122,44 +133,64 @@ parse_args() {
 # Cleanup functions
 # ============================================================
 
+# Safe remove directory - tracks failures
+remove_directory_safe() {
+    local path="$1"
+    local name="$2"
+
+    if [ ! -e "$path" ]; then
+        return 0
+    fi
+
+    if rm -rf "$path" 2>/dev/null; then
+        echo "    Deleted: $name"
+        return 0
+    else
+        echo "    Failed to delete: $name" >&2
+        CLEANUP_FAILED+=("$name ($path)")
+        return 1
+    fi
+}
+
 # Check and confirm deletion of a single path
 confirm_delete() {
     local path="$1"
     local name="$2"
 
-    if [ -e "$path" ]; then
-        echo -n "  Found: $name - delete? (y/n/a=all/s=skip-all): "
-        read -r response
-
-        case "$response" in
-            y|Y)
-                rm -rf "$path"
-                echo "    Deleted: $name"
-                return 0
-                ;;
-            a|A)
-                rm -rf "$path"
-                echo "    Deleted: $name"
-                return 0
-                ;;
-            s|S)
-                echo "    Skipped: $name"
-                return 1
-                ;;
-            *)
-                echo "    Skipped: $name"
-                return 1
-                ;;
-        esac
+    if [ ! -e "$path" ]; then
+        return 0
     fi
-    return 1
+
+    if [ "$AUTO_CONFIRM" = "true" ]; then
+        return $(remove_directory_safe "$path" "$name"; echo $?)
+    fi
+
+    echo -n "  Found: $name - delete? (y=yes/n=no/a=all/s=skip-all): "
+    read -r response
+
+    case "$response" in
+        y|Y)
+            return $(remove_directory_safe "$path" "$name"; echo $?)
+            ;;
+        a|A)
+            AUTO_CONFIRM=true
+            return $(remove_directory_safe "$path" "$name"; echo $?)
+            ;;
+        s|S)
+            echo "    Skipped: $name"
+            CLEANUP_SKIPPED+=("$name ($path)")
+            return 1
+            ;;
+        *)
+            echo "    Skipped: $name"
+            CLEANUP_SKIPPED+=("$name ($path)")
+            return 1
+            ;;
+    esac
 }
 
 # Interactive cleanup confirmation
 interactive_cleanup() {
-    local skip_all=false
-    local allow_all=false
-
     echo ">>> Checking for existing build artifacts to clean"
     echo ""
 
@@ -197,19 +228,20 @@ interactive_cleanup() {
         return
     fi
 
-    # Confirm each path
+    # Process each path
+    local skip_all=false
     for item in "${paths_to_check[@]}"; do
         local path="${item%%:*}"
         local name="${item#*:}"
 
         if [ "$skip_all" = "true" ]; then
             echo "  Skipped: $name"
+            CLEANUP_SKIPPED+=("$name ($path)")
             continue
         fi
 
-        if [ "$allow_all" = "true" ]; then
-            rm -rf "$path"
-            echo "  Deleted: $name"
+        if [ "$AUTO_CONFIRM" = "true" ]; then
+            remove_directory_safe "$path" "$name"
             continue
         fi
 
@@ -219,25 +251,24 @@ interactive_cleanup() {
 
             case "$response" in
                 y|Y)
-                    rm -rf "$path"
-                    echo "    Deleted: $name"
+                    remove_directory_safe "$path" "$name"
                     ;;
                 d|D)
-                    rm -rf "$path"
-                    echo "    Deleted: $name"
+                    remove_directory_safe "$path" "$name"
                     skip_all=true
                     ;;
                 a|A)
-                    rm -rf "$path"
-                    echo "    Deleted: $name"
-                    allow_all=true
+                    AUTO_CONFIRM=true
+                    remove_directory_safe "$path" "$name"
                     ;;
                 s|S)
                     echo "    Skipped: $name"
+                    CLEANUP_SKIPPED+=("$name ($path)")
                     skip_all=true
                     ;;
                 *)
                     echo "    Skipped: $name"
+                    CLEANUP_SKIPPED+=("$name ($path)")
                     ;;
             esac
         fi
@@ -252,9 +283,74 @@ per_version_cleanup() {
     local PYVER="$1"
     local BUILD_DIR="$ROOT_DIR/build_$PYVER"
 
-    rm -rf "$BUILD_DIR" "$INSTALL_DIR" "$ROOT_DIR/dist"
+    echo "  Cleaning build artifacts for Python $PYVER..."
+
+    remove_directory_safe "$BUILD_DIR" "build_$PYVER directory" || true
+    remove_directory_safe "$INSTALL_DIR" "install directory" || true
+    remove_directory_safe "$ROOT_DIR/dist" "dist directory" || true
+
     mkdir -p "$BUILD_DIR"
     mkdir -p "$SHARED_DST_DIR"
+}
+
+# ============================================================
+# Install Python version via uv
+# ============================================================
+
+install_python_version() {
+    local PYVER="$1"
+
+    # Check if Python version is already installed using uv python list
+    local is_installed=false
+    local installed_versions
+    installed_versions=$(uv python list 2>/dev/null || true)
+
+    if [ -n "$installed_versions" ]; then
+        if echo "$installed_versions" | grep -q "\b${PYVER}\b"; then
+            is_installed=true
+        fi
+    fi
+
+    # If already installed, just find and return the executable
+    if [ "$is_installed" = "true" ]; then
+        local python_exe
+        python_exe=$(uv python find "$PYVER" 2>/dev/null || true)
+        if [ -n "$python_exe" ] && [ -x "$python_exe" ]; then
+            echo "$python_exe"
+            return 0
+        fi
+    fi
+
+    # Not found - auto-install
+    echo ""
+    echo "Python ${PYVER} not found. Installing via uv..."
+    echo "  (This may take a few minutes depending on network speed)"
+
+    # Execute installation
+    if ! uv python install "$PYVER"; then
+        echo "Failed to install Python ${PYVER} via uv." >&2
+        echo "" >&2
+        echo "Possible causes:" >&2
+        echo "- Network connectivity issues" >&2
+        echo "- Invalid Python version: ${PYVER}" >&2
+        echo "- uv tool not properly installed" >&2
+        echo "" >&2
+        echo "To manually install, run:" >&2
+        echo "  uv python install ${PYVER}" >&2
+        exit 1
+    fi
+
+    echo "Python ${PYVER} installed successfully."
+
+    # Verify installation and return executable path
+    local python_exe
+    python_exe=$(uv python find "$PYVER" 2>/dev/null || true)
+    if [ -z "$python_exe" ] || [ ! -x "$python_exe" ]; then
+        echo "Python ${PYVER} was reported as installed but cannot be found." >&2
+        exit 1
+    fi
+
+    echo "$python_exe"
 }
 
 # ============================================================
@@ -262,9 +358,6 @@ per_version_cleanup() {
 # ============================================================
 
 get_pybind11_dir() {
-    local PYVER="$1"
-
-    if [ "$OFFLINE_MODE" = "true" ]; then
         # Offline mode: use local venv pybind11
         local VENV_PYBIND11="$ROOT_DIR/venv$(echo "$PYVER" | tr -d '.')/share/cmake/pybind11"
         if [ -d "$VENV_PYBIND11" ]; then
@@ -310,10 +403,10 @@ build_version() {
         mkdir -p "$SHARED_DST_DIR"
     fi
 
-    # Resolve Python interpreter
+    # Resolve Python interpreter (auto-install if needed)
     echo "Resolving Python interpreter..."
     local PYTHON_EXE
-    PYTHON_EXE="$(uv python find "$PYVER")"
+    PYTHON_EXE="$(install_python_version "$PYVER")"
     echo "Using Python: $PYTHON_EXE"
 
     # Resolve pybind11 CMake directory
@@ -428,13 +521,62 @@ setup_arch() {
 
 final_cleanup() {
     echo
-    echo "Final cleanup..."
+    echo ">>> Final cleanup..."
 
-    rm -rf "$ROOT_DIR"/build_* \
-           "$ROOT_DIR/build" \
-           "$ROOT_DIR/install"
+    # Remove build_* directories
+    for dir in "$ROOT_DIR"/build_*; do
+        if [ -d "$dir" ]; then
+            local dirname
+            dirname="$(basename "$dir")"
+            remove_directory_safe "$dir" "$dirname directory" || true
+        fi
+    done
 
-    find "$ROOT_DIR/src" -name "*.egg-info" -type d -exec rm -rf {} + 2>/dev/null || true
+    remove_directory_safe "$ROOT_DIR/build" "build directory" || true
+    remove_directory_safe "$ROOT_DIR/install" "install directory" || true
+    remove_directory_safe "$ROOT_DIR/dist" "dist directory" || true
+
+    # Remove egg-info directories
+    find "$ROOT_DIR/src" -name "*.egg-info" -type d -print0 2>/dev/null | \
+        while IFS= read -r -d '' dir; do
+            remove_directory_safe "$dir" "$(basename "$dir")" || true
+        done
+}
+
+# Show cleanup report
+show_cleanup_report() {
+    echo ""
+    echo "==========================================="
+
+    if [ ${#CLEANUP_FAILED[@]} -eq 0 ] && [ ${#CLEANUP_SKIPPED[@]} -eq 0 ]; then
+        echo " Cleanup completed successfully"
+        echo " All temporary files were removed"
+    else
+        if [ ${#CLEANUP_FAILED[@]} -gt 0 ]; then
+            echo " Cleanup completed with FAILURES:"
+            echo ""
+            echo "  Failed to delete the following items:"
+            for item in "${CLEANUP_FAILED[@]}"; do
+                echo "    - $item"
+            done
+        fi
+
+        if [ ${#CLEANUP_SKIPPED[@]} -gt 0 ]; then
+            echo ""
+            echo "  Skipped the following items (user requested):"
+            for item in "${CLEANUP_SKIPPED[@]}"; do
+                echo "    - $item"
+            done
+        fi
+
+        echo ""
+        echo "  You may need to manually remove these files/directories"
+        echo "  or run the script with --clean-only to try again."
+    fi
+
+    echo ""
+    echo " Wheels are located in: $WHEEL_DIR"
+    echo "==========================================="
 }
 
 # ============================================================
@@ -456,6 +598,8 @@ main() {
 
     # Clean only mode
     if [ "$CLEAN_ONLY" = "true" ]; then
+        show_cleanup_report
+        echo ""
         echo ">>> Clean completed (no build requested)"
         exit 0
     fi
@@ -468,11 +612,8 @@ main() {
     # Final cleanup
     final_cleanup
 
-    echo
-    echo "==========================================="
-    echo " All builds completed"
-    echo " Wheels are located in: $WHEEL_DIR"
-    echo "==========================================="
+    # Show final report
+    show_cleanup_report
 }
 
 # Run main
