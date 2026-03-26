@@ -10,6 +10,17 @@ on:
     branches: [main, master, develop, "release/**"]
   push:
     branches: [main, master, "feature/**", "hotfix/**"]
+  workflow_dispatch:
+    inputs:
+      python_versions:
+        description: 'Python versions to build (min/default/all)'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - min
+          - default
+          - all
 
 concurrency:
   group: pr-gate-${{ github.ref }}
@@ -19,6 +30,49 @@ env:
   UV_LINK_MODE: copy
 
 jobs:
+  # ============================================================
+  # Job 0: 动态生成版本矩阵
+  # ============================================================
+  generate-matrix:
+    name: "Generate Build Matrix"
+    runs-on: ubuntu-22.04
+    outputs:
+      linux-versions: ${{ steps.set-matrix.outputs.linux-versions }}
+      windows-versions: ${{ steps.set-matrix.outputs.windows-versions }}
+      macos-versions: ${{ steps.set-matrix.outputs.macos-versions }}
+    steps:
+      - name: Set version matrix
+        id: set-matrix
+        run: |
+          # 根据输入选择版本
+          VERSION_MODE="${{ github.event.inputs.python_versions || 'default' }}"
+          echo "Version mode: $VERSION_MODE"
+
+          case "$VERSION_MODE" in
+            min)
+              LINUX_VERSIONS='["3.10"]'
+              WINDOWS_VERSIONS='["3.10"]'
+              MACOS_VERSIONS='["3.10"]'
+              ;;
+            all)
+              LINUX_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
+              WINDOWS_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
+              MACOS_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
+              ;;
+            default|*)
+              LINUX_VERSIONS='["3.9", "3.10", "3.11", "3.12"]'
+              WINDOWS_VERSIONS='["3.10", "3.11", "3.12"]'
+              MACOS_VERSIONS='["3.10", "3.11", "3.12"]'
+              ;;
+          esac
+
+          echo "linux-versions=$LINUX_VERSIONS" >> $GITHUB_OUTPUT
+          echo "windows-versions=$WINDOWS_VERSIONS" >> $GITHUB_OUTPUT
+          echo "macos-versions=$MACOS_VERSIONS" >> $GITHUB_OUTPUT
+
+          echo "Linux versions: $LINUX_VERSIONS"
+          echo "Windows versions: $WINDOWS_VERSIONS"
+          echo "macOS versions: $MACOS_VERSIONS"
   # ============================================================
   # Job 1: Python 代码格式检查
   # ============================================================
@@ -53,10 +107,11 @@ jobs:
   build-linux:
     name: "L1/L2 | Build Linux"
     runs-on: ubuntu-22.04
+    needs: generate-matrix
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ${{ fromJSON(needs.generate-matrix.outputs.linux-versions) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -99,10 +154,11 @@ jobs:
   build-windows:
     name: "L1/L2 | Build Windows"
     runs-on: windows-2022
+    needs: generate-matrix
     timeout-minutes: 35
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ${{ fromJSON(needs.generate-matrix.outputs.windows-versions) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -142,10 +198,11 @@ jobs:
   build-macos:
     name: "L1/L2 | Build macOS"
     runs-on: macos-latest
+    needs: generate-matrix
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ${{ fromJSON(needs.generate-matrix.outputs.macos-versions) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -177,7 +234,7 @@ jobs:
   test-python-no-hw:
     name: "L2 | Python No-HW Tests"
     runs-on: ubuntu-22.04
-    needs: build-linux
+    needs: [generate-matrix, build-linux]
     timeout-minutes: 15
     strategy:
       matrix:
@@ -222,7 +279,7 @@ jobs:
   verify-import:
     name: "L2 | Import Check"
     runs-on: ${{ matrix.os }}
-    needs: [build-linux, build-windows, build-macos]
+    needs: [generate-matrix, build-linux, build-windows, build-macos]
     strategy:
       matrix:
         os: [ubuntu-22.04, windows-2022, macos-latest]
@@ -260,6 +317,7 @@ jobs:
     name: "Gate Summary"
     runs-on: ubuntu-22.04
     needs:
+      - generate-matrix
       - lint-python
       - build-linux
       - build-windows

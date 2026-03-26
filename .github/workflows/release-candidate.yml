@@ -12,27 +12,87 @@ on:
         description: 'Release version (e.g., v2.1.0)'
         required: true
         type: string
+      python_versions:
+        description: 'Python versions to build (min/default/all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - min
+          - default
+          - all
 
 env:
   UV_LINK_MODE: copy
 
 jobs:
   # ============================================================
+  # Job 0: 动态生成版本矩阵
+  # ============================================================
+  generate-matrix:
+    name: "Generate Build Matrix"
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix-include: ${{ steps.set-matrix.outputs.matrix-include }}
+    steps:
+      - name: Set version matrix
+        id: set-matrix
+        run: |
+          # 根据输入选择版本，默认 all (发版场景)
+          VERSION_MODE="${{ github.event.inputs.python_versions || 'all' }}"
+          echo "Version mode: $VERSION_MODE"
+
+          case "$VERSION_MODE" in
+            min)
+              LINUX_VERSIONS=("3.10")
+              WINDOWS_VERSIONS=("3.10")
+              MACOS_VERSIONS=("3.10")
+              ;;
+            default)
+              LINUX_VERSIONS=("3.9" "3.10" "3.11" "3.12")
+              WINDOWS_VERSIONS=("3.10" "3.11" "3.12")
+              MACOS_VERSIONS=("3.10" "3.11" "3.12")
+              ;;
+            all|*)
+              LINUX_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              WINDOWS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              MACOS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              ;;
+          esac
+
+          # 构建完整的矩阵 (OS x Python版本)
+          MATRIX="["
+          FIRST=true
+
+          for pyver in "${LINUX_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-Python-'$pyver'"}'
+          done
+
+          for pyver in "${WINDOWS_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-Python-'$pyver'"}'
+          done
+
+          for pyver in "${MACOS_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-Python-'$pyver'"}'
+          done
+
+          MATRIX+="]"
+
+          echo "matrix-include=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Matrix: $MATRIX"
+  # ============================================================
   # Job 1: 多平台 Wheel 构建
   # ============================================================
   build-wheels:
-    name: "Build Wheels - ${{ matrix.os }}"
+    name: "Build Wheels - ${{ matrix.label }}"
     runs-on: ${{ matrix.os }}
+    needs: generate-matrix
     strategy:
       matrix:
-        include:
-          - os: ubuntu-22.04
-            build_script: "bash scripts/build_whl/build-whl-uv.sh"
-          - os: windows-2022
-            build_script: "powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1"
-          - os: macos-latest
-            build_script: "bash scripts/build_whl/build-whl-uv-macos.sh"
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -92,7 +152,7 @@ jobs:
   create-release:
     name: "Create Release"
     runs-on: ubuntu-22.04
-    needs: [build-wheels, hardware-regression]
+    needs: [generate-matrix, build-wheels, hardware-regression]
     if: success()
     steps:
       - name: Download all wheels
