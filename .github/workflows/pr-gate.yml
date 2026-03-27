@@ -336,7 +336,11 @@ jobs:
 
       - name: Install and verify import
         run: |
-          pip install wheel/*manylinux*.whl
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            pip install wheel/*manylinux*.whl
+          else
+            pip install wheel/*.whl
+          fi
           python -c "import pyorbbecsdk; print('Version:', pyorbbecsdk.__version__)"
           python -c "from pyorbbecsdk import Context, Pipeline, Config"
 
