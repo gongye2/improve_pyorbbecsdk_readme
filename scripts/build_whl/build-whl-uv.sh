@@ -13,6 +13,9 @@ set -euo pipefail
 
 export UV_LINK_MODE=copy
 
+# Ensure uv and its managed Python versions are in PATH
+export PATH="$HOME/.local/bin:$PATH"
+
 # Set UV offline mode if requested
 UV_OFFLINE="${UV_OFFLINE:-}"
 
@@ -300,56 +303,15 @@ per_version_cleanup() {
 install_python_version() {
     local PYVER="$1"
 
-    # Check if Python version is already installed using uv python list
-    local is_installed=false
-    local installed_versions
-    installed_versions=$(uv python list 2>/dev/null || true)
-
-    if [ -n "$installed_versions" ]; then
-        if echo "$installed_versions" | grep -q "\b${PYVER}\b"; then
-            is_installed=true
-        fi
-    fi
-
-    # If already installed, just find and return the executable
-    if [ "$is_installed" = "true" ]; then
-        local python_exe
-        python_exe=$(uv python find "$PYVER" 2>/dev/null || true)
-        if [ -n "$python_exe" ] && [ -x "$python_exe" ]; then
-            echo "$python_exe"
-            return 0
-        fi
-    fi
-
-    # Not found - auto-install
-    echo "" >&2
-    echo "Python ${PYVER} not found. Installing via uv..." >&2
-    echo "  (This may take a few minutes depending on network speed)" >&2
-
-    # Execute installation
-    if ! uv python install "$PYVER"; then
-        echo "Failed to install Python ${PYVER} via uv." >&2
-        echo "" >&2
-        echo "Possible causes:" >&2
-        echo "- Network connectivity issues" >&2
-        echo "- Invalid Python version: ${PYVER}" >&2
-        echo "- uv tool not properly installed" >&2
-        echo "" >&2
-        echo "To manually install, run:" >&2
-        echo "  uv python install ${PYVER}" >&2
-        exit 1
-    fi
-
-    echo "Python ${PYVER} installed successfully." >&2
-
-    # Verify installation and return executable path
+    echo "Resolving Python interpreter..."
+    # Ensure uv-managed Python is installed
+    uv python install "$PYVER"
     local python_exe
-    python_exe=$(uv python find "$PYVER" 2>/dev/null || true)
+    python_exe=$(uv python find "$PYVER")
     if [ -z "$python_exe" ] || [ ! -x "$python_exe" ]; then
-        echo "Python ${PYVER} was reported as installed but cannot be found." >&2
+        echo "Failed to find Python ${PYVER} after installation." >&2
         exit 1
     fi
-
     echo "$python_exe"
 }
 
@@ -358,6 +320,8 @@ install_python_version() {
 # ============================================================
 
 get_pybind11_dir() {
+    local PYVER="$1"
+
     if [ "${OFFLINE_MODE:-false}" = true ]; then
         # Offline mode: use local venv pybind11
         local VENV_PYBIND11="$ROOT_DIR/venv$(echo "$PYVER" | tr -d '.')/share/cmake/pybind11"
@@ -416,14 +380,16 @@ build_version() {
     PYBIND11_DIR="$(get_pybind11_dir "$PYVER")"
     echo "pybind11_DIR=$PYBIND11_DIR"
 
-    # CMake configure & build
+    # CMake configure & build (using gcc for Linux)
     pushd "$BUILD_DIR" >/dev/null
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DPython3_EXECUTABLE="$PYTHON_EXE" \
         -Dpybind11_DIR="$PYBIND11_DIR" \
-        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+        -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+        -DCMAKE_C_COMPILER=gcc \
+        -DCMAKE_CXX_COMPILER=g++
 
     cmake --build . --target install -j"$(nproc)"
 
