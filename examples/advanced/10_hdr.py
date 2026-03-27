@@ -21,8 +21,8 @@ import sys
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (Config, HDRMergeFilter,  # type: ignore
-                         OBFrameAggregateOutputMode, OBHdrConfig,
+from pyorbbecsdk import HDRMergeFilter  # type: ignore
+from pyorbbecsdk import (Config, OBFrameAggregateOutputMode, OBHdrConfig,
                          OBPermissionType, OBPropertyID, OBSensorType,
                          Pipeline)
 

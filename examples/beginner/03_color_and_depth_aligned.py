@@ -38,8 +38,9 @@ import cv2
 import numpy as np
 from utils import frame_to_bgr_image
 
-from pyorbbecsdk import (AlignFilter, Config, OBAlignMode,  # type: ignore
-                         OBFormat, OBFrameAggregateOutputMode, OBSensorType,
+from pyorbbecsdk import OBAlignMode  # type: ignore
+from pyorbbecsdk import (AlignFilter, Config, OBFormat,
+                         OBFrameAggregateOutputMode, OBSensorType,
                          OBStreamType, Pipeline)
 
 # --- Configuration Constants ---

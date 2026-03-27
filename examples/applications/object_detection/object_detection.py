@@ -47,8 +47,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(_SCRIPT_DIR, "..", "..")))
 
 from utils import frame_to_bgr_image  # noqa: E402
 
-from pyorbbecsdk import (AlignFilter, Config,  # type: ignore  # noqa: E402
-                         OBFormat, OBSensorType, OBStreamType, Pipeline)
+from pyorbbecsdk import Config  # type: ignore  # noqa: E402
+from pyorbbecsdk import (AlignFilter, OBFormat, OBSensorType, OBStreamType,
+                         Pipeline)
 
 # ---------------------------------------------------------------------------
 # Default Paths (relative to script, not CWD)

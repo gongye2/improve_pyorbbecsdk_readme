@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (Config, OBFrameType, OBSensorType,  # type: ignore
-                         OBStreamType, Pipeline)
+from pyorbbecsdk import OBSensorType  # type: ignore
+from pyorbbecsdk import Config, OBFrameType, OBStreamType, Pipeline
 
 ESC_KEY = 27
 
