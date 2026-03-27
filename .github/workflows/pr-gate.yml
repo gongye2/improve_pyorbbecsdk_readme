@@ -309,6 +309,7 @@ jobs:
           path: wheel/
 
       - name: Install and verify import
+        shell: bash
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             pip install wheel/*manylinux*.whl
