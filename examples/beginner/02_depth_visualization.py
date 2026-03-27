@@ -28,7 +28,8 @@ import sys
 import cv2
 import numpy as np
 
-from pyorbbecsdk import Config, Context, OBError, OBLogLevel, OBSensorType, Pipeline
+from pyorbbecsdk import (Config, Context, OBError, OBLogLevel, OBSensorType,
+                         Pipeline)
 
 # ---------------------------------------------------------------------------
 # Configuration — adjust these for your scene
