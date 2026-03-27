@@ -322,9 +322,9 @@ install_python_version() {
     fi
 
     # Not found - auto-install
-    echo ""
-    echo "Python ${PYVER} not found. Installing via uv..."
-    echo "  (This may take a few minutes depending on network speed)"
+    echo "" >&2
+    echo "Python ${PYVER} not found. Installing via uv..." >&2
+    echo "  (This may take a few minutes depending on network speed)" >&2
 
     # Execute installation
     if ! uv python install "$PYVER"; then
@@ -340,7 +340,7 @@ install_python_version() {
         exit 1
     fi
 
-    echo "Python ${PYVER} installed successfully."
+    echo "Python ${PYVER} installed successfully." >&2
 
     # Verify installation and return executable path
     local python_exe
