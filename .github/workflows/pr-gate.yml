@@ -80,13 +80,8 @@ jobs:
     name: "L1 | Python Lint"
     runs-on: ubuntu-22.04
     timeout-minutes: 10
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -97,34 +92,13 @@ jobs:
         run: |
           pip install black isort flake8 --quiet
 
-      - name: Check Python formatting
-        id: format-check
+      - name: Check Python formatting (black)
         run: |
-          if black --check --target-version py38 . && isort --check .; then
-            echo "formatted=true" >> $GITHUB_OUTPUT
-          else
-            echo "formatted=false" >> $GITHUB_OUTPUT
-          fi
-        continue-on-error: true
+          black --check --target-version py38 .
 
-      - name: Auto-format Python code
-        if: steps.format-check.outputs.formatted == 'false'
+      - name: Check Python formatting (isort)
         run: |
-          black --target-version py38 .
-          isort .
-
-      - name: Commit formatting changes
-        if: steps.format-check.outputs.formatted == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "style: auto-format Python code with black and isort"
-            git push
-          fi
+          isort --check .
 
       - name: Run flake8
         run: |
