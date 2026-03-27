@@ -47,9 +47,7 @@ class TestG300DeviceDiscovery:
             "Gemini 305",
             "Gemini 345",
         ]
-        assert any(
-            p in name for p in g300_prefixes
-        ), f"Device name '{name}' is not a recognized G300 series model"
+        assert any(p in name for p in g300_prefixes), f"Device name '{name}' is not a recognized G300 series model"
 
     def test_vid_is_orbbec(self, device_info):
         """Vendor ID must be Orbbec (0x2BC5)."""
@@ -80,9 +78,7 @@ class TestG300FirmwareInfo:
     def test_firmware_version_format(self, device_info):
         """Firmware version must follow a numeric dotted pattern (e.g. 1.6.00)."""
         fw = device_info.get_firmware_version()
-        assert re.search(
-            r"v?\d+\.\d+\.[\w\.]+", fw
-        ), f"Firmware version '{fw}' does not match expected format"
+        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), f"Firmware version '{fw}' does not match expected format"
 
     def test_hardware_version_nonempty(self, device_info):
         hw = device_info.get_hardware_version()
@@ -141,9 +137,7 @@ class TestG300PhysicalProperties:
         values = [float(v) for v in _re.findall(r"[-+]?\d*\.?\d+", str(temp))]
         if values:
             for val in values:
-                assert (
-                    -10.0 <= val <= 95.0
-                ), f"Temperature {val}°C is outside expected range"
+                assert -10.0 <= val <= 95.0, f"Temperature {val}°C is outside expected range"
 
     def test_calibration_params_available(self, g300_series_device):
         calib = g300_series_device.get_calibration_camera_param_list()

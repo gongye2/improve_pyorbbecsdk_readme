@@ -44,7 +44,5 @@ class PipelineTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    print(
-        "Start test Pipeline interface, Please make sure you have connected a device to your computer."
-    )
+    print("Start test Pipeline interface, Please make sure you have connected a device to your computer.")
     unittest.main()

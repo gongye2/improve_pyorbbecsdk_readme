@@ -61,12 +61,8 @@ def _get_pipeline_camera_param(pipeline):
     import time
 
     config = Config()
-    depth_profile = pipeline.get_stream_profile_list(
-        OBSensorType.DEPTH_SENSOR
-    ).get_default_video_stream_profile()
-    color_profile = pipeline.get_stream_profile_list(
-        OBSensorType.COLOR_SENSOR
-    ).get_default_video_stream_profile()
+    depth_profile = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
+    color_profile = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
     config.enable_stream(depth_profile)
     config.enable_stream(color_profile)
     pipeline.start(config)
@@ -99,12 +95,8 @@ def _assert_intrinsic_valid(intrinsic, name):
     assert intrinsic.cy > 0, f"{name}: cy must be > 0, got {intrinsic.cy}"
     assert intrinsic.width > 0, f"{name}: width must be > 0"
     assert intrinsic.height > 0, f"{name}: height must be > 0"
-    assert (
-        100 <= intrinsic.fx <= 5000
-    ), f"{name}: fx={intrinsic.fx:.1f} out of expected range [100, 5000]"
-    assert (
-        100 <= intrinsic.fy <= 5000
-    ), f"{name}: fy={intrinsic.fy:.1f} out of expected range [100, 5000]"
+    assert 100 <= intrinsic.fx <= 5000, f"{name}: fx={intrinsic.fx:.1f} out of expected range [100, 5000]"
+    assert 100 <= intrinsic.fy <= 5000, f"{name}: fy={intrinsic.fy:.1f} out of expected range [100, 5000]"
     assert (
         0 < intrinsic.cx < intrinsic.width
     ), f"{name}: cx={intrinsic.cx:.1f} must be within image width={intrinsic.width}"
@@ -150,9 +142,7 @@ class TestPipelineCameraParam:
         for attr, val in attrs.items():
             if val is not None:
                 assert np.isfinite(val), f"depth_distortion.{attr}={val} is not finite"
-                assert (
-                    abs(val) < 10.0
-                ), f"depth_distortion.{attr}={val:.4f} seems unreasonably large"
+                assert abs(val) < 10.0, f"depth_distortion.{attr}={val:.4f} seems unreasonably large"
 
     def test_color_distortion_bounded(self, pipeline, g300_series_device):
         param, _, _ = _get_pipeline_camera_param(pipeline)
@@ -160,9 +150,7 @@ class TestPipelineCameraParam:
         for attr, val in attrs.items():
             if val is not None:
                 assert np.isfinite(val), f"rgb_distortion.{attr}={val} is not finite"
-                assert (
-                    abs(val) < 10.0
-                ), f"rgb_distortion.{attr}={val:.4f} seems unreasonably large"
+                assert abs(val) < 10.0, f"rgb_distortion.{attr}={val:.4f} seems unreasonably large"
 
     def test_extrinsic_rotation_finite(self, pipeline, g300_series_device):
         """
@@ -181,9 +169,7 @@ class TestPipelineCameraParam:
             np.array2string(np.asarray(trans), precision=3),
         )
         rot_arr = np.asarray(rot, dtype=np.float64)
-        assert (
-            rot_arr.size == 9
-        ), f"Expected OBExtrinsic.rot to have 9 elements, got {rot_arr.size}"
+        assert rot_arr.size == 9, f"Expected OBExtrinsic.rot to have 9 elements, got {rot_arr.size}"
         non_finite = ~np.isfinite(rot_arr)
         assert not non_finite.any(), (
             f"Extrinsic rotation contains non-finite values at indices "
@@ -202,9 +188,7 @@ class TestPipelineCameraParam:
 
         det = float(np.linalg.det(R))
         logger.debug("det(R) = %.6f", det)
-        assert (
-            abs(det - 1.0) < 0.05
-        ), f"det(R)={det:.4f} deviates from 1.0 — R may not be a valid rotation matrix"
+        assert abs(det - 1.0) < 0.05, f"det(R)={det:.4f} deviates from 1.0 — R may not be a valid rotation matrix"
 
         residual_mat = R @ R.T - np.eye(3)
         identity_residual = float(np.max(np.abs(residual_mat)))
@@ -213,9 +197,7 @@ class TestPipelineCameraParam:
             identity_residual,
             np.array2string(residual_mat, precision=6),
         )
-        assert (
-            identity_residual < 0.05
-        ), f"R @ R.T residual {identity_residual:.4f} exceeds 0.05 — R is not orthogonal"
+        assert identity_residual < 0.05, f"R @ R.T residual {identity_residual:.4f} exceeds 0.05 — R is not orthogonal"
 
     def test_extrinsic_via_stream_profile(self, pipeline, g300_series_device):
         """
@@ -233,15 +215,11 @@ class TestPipelineCameraParam:
             "Stream-profile extrinsic rot: %s",
             np.array2string(rot_flat, precision=6),
         )
-        assert (
-            rot_flat.size == 9
-        ), f"Expected OBExtrinsic.rot size 9, got {rot_flat.size}"
+        assert rot_flat.size == 9, f"Expected OBExtrinsic.rot size 9, got {rot_flat.size}"
         R = rot_flat.reshape(3, 3)
         det = float(np.linalg.det(R))
         logger.debug("Stream-profile det(R) = %.6f", det)
-        assert (
-            abs(det - 1.0) < 0.05
-        ), f"Stream-profile extrinsic det(R)={det:.4f} deviates from 1.0"
+        assert abs(det - 1.0) < 0.05, f"Stream-profile extrinsic det(R)={det:.4f} deviates from 1.0"
 
 
 # ---------------------------------------------------------------------------
@@ -253,9 +231,7 @@ class TestCalibrationList:
 
     def test_calib_list_nonempty(self, g300_series_device):
         calib = g300_series_device.get_calibration_camera_param_list()
-        assert (
-            calib is not None and calib.get_count() > 0
-        ), "get_calibration_camera_param_list() returned empty list"
+        assert calib is not None and calib.get_count() > 0, "get_calibration_camera_param_list() returned empty list"
         logger.debug("Calibration param list count: %d", calib.get_count())
 
     def test_calib_entries_have_valid_depth_intrinsics(self, g300_series_device):
@@ -283,12 +259,8 @@ class TestCalibrationList:
                 i,
                 np.array2string(rot_flat, precision=6),
             )
-            assert (
-                rot_flat.size == 9
-            ), f"calib[{i}] OBExtrinsic.rot expected size 9, got {rot_flat.size}"
+            assert rot_flat.size == 9, f"calib[{i}] OBExtrinsic.rot expected size 9, got {rot_flat.size}"
             R = rot_flat.reshape(3, 3)
             det = float(np.linalg.det(R))
             logger.debug("calib[%d] det(R) = %.6f", i, det)
-            assert (
-                abs(det - 1.0) < 0.05
-            ), f"calib[{i}] det(R)={det:.4f} deviates from 1.0"
+            assert abs(det - 1.0) < 0.05, f"calib[{i}] det(R)={det:.4f} deviates from 1.0"

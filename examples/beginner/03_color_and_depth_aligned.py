@@ -39,9 +39,15 @@ import numpy as np
 from utils import frame_to_bgr_image
 
 from pyorbbecsdk import OBAlignMode  # type: ignore
-from pyorbbecsdk import (AlignFilter, Config, OBFormat,
-                         OBFrameAggregateOutputMode, OBSensorType,
-                         OBStreamType, Pipeline)
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBFrameAggregateOutputMode,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+)
 
 # --- Configuration Constants ---
 ESC_KEY = 27
@@ -69,9 +75,7 @@ def get_hw_stream_config(pipeline: Pipeline):
             color_profile = profile_list[i]
             if color_profile.get_format() != OBFormat.RGB:
                 continue
-            hw_depth_list = pipeline.get_d2c_depth_profile_list(
-                color_profile, OBAlignMode.HW_MODE
-            )
+            hw_depth_list = pipeline.get_d2c_depth_profile_list(color_profile, OBAlignMode.HW_MODE)
             if len(hw_depth_list) == 0:
                 continue
             config.enable_stream(hw_depth_list[0])
@@ -125,9 +129,7 @@ def main():
 
         config = get_hw_stream_config(pipeline)
         if config is None:
-            print(
-                "ERROR: Hardware D2C is not supported on this device. Try without --hw."
-            )
+            print("ERROR: Hardware D2C is not supported on this device. Try without --hw.")
             return
 
         enable_hw_d2c = True
@@ -155,9 +157,7 @@ def main():
             depth_profile = profile_list.get_default_video_stream_profile()
             config.enable_stream(depth_profile)
 
-            config.set_frame_aggregate_output_mode(
-                OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-            )
+            config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         except Exception as e:
             print(f"Stream configuration error: {e}")
             return
@@ -209,9 +209,9 @@ def main():
 
             # -- Convert depth frame --
             try:
-                depth_data = np.frombuffer(
-                    depth_frame.get_data(), dtype=np.uint16
-                ).reshape((depth_frame.get_height(), depth_frame.get_width()))
+                depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
+                    (depth_frame.get_height(), depth_frame.get_width())
+                )
             except ValueError:
                 continue
 
@@ -220,37 +220,25 @@ def main():
             if args.hw:
                 depth_data = np.clip(depth_data, MIN_DEPTH, MAX_DEPTH)
             else:
-                depth_data = np.where(
-                    (depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0
-                )
+                depth_data = np.where((depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0)
 
             depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX)
-            depth_image = cv2.applyColorMap(
-                depth_image.astype(np.uint8), cv2.COLORMAP_JET
-            )
+            depth_image = cv2.applyColorMap(depth_image.astype(np.uint8), cv2.COLORMAP_JET)
 
             # Resize depth to match color dimensions (needed when HW D2C is disabled)
             h, w = color_image.shape[:2]
             if depth_image.shape[:2] != (h, w):
-                depth_image = cv2.resize(
-                    depth_image, (w, h), interpolation=cv2.INTER_NEAREST
-                )
+                depth_image = cv2.resize(depth_image, (w, h), interpolation=cv2.INTER_NEAREST)
 
             # -- Blend and display --
             blend_alpha = alpha if args.hw else 0.5
-            overlay = cv2.addWeighted(
-                color_image, 1 - blend_alpha, depth_image, blend_alpha, 0
-            )
+            overlay = cv2.addWeighted(color_image, 1 - blend_alpha, depth_image, blend_alpha, 0)
 
             # Status text
             if args.hw:
                 status = f"HW D2C: {'ON' if enable_hw_d2c else 'OFF'}  alpha={blend_alpha:.1f}"
             else:
-                mode_str = (
-                    "D2C (Depth To Color)"
-                    if align_mode == 0
-                    else "C2D (Color To Depth)"
-                )
+                mode_str = "D2C (Depth To Color)" if align_mode == 0 else "C2D (Color To Depth)"
                 sync_str = "Sync: ON" if enable_sync else "Sync: OFF"
                 status = f"{mode_str} | {sync_str}"
 
@@ -284,14 +272,10 @@ def main():
                 if key in (ord("t"), ord("T")):
                     align_mode = (align_mode + 1) % 2
                     if align_mode == 0:
-                        align_filter = AlignFilter(
-                            align_to_stream=OBStreamType.COLOR_STREAM
-                        )
+                        align_filter = AlignFilter(align_to_stream=OBStreamType.COLOR_STREAM)
                         print("Mode: Depth To Color")
                     else:
-                        align_filter = AlignFilter(
-                            align_to_stream=OBStreamType.DEPTH_STREAM
-                        )
+                        align_filter = AlignFilter(align_to_stream=OBStreamType.DEPTH_STREAM)
                         print("Mode: Color To Depth")
                 elif key in (ord("f"), ord("F")):
                     enable_sync = not enable_sync

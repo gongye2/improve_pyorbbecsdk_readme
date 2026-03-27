@@ -171,9 +171,7 @@ def main():
         if script in SKIP:
             continue
         print(f"  Running  {label:<45}", end="", flush=True)
-        status, elapsed, stdout, stderr = run_one(
-            label, script, extra_args, stdin_input
-        )
+        status, elapsed, stdout, stderr = run_one(label, script, extra_args, stdin_input)
 
         if status in ("PASS", "TIMEOUT"):
             color = GREEN

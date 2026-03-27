@@ -70,9 +70,7 @@ def main():
 
         print("\n" + "-" * 72)
         # Get output filename from user
-        file_path = input(
-            "Please enter the output filename (with .bag extension): "
-        ).strip()
+        file_path = input("Please enter the output filename (with .bag extension): ").strip()
         if not file_path.endswith(".bag"):
             file_path += ".bag"
 
@@ -134,9 +132,7 @@ def main():
                         duration = current_time - start_time
                         if frame_count_map:
                             start_time = current_time
-                            wait_interval = (
-                                2000  # Change to 2s interval for subsequent prints
-                            )
+                            wait_interval = 2000  # Change to 2s interval for subsequent prints
                             temp_count_map = frame_count_map.copy()
                             # Reset counts for the next interval
                             for k in frame_count_map:

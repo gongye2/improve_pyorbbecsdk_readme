@@ -33,16 +33,8 @@ TIMEOUT_MS = 2000
 
 def _get_pipeline_camera_param(pipeline):
     config = Config()
-    config.enable_stream(
-        pipeline.get_stream_profile_list(
-            OBSensorType.DEPTH_SENSOR
-        ).get_default_video_stream_profile()
-    )
-    config.enable_stream(
-        pipeline.get_stream_profile_list(
-            OBSensorType.COLOR_SENSOR
-        ).get_default_video_stream_profile()
-    )
+    config.enable_stream(pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile())
+    config.enable_stream(pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile())
     pipeline.start(config)
     deadline = time.time() + 5
     while time.time() < deadline:
@@ -105,6 +97,4 @@ class TestFemtoCalibrationList:
     def test_calib_entries_valid(self, femto_device):
         calib = femto_device.get_calibration_camera_param_list()
         for i in range(calib.get_count()):
-            _assert_intrinsic_valid(
-                calib.get_camera_param(i).depth_intrinsic, f"femto_calib[{i}].depth"
-            )
+            _assert_intrinsic_valid(calib.get_camera_param(i).depth_intrinsic, f"femto_calib[{i}].depth")

@@ -199,13 +199,9 @@ class AlignFilter(Filter):
     def get_align_to_stream_type(self) -> OBStreamType: ...
 
 class CameraParamList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBCameraParam: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBCameraParam: ...
     def __len__(self) -> int: ...
-    def get_camera_param(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBCameraParam:
+    def get_camera_param(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBCameraParam:
         """
         Get the camera parameters for the specified index
         """
@@ -279,9 +275,7 @@ class Config:
     def get_enabled_stream_profile_list(self) -> StreamProfileList: ...
     def set_align_mode(self, arg0: OBAlignMode) -> None: ...
     def set_depth_scale_require(self, arg0: bool) -> None: ...
-    def set_frame_aggregate_output_mode(
-        self, arg0: OBFrameAggregateOutputMode
-    ) -> None: ...
+    def set_frame_aggregate_output_mode(self, arg0: OBFrameAggregateOutputMode) -> None: ...
 
 class Context:
     @staticmethod
@@ -302,9 +296,7 @@ class Context:
     @staticmethod
     def set_logger_level(arg0: OBLogLevel) -> None: ...
     @staticmethod
-    def set_logger_to_callback(
-        arg0: OBLogLevel, arg1: collections.abc.Callable
-    ) -> None:
+    def set_logger_to_callback(arg0: OBLogLevel, arg1: collections.abc.Callable) -> None:
         """
         Set logger to callback
         """
@@ -335,9 +327,7 @@ class Context:
         Create net device
         """
 
-    def enable_multi_device_sync(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None:
+    def enable_multi_device_sync(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None:
         """
         Activates the multi-device synchronization function to synchronize the clock of the created device (the device needs to support this function).repeat_interval: The synchronization time interval (unit: ms; if repeatInterval=0, it means that it will only be synchronized once and will not be executed regularly).
         """
@@ -353,31 +343,23 @@ class Context:
         Query devices
         """
 
-    def register_device_changed_callback(
-        self, arg0: collections.abc.Callable
-    ) -> int: ...
+    def register_device_changed_callback(self, arg0: collections.abc.Callable) -> int: ...
     def set_device_changed_callback(self, arg0: collections.abc.Callable) -> None:
         """
         Set device changed callback, callback will be called when device changed
         """
 
-    def unregister_device_changed_callback(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def unregister_device_changed_callback(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class DecimationFilter(Filter):
     def __init__(self) -> None: ...
     def get_scale_range(self) -> OBUint8PropertyRange: ...
     def get_scale_value(self) -> int: ...
-    def set_scale_value(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def set_scale_value(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class DepthFrame(VideoFrame):
     def get_depth_scale(self) -> float: ...
-    def set_value_scale(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def set_value_scale(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
 
 class Device:
     __hash__: typing.ClassVar[None] = None
@@ -405,15 +387,11 @@ class Device:
     def get_sensor(self, arg0: OBSensorType) -> Sensor: ...
     def get_sensor_list(self) -> SensorList: ...
     def get_support_property_count(self) -> int: ...
-    def get_supported_property(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBPropertyItem: ...
+    def get_supported_property(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBPropertyItem: ...
     def get_temperature(self) -> OBDeviceTemperature: ...
     def get_timestamp_reset_config(self) -> OBDeviceTimestampResetConfig: ...
     def isFrameInterleaveSupported(self) -> bool: ...
-    def is_property_supported(
-        self, arg0: OBPropertyID, arg1: OBPermissionType
-    ) -> bool: ...
+    def is_property_supported(self, arg0: OBPropertyID, arg1: OBPermissionType) -> bool: ...
     def loadFrameInterleave(self, arg0: str) -> None: ...
     def load_depth_filter_config(self, arg0: str) -> None: ...
     def load_preset(self, arg0: str) -> None: ...
@@ -425,22 +403,14 @@ class Device:
     def set_depth_work_mode(self, arg0: OBDepthWorkMode) -> OBStatus: ...
     @typing.overload
     def set_depth_work_mode(self, arg0: str) -> OBStatus: ...
-    def set_device_state_changed_callback(
-        self, arg0: collections.abc.Callable
-    ) -> None: ...
-    def set_float_property(
-        self, arg0: OBPropertyID, arg1: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def set_device_state_changed_callback(self, arg0: collections.abc.Callable) -> None: ...
+    def set_float_property(self, arg0: OBPropertyID, arg1: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     def set_hdr_config(self, arg0: OBHdrConfig) -> None: ...
-    def set_int_property(
-        self, arg0: OBPropertyID, arg1: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def set_int_property(self, arg0: OBPropertyID, arg1: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def set_ip_config(self, arg0: OBDeviceIpAddrConfig) -> None: ...
     def set_multi_device_sync_config(self, arg0: OBMultiDeviceSyncConfig) -> None: ...
     def set_preset_resolution_config(self, arg0: OBPresetResolutionConfig) -> None: ...
-    def set_timestamp_reset_config(
-        self, arg0: OBDeviceTimestampResetConfig
-    ) -> None: ...
+    def set_timestamp_reset_config(self, arg0: OBDeviceTimestampResetConfig) -> None: ...
     def timer_reset(self) -> None: ...
     def timer_sync_with_host(self) -> None: ...
     def timestamp_reset(self) -> None: ...
@@ -451,9 +421,7 @@ class Device:
         callback: collections.abc.Callable,
         async_update: bool = True,
     ) -> None: ...
-    def update_optional_depth_presets(
-        self, file_path_list: list, callback: collections.abc.Callable
-    ) -> None: ...
+    def update_optional_depth_presets(self, file_path_list: list, callback: collections.abc.Callable) -> None: ...
 
 class DeviceInfo:
     def __repr__(self) -> str: ...
@@ -523,9 +491,7 @@ class DeviceInfo:
         """
 
 class DeviceList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> Device: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Device: ...
     def __len__(self) -> int: ...
     def get_count(self) -> int: ...
     def get_device_by_index(
@@ -543,33 +509,15 @@ class DeviceList:
         uid: str,
         access_mode: OBDeviceAccessMode = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS,
     ) -> Device: ...
-    def get_device_connection_type_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_gateway_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_ip_address_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_name_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_pid_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> int: ...
-    def get_device_serial_number_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_subnet_mask_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_uid_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
-    def get_device_vid_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> int: ...
+    def get_device_connection_type_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_gateway_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_ip_address_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_name_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_pid_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> int: ...
+    def get_device_serial_number_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_subnet_mask_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_uid_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
+    def get_device_vid_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> int: ...
     def get_local_gateway(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str:
         """
         Get the host gateway for the specified device
@@ -580,16 +528,12 @@ class DeviceList:
         Get the host Ip address for the specified device
         """
 
-    def get_local_mac_address(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str:
+    def get_local_mac_address(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str:
         """
         Get the host Mac address for the specified device
         """
 
-    def get_local_subnet_length(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> int:
+    def get_local_subnet_length(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> int:
         """
         Get the host subnet length for the specified device
         """
@@ -599,9 +543,7 @@ class DevicePresetList:
     def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
     def __len__(self) -> int: ...
     def get_count(self) -> int: ...
-    def get_name_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> str: ...
+    def get_name_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
     def has_preset(self, arg0: str) -> bool: ...
 
 class DisparityTransform(Filter):
@@ -675,9 +617,7 @@ class Frame:
     def get_type(self) -> OBFrameType: ...
     def has_metadata(self, arg0: OBFrameMetadataType) -> bool: ...
     def set_stream_profile(self, arg0: StreamProfile) -> None: ...
-    def set_system_timestamp_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def set_system_timestamp_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def update_data(self, arg0: typing_extensions.Buffer) -> None: ...
     def update_metadata(self, arg0: typing_extensions.Buffer) -> None: ...
 
@@ -691,9 +631,7 @@ class FrameSet(Frame):
     def get_count(self) -> int: ...
     def get_depth_frame(self) -> DepthFrame: ...
     def get_frame(self, arg0: OBFrameType) -> Frame: ...
-    def get_frame_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> Frame: ...
+    def get_frame_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Frame: ...
     def get_frame_by_type(self, arg0: OBFrameType) -> Frame: ...
     def get_frame_count(self) -> int: ...
     def get_gyro_frame(self) -> GyroFrame: ...
@@ -770,33 +708,15 @@ class OBAccelFullScaleRange:
       ACCEL_FS_24g
     """
 
-    ACCEL_FS_12g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_12g: 7>
-    ACCEL_FS_16g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_16g: 4>
-    ACCEL_FS_24g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_24g: 8>
-    ACCEL_FS_2g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_2g: 1>
-    ACCEL_FS_3g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_3g: 5>
-    ACCEL_FS_4g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_4g: 2>
-    ACCEL_FS_6g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_6g: 6>
-    ACCEL_FS_8g: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_8g: 3>
-    ACCEL_FS_UNKNOWN: typing.ClassVar[
-        OBAccelFullScaleRange
-    ]  # value = <OBAccelFullScaleRange.ACCEL_FS_UNKNOWN: -1>
+    ACCEL_FS_12g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_12g: 7>
+    ACCEL_FS_16g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_16g: 4>
+    ACCEL_FS_24g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_24g: 8>
+    ACCEL_FS_2g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_2g: 1>
+    ACCEL_FS_3g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_3g: 5>
+    ACCEL_FS_4g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_4g: 2>
+    ACCEL_FS_6g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_6g: 6>
+    ACCEL_FS_8g: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_8g: 3>
+    ACCEL_FS_UNKNOWN: typing.ClassVar[OBAccelFullScaleRange]  # value = <OBAccelFullScaleRange.ACCEL_FS_UNKNOWN: -1>
     __members__: typing.ClassVar[
         dict[str, OBAccelFullScaleRange]
     ]  # value = {'ACCEL_FS_UNKNOWN': <OBAccelFullScaleRange.ACCEL_FS_UNKNOWN: -1>, 'ACCEL_FS_2g': <OBAccelFullScaleRange.ACCEL_FS_2g: 1>, 'ACCEL_FS_4g': <OBAccelFullScaleRange.ACCEL_FS_4g: 2>, 'ACCEL_FS_8g': <OBAccelFullScaleRange.ACCEL_FS_8g: 3>, 'ACCEL_FS_16g': <OBAccelFullScaleRange.ACCEL_FS_16g: 4>, 'ACCEL_FS_3g': <OBAccelFullScaleRange.ACCEL_FS_3g: 5>, 'ACCEL_FS_6g': <OBAccelFullScaleRange.ACCEL_FS_6g: 6>, 'ACCEL_FS_12g': <OBAccelFullScaleRange.ACCEL_FS_12g: 7>, 'ACCEL_FS_24g': <OBAccelFullScaleRange.ACCEL_FS_24g: 8>}
@@ -808,9 +728,7 @@ class OBAccelFullScaleRange:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -822,45 +740,31 @@ class OBAccelIntrinsic:
     @property
     def bias(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @bias.setter
-    def bias(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def bias(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
     @property
     def gravity(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @gravity.setter
-    def gravity(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def gravity(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
     @property
     def noise_density(self) -> float: ...
     @noise_density.setter
-    def noise_density(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def noise_density(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def random_walk(self) -> float: ...
     @random_walk.setter
-    def random_walk(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def random_walk(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def reference_temp(self) -> float: ...
     @reference_temp.setter
-    def reference_temp(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def reference_temp(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def scale_misalignment(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @scale_misalignment.setter
-    def scale_misalignment(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def scale_misalignment(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
     @property
     def temp_slope(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @temp_slope.setter
-    def temp_slope(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def temp_slope(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
 
 class OBAccelValue:
     def __init__(self) -> None: ...
@@ -903,9 +807,7 @@ class OBAlignMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -933,29 +835,21 @@ class OBBoolPropertyRange:
 
 class OBCalibrationParam:
     def __init__(self) -> None: ...
-    def get_distortion(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBCameraDistortion: ...
+    def get_distortion(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBCameraDistortion: ...
     def get_extrinsic(
         self,
         arg0: typing.SupportsInt | typing.SupportsIndex,
         arg1: typing.SupportsInt | typing.SupportsIndex,
     ) -> OBExtrinsic: ...
-    def get_intrinsic(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBCameraIntrinsic: ...
-    def set_distortion(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex, arg1: OBCameraDistortion
-    ) -> None: ...
+    def get_intrinsic(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBCameraIntrinsic: ...
+    def set_distortion(self, arg0: typing.SupportsInt | typing.SupportsIndex, arg1: OBCameraDistortion) -> None: ...
     def set_extrinsic(
         self,
         arg0: typing.SupportsInt | typing.SupportsIndex,
         arg1: typing.SupportsInt | typing.SupportsIndex,
         arg2: OBExtrinsic,
     ) -> None: ...
-    def set_intrinsic(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex, arg1: OBCameraIntrinsic
-    ) -> None: ...
+    def set_intrinsic(self, arg0: typing.SupportsInt | typing.SupportsIndex, arg1: OBCameraIntrinsic) -> None: ...
 
 class OBCameraDistortion:
     def __init__(self) -> None: ...
@@ -1006,18 +900,14 @@ class OBCameraDistortionModel:
       BROWN_CONRADY
     """
 
-    BROWN_CONRADY: typing.ClassVar[
-        OBCameraDistortionModel
-    ]  # value = <OBCameraDistortionModel.BROWN_CONRADY: 3>
+    BROWN_CONRADY: typing.ClassVar[OBCameraDistortionModel]  # value = <OBCameraDistortionModel.BROWN_CONRADY: 3>
     INVERSE_BROWN_CONRADY: typing.ClassVar[
         OBCameraDistortionModel
     ]  # value = <OBCameraDistortionModel.INVERSE_BROWN_CONRADY: 2>
     MODIFIED_BROWN_CONRADY: typing.ClassVar[
         OBCameraDistortionModel
     ]  # value = <OBCameraDistortionModel.MODIFIED_BROWN_CONRADY: 1>
-    NONE: typing.ClassVar[
-        OBCameraDistortionModel
-    ]  # value = <OBCameraDistortionModel.NONE: 0>
+    NONE: typing.ClassVar[OBCameraDistortionModel]  # value = <OBCameraDistortionModel.NONE: 0>
     __members__: typing.ClassVar[
         dict[str, OBCameraDistortionModel]
     ]  # value = {'NONE': <OBCameraDistortionModel.NONE: 0>, 'MODIFIED_BROWN_CONRADY': <OBCameraDistortionModel.MODIFIED_BROWN_CONRADY: 1>, 'INVERSE_BROWN_CONRADY': <OBCameraDistortionModel.INVERSE_BROWN_CONRADY: 2>, 'BROWN_CONRADY': <OBCameraDistortionModel.BROWN_CONRADY: 3>}
@@ -1029,9 +919,7 @@ class OBCameraDistortionModel:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1109,9 +997,7 @@ class OBCmdVersion:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1157,9 +1043,7 @@ class OBCommunicationType:
       ETHERNET
     """
 
-    ETHERNET: typing.ClassVar[
-        OBCommunicationType
-    ]  # value = <OBCommunicationType.ETHERNET: 1>
+    ETHERNET: typing.ClassVar[OBCommunicationType]  # value = <OBCommunicationType.ETHERNET: 1>
     USB: typing.ClassVar[OBCommunicationType]  # value = <OBCommunicationType.USB: 0>
     __members__: typing.ClassVar[
         dict[str, OBCommunicationType]
@@ -1172,9 +1056,7 @@ class OBCommunicationType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1190,9 +1072,7 @@ class OBCompressionMode:
       LOSSY
     """
 
-    LOSSLESS: typing.ClassVar[
-        OBCompressionMode
-    ]  # value = <OBCompressionMode.LOSSLESS: 0>
+    LOSSLESS: typing.ClassVar[OBCompressionMode]  # value = <OBCompressionMode.LOSSLESS: 0>
     LOSSY: typing.ClassVar[OBCompressionMode]  # value = <OBCompressionMode.LOSSY: 1>
     __members__: typing.ClassVar[
         dict[str, OBCompressionMode]
@@ -1205,9 +1085,7 @@ class OBCompressionMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1250,42 +1128,18 @@ class OBConvertFormat:
       BGR_TO_RGB
     """
 
-    BGR_TO_RGB: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.BGR_TO_RGB: 11>
-    I420_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.I420_TO_RGB888: 1>
-    MJPG_TO_BGR888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.MJPG_TO_BGR888: 8>
-    MJPG_TO_BGRA: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.MJPG_TO_BGRA: 9>
-    MJPG_TO_I420: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.MJPG_TO_I420: 4>
-    MJPG_TO_NV21: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.MJPG_TO_NV21: 6>
-    MJPG_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.MJPG_TO_RGB888: 7>
-    NV12_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.NV12_TO_RGB888: 3>
-    NV21_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.NV21_TO_RGB888: 2>
-    RGB888_TO_BGR: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.RGB888_TO_BGR: 5>
-    UYVY_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.UYVY_TO_RGB888: 10>
-    YUYV_TO_RGB888: typing.ClassVar[
-        OBConvertFormat
-    ]  # value = <OBConvertFormat.YUYV_TO_RGB888: 0>
+    BGR_TO_RGB: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.BGR_TO_RGB: 11>
+    I420_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.I420_TO_RGB888: 1>
+    MJPG_TO_BGR888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.MJPG_TO_BGR888: 8>
+    MJPG_TO_BGRA: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.MJPG_TO_BGRA: 9>
+    MJPG_TO_I420: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.MJPG_TO_I420: 4>
+    MJPG_TO_NV21: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.MJPG_TO_NV21: 6>
+    MJPG_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.MJPG_TO_RGB888: 7>
+    NV12_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.NV12_TO_RGB888: 3>
+    NV21_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.NV21_TO_RGB888: 2>
+    RGB888_TO_BGR: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.RGB888_TO_BGR: 5>
+    UYVY_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.UYVY_TO_RGB888: 10>
+    YUYV_TO_RGB888: typing.ClassVar[OBConvertFormat]  # value = <OBConvertFormat.YUYV_TO_RGB888: 0>
     __members__: typing.ClassVar[
         dict[str, OBConvertFormat]
     ]  # value = {'YUYV_TO_RGB888': <OBConvertFormat.YUYV_TO_RGB888: 0>, 'I420_TO_RGB888': <OBConvertFormat.I420_TO_RGB888: 1>, 'NV21_TO_RGB888': <OBConvertFormat.NV21_TO_RGB888: 2>, 'NV12_TO_RGB888': <OBConvertFormat.NV12_TO_RGB888: 3>, 'MJPG_TO_I420': <OBConvertFormat.MJPG_TO_I420: 4>, 'RGB888_TO_BGR': <OBConvertFormat.RGB888_TO_BGR: 5>, 'MJPG_TO_NV21': <OBConvertFormat.MJPG_TO_NV21: 6>, 'MJPG_TO_RGB888': <OBConvertFormat.MJPG_TO_RGB888: 7>, 'MJPG_TO_BGR888': <OBConvertFormat.MJPG_TO_BGR888: 8>, 'MJPG_TO_BGRA': <OBConvertFormat.MJPG_TO_BGRA: 9>, 'UYVY_TO_RGB888': <OBConvertFormat.UYVY_TO_RGB888: 10>, 'BGR_TO_RGB': <OBConvertFormat.BGR_TO_RGB: 11>}
@@ -1297,9 +1151,7 @@ class OBConvertFormat:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1315,12 +1167,8 @@ class OBCoordinateSystemType:
       RIGHT_HAND
     """
 
-    LEFT_HAND: typing.ClassVar[
-        OBCoordinateSystemType
-    ]  # value = <OBCoordinateSystemType.LEFT_HAND: 0>
-    RIGHT_HAND: typing.ClassVar[
-        OBCoordinateSystemType
-    ]  # value = <OBCoordinateSystemType.RIGHT_HAND: 1>
+    LEFT_HAND: typing.ClassVar[OBCoordinateSystemType]  # value = <OBCoordinateSystemType.LEFT_HAND: 0>
+    RIGHT_HAND: typing.ClassVar[OBCoordinateSystemType]  # value = <OBCoordinateSystemType.RIGHT_HAND: 1>
     __members__: typing.ClassVar[
         dict[str, OBCoordinateSystemType]
     ]  # value = {'LEFT_HAND': <OBCoordinateSystemType.LEFT_HAND: 0>, 'RIGHT_HAND': <OBCoordinateSystemType.RIGHT_HAND: 1>}
@@ -1332,9 +1180,7 @@ class OBCoordinateSystemType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1363,9 +1209,7 @@ class OBDCPowerState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1381,12 +1225,8 @@ class OBDDONoiseRemovalType:
       OVERALL
     """
 
-    LUT: typing.ClassVar[
-        OBDDONoiseRemovalType
-    ]  # value = <OBDDONoiseRemovalType.LUT: 0>
-    OVERALL: typing.ClassVar[
-        OBDDONoiseRemovalType
-    ]  # value = <OBDDONoiseRemovalType.OVERALL: 1>
+    LUT: typing.ClassVar[OBDDONoiseRemovalType]  # value = <OBDDONoiseRemovalType.LUT: 0>
+    OVERALL: typing.ClassVar[OBDDONoiseRemovalType]  # value = <OBDDONoiseRemovalType.OVERALL: 1>
     __members__: typing.ClassVar[
         dict[str, OBDDONoiseRemovalType]
     ]  # value = {'LUT': <OBDDONoiseRemovalType.LUT: 0>, 'OVERALL': <OBDDONoiseRemovalType.OVERALL: 1>}
@@ -1398,9 +1238,7 @@ class OBDDONoiseRemovalType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1432,25 +1270,13 @@ class OBDataTranState:
 
     DONE: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.DONE: 2>
     ERR_BUSY: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.ERR_BUSY: -1>
-    ERR_OTHER: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.ERR_OTHER: -5>
-    ERR_TRAN_FAILED: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.ERR_TRAN_FAILED: -3>
-    ERR_UNSUPPORTED: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.ERR_UNSUPPORTED: -2>
-    ERR_VERIFY_FAILED: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.ERR_VERIFY_FAILED: -4>
+    ERR_OTHER: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.ERR_OTHER: -5>
+    ERR_TRAN_FAILED: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.ERR_TRAN_FAILED: -3>
+    ERR_UNSUPPORTED: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.ERR_UNSUPPORTED: -2>
+    ERR_VERIFY_FAILED: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.ERR_VERIFY_FAILED: -4>
     STOPPED: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.STOPPED: 3>
-    TRANSFERRING: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.TRANSFERRING: 0>
-    VERIFYING: typing.ClassVar[
-        OBDataTranState
-    ]  # value = <OBDataTranState.VERIFYING: 1>
+    TRANSFERRING: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.TRANSFERRING: 0>
+    VERIFYING: typing.ClassVar[OBDataTranState]  # value = <OBDataTranState.VERIFYING: 1>
     __members__: typing.ClassVar[
         dict[str, OBDataTranState]
     ]  # value = {'STOPPED': <OBDataTranState.STOPPED: 3>, 'DONE': <OBDataTranState.DONE: 2>, 'VERIFYING': <OBDataTranState.VERIFYING: 1>, 'TRANSFERRING': <OBDataTranState.TRANSFERRING: 0>, 'ERR_BUSY': <OBDataTranState.ERR_BUSY: -1>, 'ERR_UNSUPPORTED': <OBDataTranState.ERR_UNSUPPORTED: -2>, 'ERR_TRAN_FAILED': <OBDataTranState.ERR_TRAN_FAILED: -3>, 'ERR_VERIFY_FAILED': <OBDataTranState.ERR_VERIFY_FAILED: -4>, 'ERR_OTHER': <OBDataTranState.ERR_OTHER: -5>}
@@ -1462,9 +1288,7 @@ class OBDataTranState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1483,9 +1307,7 @@ class OBDepthCroppingMode:
     """
 
     AUTO: typing.ClassVar[OBDepthCroppingMode]  # value = <OBDepthCroppingMode.AUTO: 0>
-    CLOSE: typing.ClassVar[
-        OBDepthCroppingMode
-    ]  # value = <OBDepthCroppingMode.CLOSE: 1>
+    CLOSE: typing.ClassVar[OBDepthCroppingMode]  # value = <OBDepthCroppingMode.CLOSE: 1>
     OPEN: typing.ClassVar[OBDepthCroppingMode]  # value = <OBDepthCroppingMode.OPEN: 2>
     __members__: typing.ClassVar[
         dict[str, OBDepthCroppingMode]
@@ -1498,9 +1320,7 @@ class OBDepthCroppingMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1522,21 +1342,13 @@ class OBDepthPrecisionLevel:
       ZERO_POINT_ONE_MM
     """
 
-    ONE_MM: typing.ClassVar[
-        OBDepthPrecisionLevel
-    ]  # value = <OBDepthPrecisionLevel.ONE_MM: 0>
+    ONE_MM: typing.ClassVar[OBDepthPrecisionLevel]  # value = <OBDepthPrecisionLevel.ONE_MM: 0>
     ZERO_POINT_EIGHT_MM: typing.ClassVar[
         OBDepthPrecisionLevel
     ]  # value = <OBDepthPrecisionLevel.ZERO_POINT_EIGHT_MM: 1>
-    ZERO_POINT_FOUR_MM: typing.ClassVar[
-        OBDepthPrecisionLevel
-    ]  # value = <OBDepthPrecisionLevel.ZERO_POINT_FOUR_MM: 2>
-    ZERO_POINT_ONE_MM: typing.ClassVar[
-        OBDepthPrecisionLevel
-    ]  # value = <OBDepthPrecisionLevel.ZERO_POINT_ONE_MM: 3>
-    ZERO_POINT_TWO_MM: typing.ClassVar[
-        OBDepthPrecisionLevel
-    ]  # value = <OBDepthPrecisionLevel.ZERO_POINT_TWO_MM: 4>
+    ZERO_POINT_FOUR_MM: typing.ClassVar[OBDepthPrecisionLevel]  # value = <OBDepthPrecisionLevel.ZERO_POINT_FOUR_MM: 2>
+    ZERO_POINT_ONE_MM: typing.ClassVar[OBDepthPrecisionLevel]  # value = <OBDepthPrecisionLevel.ZERO_POINT_ONE_MM: 3>
+    ZERO_POINT_TWO_MM: typing.ClassVar[OBDepthPrecisionLevel]  # value = <OBDepthPrecisionLevel.ZERO_POINT_TWO_MM: 4>
     __members__: typing.ClassVar[
         dict[str, OBDepthPrecisionLevel]
     ]  # value = {'ONE_MM': <OBDepthPrecisionLevel.ONE_MM: 0>, 'ZERO_POINT_EIGHT_MM': <OBDepthPrecisionLevel.ZERO_POINT_EIGHT_MM: 1>, 'ZERO_POINT_FOUR_MM': <OBDepthPrecisionLevel.ZERO_POINT_FOUR_MM: 2>, 'ZERO_POINT_TWO_MM': <OBDepthPrecisionLevel.ZERO_POINT_TWO_MM: 4>, 'ZERO_POINT_ONE_MM': <OBDepthPrecisionLevel.ZERO_POINT_ONE_MM: 3>}
@@ -1548,9 +1360,7 @@ class OBDepthPrecisionLevel:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1567,23 +1377,17 @@ class OBDepthWorkMode:
     @property
     def checksum(self) -> numpy.typing.NDArray[numpy.uint8]: ...
     @checksum.setter
-    def checksum(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.uint8]
-    ) -> None: ...
+    def checksum(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.uint8]) -> None: ...
 
 class OBDepthWorkModeList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBDepthWorkMode: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBDepthWorkMode: ...
     def __len__(self) -> int: ...
     def get_count(self) -> int:
         """
         Get the number of OBDepthWorkMode objects in the list
         """
 
-    def get_depth_work_mode_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBDepthWorkMode:
+    def get_depth_work_mode_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBDepthWorkMode:
         """
         Get the OBDepthWorkMode object at the specified index
         """
@@ -1614,9 +1418,7 @@ class OBDepthWorkModeTag:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1664,9 +1466,7 @@ class OBDeviceAccessMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1682,12 +1482,8 @@ class OBDeviceDevelopmentMode:
       DEVELOPMENT
     """
 
-    DEVELOPMENT: typing.ClassVar[
-        OBDeviceDevelopmentMode
-    ]  # value = <OBDeviceDevelopmentMode.DEVELOPMENT: 1>
-    NORMAL: typing.ClassVar[
-        OBDeviceDevelopmentMode
-    ]  # value = <OBDeviceDevelopmentMode.NORMAL: 0>
+    DEVELOPMENT: typing.ClassVar[OBDeviceDevelopmentMode]  # value = <OBDeviceDevelopmentMode.DEVELOPMENT: 1>
+    NORMAL: typing.ClassVar[OBDeviceDevelopmentMode]  # value = <OBDeviceDevelopmentMode.NORMAL: 0>
     __members__: typing.ClassVar[
         dict[str, OBDeviceDevelopmentMode]
     ]  # value = {'NORMAL': <OBDeviceDevelopmentMode.NORMAL: 0>, 'DEVELOPMENT': <OBDeviceDevelopmentMode.DEVELOPMENT: 1>}
@@ -1699,9 +1495,7 @@ class OBDeviceDevelopmentMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1728,33 +1522,23 @@ class OBDeviceSyncConfig:
     @property
     def device_trigger_signal_out_delay(self) -> int: ...
     @device_trigger_signal_out_delay.setter
-    def device_trigger_signal_out_delay(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def device_trigger_signal_out_delay(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def device_trigger_signal_out_polarity(self) -> int: ...
     @device_trigger_signal_out_polarity.setter
-    def device_trigger_signal_out_polarity(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def device_trigger_signal_out_polarity(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def ir_trigger_signal_delay(self) -> int: ...
     @ir_trigger_signal_delay.setter
-    def ir_trigger_signal_delay(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def ir_trigger_signal_delay(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def mcu_trigger_frequency(self) -> int: ...
     @mcu_trigger_frequency.setter
-    def mcu_trigger_frequency(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def mcu_trigger_frequency(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def rgb_trigger_signal_delay(self) -> int: ...
     @rgb_trigger_signal_delay.setter
-    def rgb_trigger_signal_delay(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def rgb_trigger_signal_delay(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBDeviceTemperature:
     def __init__(self) -> None: ...
@@ -1762,69 +1546,47 @@ class OBDeviceTemperature:
     @property
     def chip_bottom_temperature(self) -> float: ...
     @chip_bottom_temperature.setter
-    def chip_bottom_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def chip_bottom_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def chip_top_temperature(self) -> float: ...
     @chip_top_temperature.setter
-    def chip_top_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def chip_top_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def cpu_temperature(self) -> float: ...
     @cpu_temperature.setter
-    def cpu_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def cpu_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def imu_temperature(self) -> float: ...
     @imu_temperature.setter
-    def imu_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def imu_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def ir_left_temperature(self) -> float: ...
     @ir_left_temperature.setter
-    def ir_left_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def ir_left_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def ir_right_temperature(self) -> float: ...
     @ir_right_temperature.setter
-    def ir_right_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def ir_right_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def ir_temperature(self) -> float: ...
     @ir_temperature.setter
-    def ir_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def ir_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def laser_temperature(self) -> float: ...
     @laser_temperature.setter
-    def laser_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def laser_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def main_board_temperature(self) -> float: ...
     @main_board_temperature.setter
-    def main_board_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def main_board_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def rgb_temperature(self) -> float: ...
     @rgb_temperature.setter
-    def rgb_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def rgb_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def tec_temperature(self) -> float: ...
     @tec_temperature.setter
-    def tec_temperature(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def tec_temperature(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
 
 class OBDeviceTimestampResetConfig:
     enable: bool
@@ -1832,9 +1594,7 @@ class OBDeviceTimestampResetConfig:
     @property
     def timestamp_reset_delay_us(self) -> int: ...
     @timestamp_reset_delay_us.setter
-    def timestamp_reset_delay_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def timestamp_reset_delay_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBDeviceType:
     """
@@ -1847,15 +1607,9 @@ class OBDeviceType:
       TIME_OF_FLIGHT
     """
 
-    LIGHT_BINOCULAR: typing.ClassVar[
-        OBDeviceType
-    ]  # value = <OBDeviceType.LIGHT_BINOCULAR: 1>
-    LIGHT_MONOCULAR: typing.ClassVar[
-        OBDeviceType
-    ]  # value = <OBDeviceType.LIGHT_MONOCULAR: 0>
-    TIME_OF_FLIGHT: typing.ClassVar[
-        OBDeviceType
-    ]  # value = <OBDeviceType.TIME_OF_FLIGHT: 2>
+    LIGHT_BINOCULAR: typing.ClassVar[OBDeviceType]  # value = <OBDeviceType.LIGHT_BINOCULAR: 1>
+    LIGHT_MONOCULAR: typing.ClassVar[OBDeviceType]  # value = <OBDeviceType.LIGHT_MONOCULAR: 0>
+    TIME_OF_FLIGHT: typing.ClassVar[OBDeviceType]  # value = <OBDeviceType.TIME_OF_FLIGHT: 2>
     __members__: typing.ClassVar[
         dict[str, OBDeviceType]
     ]  # value = {'LIGHT_MONOCULAR': <OBDeviceType.LIGHT_MONOCULAR: 0>, 'LIGHT_BINOCULAR': <OBDeviceType.LIGHT_BINOCULAR: 1>, 'TIME_OF_FLIGHT': <OBDeviceType.TIME_OF_FLIGHT: 2>}
@@ -1867,9 +1621,7 @@ class OBDeviceType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1882,27 +1634,19 @@ class OBEdgeNoiseRemovalFilterParams:
     @property
     def margin_bottom_th(self) -> int: ...
     @margin_bottom_th.setter
-    def margin_bottom_th(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def margin_bottom_th(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def margin_left_th(self) -> int: ...
     @margin_left_th.setter
-    def margin_left_th(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def margin_left_th(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def margin_right_th(self) -> int: ...
     @margin_right_th.setter
-    def margin_right_th(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def margin_right_th(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def margin_top_th(self) -> int: ...
     @margin_top_th.setter
-    def margin_top_th(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def margin_top_th(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBEdgeNoiseRemovalType:
     """
@@ -1917,18 +1661,10 @@ class OBEdgeNoiseRemovalType:
       MGC_FILTER
     """
 
-    MGA_FILTER: typing.ClassVar[
-        OBEdgeNoiseRemovalType
-    ]  # value = <OBEdgeNoiseRemovalType.MGA_FILTER: 2>
-    MGC_FILTER: typing.ClassVar[
-        OBEdgeNoiseRemovalType
-    ]  # value = <OBEdgeNoiseRemovalType.MGC_FILTER: 3>
-    MGH_FILTER: typing.ClassVar[
-        OBEdgeNoiseRemovalType
-    ]  # value = <OBEdgeNoiseRemovalType.MGH_FILTER: 1>
-    MG_FILTER: typing.ClassVar[
-        OBEdgeNoiseRemovalType
-    ]  # value = <OBEdgeNoiseRemovalType.MG_FILTER: 0>
+    MGA_FILTER: typing.ClassVar[OBEdgeNoiseRemovalType]  # value = <OBEdgeNoiseRemovalType.MGA_FILTER: 2>
+    MGC_FILTER: typing.ClassVar[OBEdgeNoiseRemovalType]  # value = <OBEdgeNoiseRemovalType.MGC_FILTER: 3>
+    MGH_FILTER: typing.ClassVar[OBEdgeNoiseRemovalType]  # value = <OBEdgeNoiseRemovalType.MGH_FILTER: 1>
+    MG_FILTER: typing.ClassVar[OBEdgeNoiseRemovalType]  # value = <OBEdgeNoiseRemovalType.MG_FILTER: 0>
     __members__: typing.ClassVar[
         dict[str, OBEdgeNoiseRemovalType]
     ]  # value = {'MG_FILTER': <OBEdgeNoiseRemovalType.MG_FILTER: 0>, 'MGH_FILTER': <OBEdgeNoiseRemovalType.MGH_FILTER: 1>, 'MGA_FILTER': <OBEdgeNoiseRemovalType.MGA_FILTER: 2>, 'MGC_FILTER': <OBEdgeNoiseRemovalType.MGC_FILTER: 3>}
@@ -1940,9 +1676,7 @@ class OBEdgeNoiseRemovalType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -1971,21 +1705,13 @@ class OBException:
       IO_ERROR
     """
 
-    CAMERA_DISCONNECTED: typing.ClassVar[
-        OBException
-    ]  # value = <OBException.CAMERA_DISCONNECTED: 2>
-    INVALID_VALUE: typing.ClassVar[
-        OBException
-    ]  # value = <OBException.INVALID_VALUE: 4>
+    CAMERA_DISCONNECTED: typing.ClassVar[OBException]  # value = <OBException.CAMERA_DISCONNECTED: 2>
+    INVALID_VALUE: typing.ClassVar[OBException]  # value = <OBException.INVALID_VALUE: 4>
     IO_ERROR: typing.ClassVar[OBException]  # value = <OBException.IO_ERROR: 7>
-    NOT_IMPLEMENTED: typing.ClassVar[
-        OBException
-    ]  # value = <OBException.NOT_IMPLEMENTED: 6>
+    NOT_IMPLEMENTED: typing.ClassVar[OBException]  # value = <OBException.NOT_IMPLEMENTED: 6>
     PLATFORM: typing.ClassVar[OBException]  # value = <OBException.PLATFORM: 3>
     UNKNOWN: typing.ClassVar[OBException]  # value = <OBException.UNKNOWN: 0>
-    WRONG_API_CALL_SEQUENCE: typing.ClassVar[
-        OBException
-    ]  # value = <OBException.WRONG_API_CALL_SEQUENCE: 5>
+    WRONG_API_CALL_SEQUENCE: typing.ClassVar[OBException]  # value = <OBException.WRONG_API_CALL_SEQUENCE: 5>
     __members__: typing.ClassVar[
         dict[str, OBException]
     ]  # value = {'UNKNOWN': <OBException.UNKNOWN: 0>, 'CAMERA_DISCONNECTED': <OBException.CAMERA_DISCONNECTED: 2>, 'PLATFORM': <OBException.PLATFORM: 3>, 'INVALID_VALUE': <OBException.INVALID_VALUE: 4>, 'WRONG_API_CALL_SEQUENCE': <OBException.WRONG_API_CALL_SEQUENCE: 5>, 'NOT_IMPLEMENTED': <OBException.NOT_IMPLEMENTED: 6>, 'IO_ERROR': <OBException.IO_ERROR: 7>}
@@ -1997,9 +1723,7 @@ class OBException:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2012,15 +1736,11 @@ class OBExtrinsic:
     @property
     def rot(self) -> numpy.typing.NDArray[numpy.float32]: ...
     @rot.setter
-    def rot(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float32]
-    ) -> None: ...
+    def rot(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float32]) -> None: ...
     @property
     def transform(self) -> numpy.typing.NDArray[numpy.float32]: ...
     @transform.setter
-    def transform(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float32]
-    ) -> None: ...
+    def transform(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float32]) -> None: ...
 
 class OBFileTranState:
     """
@@ -2047,24 +1767,12 @@ class OBFileTranState:
 
     DONE: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.DONE: 1>
     ERR_DDR: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_DDR: -1>
-    ERR_MD5_ERROR: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.ERR_MD5_ERROR: -4>
-    ERR_NOT_ENOUGH_SPACE: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.ERR_NOT_ENOUGH_SPACE: -2>
-    ERR_PATH_NOT_WRITABLE: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.ERR_PATH_NOT_WRITABLE: -3>
-    ERR_TIMEOUT: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.ERR_TIMEOUT: -6>
-    ERR_WRITE_FLASH_ERROR: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.ERR_WRITE_FLASH_ERROR: -5>
-    PREPARING: typing.ClassVar[
-        OBFileTranState
-    ]  # value = <OBFileTranState.PREPARING: 0>
+    ERR_MD5_ERROR: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_MD5_ERROR: -4>
+    ERR_NOT_ENOUGH_SPACE: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_NOT_ENOUGH_SPACE: -2>
+    ERR_PATH_NOT_WRITABLE: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_PATH_NOT_WRITABLE: -3>
+    ERR_TIMEOUT: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_TIMEOUT: -6>
+    ERR_WRITE_FLASH_ERROR: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.ERR_WRITE_FLASH_ERROR: -5>
+    PREPARING: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.PREPARING: 0>
     TRANSFER: typing.ClassVar[OBFileTranState]  # value = <OBFileTranState.TRANSFER: 2>
     __members__: typing.ClassVar[
         dict[str, OBFileTranState]
@@ -2077,9 +1785,7 @@ class OBFileTranState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2123,18 +1829,10 @@ class OBFilterConfigValueType:
       BOOLEAN
     """
 
-    BOOLEAN: typing.ClassVar[
-        OBFilterConfigValueType
-    ]  # value = <OBFilterConfigValueType.BOOLEAN: 2>
-    FLOAT: typing.ClassVar[
-        OBFilterConfigValueType
-    ]  # value = <OBFilterConfigValueType.FLOAT: 1>
-    INT: typing.ClassVar[
-        OBFilterConfigValueType
-    ]  # value = <OBFilterConfigValueType.INT: 0>
-    INVALID: typing.ClassVar[
-        OBFilterConfigValueType
-    ]  # value = <OBFilterConfigValueType.INVALID: -1>
+    BOOLEAN: typing.ClassVar[OBFilterConfigValueType]  # value = <OBFilterConfigValueType.BOOLEAN: 2>
+    FLOAT: typing.ClassVar[OBFilterConfigValueType]  # value = <OBFilterConfigValueType.FLOAT: 1>
+    INT: typing.ClassVar[OBFilterConfigValueType]  # value = <OBFilterConfigValueType.INT: 0>
+    INVALID: typing.ClassVar[OBFilterConfigValueType]  # value = <OBFilterConfigValueType.INVALID: -1>
     __members__: typing.ClassVar[
         dict[str, OBFilterConfigValueType]
     ]  # value = {'INVALID': <OBFilterConfigValueType.INVALID: -1>, 'INT': <OBFilterConfigValueType.INT: 0>, 'FLOAT': <OBFilterConfigValueType.FLOAT: 1>, 'BOOLEAN': <OBFilterConfigValueType.BOOLEAN: 2>}
@@ -2146,9 +1844,7 @@ class OBFilterConfigValueType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2156,9 +1852,7 @@ class OBFilterConfigValueType:
     def value(self) -> int: ...
 
 class OBFilterList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> Filter: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Filter: ...
     def __len__(self) -> int: ...
     def get_count(self) -> int: ...
     def get_filter(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Filter: ...
@@ -2172,9 +1866,7 @@ class OBFloatPropertyRange:
     @property
     def default_value(self) -> float: ...
     @default_value.setter
-    def default_value(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def default_value(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def max(self) -> float: ...
     @max.setter
@@ -2283,14 +1975,10 @@ class OBFormat:
     H265: typing.ClassVar[OBFormat]  # value = <OBFormat.H265: 7>
     HEVC: typing.ClassVar[OBFormat]  # value = <OBFormat.HEVC: 14>
     I420: typing.ClassVar[OBFormat]  # value = <OBFormat.I420: 15>
-    LIDAR_CALIBRATION: typing.ClassVar[
-        OBFormat
-    ]  # value = <OBFormat.LIDAR_CALIBRATION: 38>
+    LIDAR_CALIBRATION: typing.ClassVar[OBFormat]  # value = <OBFormat.LIDAR_CALIBRATION: 38>
     LIDAR_POINT: typing.ClassVar[OBFormat]  # value = <OBFormat.LIDAR_POINT: 35>
     LIDAR_SCAN: typing.ClassVar[OBFormat]  # value = <OBFormat.LIDAR_SCAN: 37>
-    LIDAR_SPHERE_POINT: typing.ClassVar[
-        OBFormat
-    ]  # value = <OBFormat.LIDAR_SPHERE_POINT: 36>
+    LIDAR_SPHERE_POINT: typing.ClassVar[OBFormat]  # value = <OBFormat.LIDAR_SPHERE_POINT: 36>
     MJPG: typing.ClassVar[OBFormat]  # value = <OBFormat.MJPG: 5>
     NV12: typing.ClassVar[OBFormat]  # value = <OBFormat.NV12: 3>
     NV21: typing.ClassVar[OBFormat]  # value = <OBFormat.NV21: 4>
@@ -2325,9 +2013,7 @@ class OBFormat:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2347,15 +2033,11 @@ class OBFrameAggregateOutputMode:
       DISABLE
     """
 
-    ANY_SITUATION: typing.ClassVar[
-        OBFrameAggregateOutputMode
-    ]  # value = <OBFrameAggregateOutputMode.ANY_SITUATION: 2>
+    ANY_SITUATION: typing.ClassVar[OBFrameAggregateOutputMode]  # value = <OBFrameAggregateOutputMode.ANY_SITUATION: 2>
     COLOR_FRAME_REQUIRE: typing.ClassVar[
         OBFrameAggregateOutputMode
     ]  # value = <OBFrameAggregateOutputMode.COLOR_FRAME_REQUIRE: 1>
-    DISABLE: typing.ClassVar[
-        OBFrameAggregateOutputMode
-    ]  # value = <OBFrameAggregateOutputMode.DISABLE: 3>
+    DISABLE: typing.ClassVar[OBFrameAggregateOutputMode]  # value = <OBFrameAggregateOutputMode.DISABLE: 3>
     FULL_FRAME_REQUIRE: typing.ClassVar[
         OBFrameAggregateOutputMode
     ]  # value = <OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE: 0>
@@ -2370,9 +2052,7 @@ class OBFrameAggregateOutputMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2454,107 +2134,49 @@ class OBFrameMetadataType:
       COUNT
     """
 
-    ACTUAL_FRAME_RATE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.ACTUAL_FRAME_RATE: 18>
-    AE_ROI_BOTTOM: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AE_ROI_BOTTOM: 23>
-    AE_ROI_LEFT: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AE_ROI_LEFT: 20>
-    AE_ROI_RIGHT: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AE_ROI_RIGHT: 22>
-    AE_ROI_TOP: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AE_ROI_TOP: 21>
-    AUTO_EXPOSURE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AUTO_EXPOSURE: 3>
-    AUTO_WHITE_BALANCE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.AUTO_WHITE_BALANCE: 6>
+    ACTUAL_FRAME_RATE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.ACTUAL_FRAME_RATE: 18>
+    AE_ROI_BOTTOM: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AE_ROI_BOTTOM: 23>
+    AE_ROI_LEFT: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AE_ROI_LEFT: 20>
+    AE_ROI_RIGHT: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AE_ROI_RIGHT: 22>
+    AE_ROI_TOP: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AE_ROI_TOP: 21>
+    AUTO_EXPOSURE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AUTO_EXPOSURE: 3>
+    AUTO_WHITE_BALANCE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.AUTO_WHITE_BALANCE: 6>
     BACKLIGHT_COMPENSATION: typing.ClassVar[
         OBFrameMetadataType
     ]  # value = <OBFrameMetadataType.BACKLIGHT_COMPENSATION: 12>
-    BRIGHTNESS: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.BRIGHTNESS: 8>
-    CONTRAST: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.CONTRAST: 9>
-    COUNT: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.COUNT: 34>
+    BRIGHTNESS: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.BRIGHTNESS: 8>
+    CONTRAST: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.CONTRAST: 9>
+    COUNT: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.COUNT: 34>
     DISPARITY_SEARCH_OFFSET: typing.ClassVar[
         OBFrameMetadataType
     ]  # value = <OBFrameMetadataType.DISPARITY_SEARCH_OFFSET: 32>
     DISPARITY_SEARCH_RANGE: typing.ClassVar[
         OBFrameMetadataType
     ]  # value = <OBFrameMetadataType.DISPARITY_SEARCH_RANGE: 33>
-    EXPOSURE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.EXPOSURE: 4>
-    EXPOSURE_PRIORITY: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.EXPOSURE_PRIORITY: 24>
-    FRAME_NUMBER: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.FRAME_NUMBER: 2>
-    FRAME_RATE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.FRAME_RATE: 19>
+    EXPOSURE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.EXPOSURE: 4>
+    EXPOSURE_PRIORITY: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.EXPOSURE_PRIORITY: 24>
+    FRAME_NUMBER: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.FRAME_NUMBER: 2>
+    FRAME_RATE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.FRAME_RATE: 19>
     GAIN: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.GAIN: 5>
-    GAMMA: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.GAMMA: 14>
-    GPIO_INPUT_DATA: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.GPIO_INPUT_DATA: 31>
-    HDR_SEQUENCE_INDEX: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.HDR_SEQUENCE_INDEX: 27>
-    HDR_SEQUENCE_NAME: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.HDR_SEQUENCE_NAME: 25>
-    HDR_SEQUENCE_SIZE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.HDR_SEQUENCE_SIZE: 26>
+    GAMMA: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.GAMMA: 14>
+    GPIO_INPUT_DATA: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.GPIO_INPUT_DATA: 31>
+    HDR_SEQUENCE_INDEX: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.HDR_SEQUENCE_INDEX: 27>
+    HDR_SEQUENCE_NAME: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.HDR_SEQUENCE_NAME: 25>
+    HDR_SEQUENCE_SIZE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.HDR_SEQUENCE_SIZE: 26>
     HUE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.HUE: 13>
-    LASER_POWER: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.LASER_POWER: 28>
-    LASER_POWER_LEVEL: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.LASER_POWER_LEVEL: 29>
-    LASER_STATUS: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.LASER_STATUS: 30>
+    LASER_POWER: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.LASER_POWER: 28>
+    LASER_POWER_LEVEL: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.LASER_POWER_LEVEL: 29>
+    LASER_STATUS: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.LASER_STATUS: 30>
     LOW_LIGHT_COMPENSATION: typing.ClassVar[
         OBFrameMetadataType
     ]  # value = <OBFrameMetadataType.LOW_LIGHT_COMPENSATION: 16>
-    MANUAL_WHITE_BALANCE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.MANUAL_WHITE_BALANCE: 17>
-    POWER_LINE_FREQUENCY: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.POWER_LINE_FREQUENCY: 15>
-    SATURATION: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.SATURATION: 10>
-    SENSOR_TIMESTAMP: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.SENSOR_TIMESTAMP: 1>
-    SHARPNESS: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.SHARPNESS: 11>
-    TIMESTAMP: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.TIMESTAMP: 0>
-    WHITE_BALANCE: typing.ClassVar[
-        OBFrameMetadataType
-    ]  # value = <OBFrameMetadataType.WHITE_BALANCE: 7>
+    MANUAL_WHITE_BALANCE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.MANUAL_WHITE_BALANCE: 17>
+    POWER_LINE_FREQUENCY: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.POWER_LINE_FREQUENCY: 15>
+    SATURATION: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.SATURATION: 10>
+    SENSOR_TIMESTAMP: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.SENSOR_TIMESTAMP: 1>
+    SHARPNESS: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.SHARPNESS: 11>
+    TIMESTAMP: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.TIMESTAMP: 0>
+    WHITE_BALANCE: typing.ClassVar[OBFrameMetadataType]  # value = <OBFrameMetadataType.WHITE_BALANCE: 7>
     __members__: typing.ClassVar[
         dict[str, OBFrameMetadataType]
     ]  # value = {'TIMESTAMP': <OBFrameMetadataType.TIMESTAMP: 0>, 'SENSOR_TIMESTAMP': <OBFrameMetadataType.SENSOR_TIMESTAMP: 1>, 'FRAME_NUMBER': <OBFrameMetadataType.FRAME_NUMBER: 2>, 'AUTO_EXPOSURE': <OBFrameMetadataType.AUTO_EXPOSURE: 3>, 'EXPOSURE': <OBFrameMetadataType.EXPOSURE: 4>, 'GAIN': <OBFrameMetadataType.GAIN: 5>, 'AUTO_WHITE_BALANCE': <OBFrameMetadataType.AUTO_WHITE_BALANCE: 6>, 'WHITE_BALANCE': <OBFrameMetadataType.WHITE_BALANCE: 7>, 'BRIGHTNESS': <OBFrameMetadataType.BRIGHTNESS: 8>, 'CONTRAST': <OBFrameMetadataType.CONTRAST: 9>, 'SATURATION': <OBFrameMetadataType.SATURATION: 10>, 'SHARPNESS': <OBFrameMetadataType.SHARPNESS: 11>, 'BACKLIGHT_COMPENSATION': <OBFrameMetadataType.BACKLIGHT_COMPENSATION: 12>, 'HUE': <OBFrameMetadataType.HUE: 13>, 'GAMMA': <OBFrameMetadataType.GAMMA: 14>, 'POWER_LINE_FREQUENCY': <OBFrameMetadataType.POWER_LINE_FREQUENCY: 15>, 'LOW_LIGHT_COMPENSATION': <OBFrameMetadataType.LOW_LIGHT_COMPENSATION: 16>, 'MANUAL_WHITE_BALANCE': <OBFrameMetadataType.MANUAL_WHITE_BALANCE: 17>, 'ACTUAL_FRAME_RATE': <OBFrameMetadataType.ACTUAL_FRAME_RATE: 18>, 'FRAME_RATE': <OBFrameMetadataType.FRAME_RATE: 19>, 'AE_ROI_LEFT': <OBFrameMetadataType.AE_ROI_LEFT: 20>, 'AE_ROI_TOP': <OBFrameMetadataType.AE_ROI_TOP: 21>, 'AE_ROI_RIGHT': <OBFrameMetadataType.AE_ROI_RIGHT: 22>, 'AE_ROI_BOTTOM': <OBFrameMetadataType.AE_ROI_BOTTOM: 23>, 'EXPOSURE_PRIORITY': <OBFrameMetadataType.EXPOSURE_PRIORITY: 24>, 'HDR_SEQUENCE_NAME': <OBFrameMetadataType.HDR_SEQUENCE_NAME: 25>, 'HDR_SEQUENCE_SIZE': <OBFrameMetadataType.HDR_SEQUENCE_SIZE: 26>, 'HDR_SEQUENCE_INDEX': <OBFrameMetadataType.HDR_SEQUENCE_INDEX: 27>, 'LASER_POWER': <OBFrameMetadataType.LASER_POWER: 28>, 'LASER_POWER_LEVEL': <OBFrameMetadataType.LASER_POWER_LEVEL: 29>, 'LASER_STATUS': <OBFrameMetadataType.LASER_STATUS: 30>, 'GPIO_INPUT_DATA': <OBFrameMetadataType.GPIO_INPUT_DATA: 31>, 'DISPARITY_SEARCH_OFFSET': <OBFrameMetadataType.DISPARITY_SEARCH_OFFSET: 32>, 'DISPARITY_SEARCH_RANGE': <OBFrameMetadataType.DISPARITY_SEARCH_RANGE: 33>, 'COUNT': <OBFrameMetadataType.COUNT: 34>}
@@ -2566,9 +2188,7 @@ class OBFrameMetadataType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2614,37 +2234,19 @@ class OBFrameType:
 
     ACCEL_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.ACCEL_FRAME: 4>
     COLOR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.COLOR_FRAME: 2>
-    CONFIDENCE_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.CONFIDENCE_FRAME: 11>
+    CONFIDENCE_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.CONFIDENCE_FRAME: 11>
     DEPTH_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.DEPTH_FRAME: 3>
     FRAME_SET: typing.ClassVar[OBFrameType]  # value = <OBFrameType.FRAME_SET: 5>
     GYRO_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.GYRO_FRAME: 7>
     IR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.IR_FRAME: 1>
-    LEFT_COLOR_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.LEFT_COLOR_FRAME: 13>
-    LEFT_IR_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.LEFT_IR_FRAME: 8>
-    LIDAR_POINTS_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.LIDAR_POINTS_FRAME: 12>
-    RAW_PHASE_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.RAW_PHASE_FRAME: 10>
-    RIGHT_COLOR_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.RIGHT_COLOR_FRAME: 14>
-    RIGHT_IR_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.RIGHT_IR_FRAME: 9>
-    TYPE_COUNT_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.TYPE_COUNT_FRAME: 15>
-    UNKNOWN_FRAME: typing.ClassVar[
-        OBFrameType
-    ]  # value = <OBFrameType.UNKNOWN_FRAME: -1>
+    LEFT_COLOR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.LEFT_COLOR_FRAME: 13>
+    LEFT_IR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.LEFT_IR_FRAME: 8>
+    LIDAR_POINTS_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.LIDAR_POINTS_FRAME: 12>
+    RAW_PHASE_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.RAW_PHASE_FRAME: 10>
+    RIGHT_COLOR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.RIGHT_COLOR_FRAME: 14>
+    RIGHT_IR_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.RIGHT_IR_FRAME: 9>
+    TYPE_COUNT_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.TYPE_COUNT_FRAME: 15>
+    UNKNOWN_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.UNKNOWN_FRAME: -1>
     VIDEO_FRAME: typing.ClassVar[OBFrameType]  # value = <OBFrameType.VIDEO_FRAME: 0>
     __members__: typing.ClassVar[
         dict[str, OBFrameType]
@@ -2657,9 +2259,7 @@ class OBFrameType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2693,39 +2293,17 @@ class OBGyroFullScaleRange:
       FS_800dps
     """
 
-    FS_1000dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_1000dps: 7>
-    FS_125dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_125dps: 4>
-    FS_16dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_16dps: 1>
-    FS_2000dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_2000dps: 8>
-    FS_250dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_250dps: 5>
-    FS_31dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_31dps: 2>
-    FS_400dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_400dps: 9>
-    FS_500dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_500dps: 6>
-    FS_62dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_62dps: 3>
-    FS_800dps: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_800dps: 10>
-    FS_UNKNOWN: typing.ClassVar[
-        OBGyroFullScaleRange
-    ]  # value = <OBGyroFullScaleRange.FS_UNKNOWN: -1>
+    FS_1000dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_1000dps: 7>
+    FS_125dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_125dps: 4>
+    FS_16dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_16dps: 1>
+    FS_2000dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_2000dps: 8>
+    FS_250dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_250dps: 5>
+    FS_31dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_31dps: 2>
+    FS_400dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_400dps: 9>
+    FS_500dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_500dps: 6>
+    FS_62dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_62dps: 3>
+    FS_800dps: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_800dps: 10>
+    FS_UNKNOWN: typing.ClassVar[OBGyroFullScaleRange]  # value = <OBGyroFullScaleRange.FS_UNKNOWN: -1>
     __members__: typing.ClassVar[
         dict[str, OBGyroFullScaleRange]
     ]  # value = {'FS_UNKNOWN': <OBGyroFullScaleRange.FS_UNKNOWN: -1>, 'FS_16dps': <OBGyroFullScaleRange.FS_16dps: 1>, 'FS_31dps': <OBGyroFullScaleRange.FS_31dps: 2>, 'FS_62dps': <OBGyroFullScaleRange.FS_62dps: 3>, 'FS_125dps': <OBGyroFullScaleRange.FS_125dps: 4>, 'FS_250dps': <OBGyroFullScaleRange.FS_250dps: 5>, 'FS_500dps': <OBGyroFullScaleRange.FS_500dps: 6>, 'FS_1000dps': <OBGyroFullScaleRange.FS_1000dps: 7>, 'FS_2000dps': <OBGyroFullScaleRange.FS_2000dps: 8>, 'FS_400dps': <OBGyroFullScaleRange.FS_400dps: 9>, 'FS_800dps': <OBGyroFullScaleRange.FS_800dps: 10>}
@@ -2737,9 +2315,7 @@ class OBGyroFullScaleRange:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2751,39 +2327,27 @@ class OBGyroIntrinsic:
     @property
     def bias(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @bias.setter
-    def bias(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def bias(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
     @property
     def noise_density(self) -> float: ...
     @noise_density.setter
-    def noise_density(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def noise_density(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def random_walk(self) -> float: ...
     @random_walk.setter
-    def random_walk(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def random_walk(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def reference_temp(self) -> float: ...
     @reference_temp.setter
-    def reference_temp(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def reference_temp(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
     @property
     def scale_misalignment(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @scale_misalignment.setter
-    def scale_misalignment(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def scale_misalignment(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
     @property
     def temp_slope(self) -> numpy.typing.NDArray[numpy.float64]: ...
     @temp_slope.setter
-    def temp_slope(
-        self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]
-    ) -> None: ...
+    def temp_slope(self, arg1: typing.Annotated[numpy.typing.ArrayLike, numpy.float64]) -> None: ...
 
 class OBGyroSampleRate:
     """
@@ -2826,60 +2390,24 @@ class OBGyroSampleRate:
       SAMPLE_RATE_800_HZ
     """
 
-    SAMPLE_RATE_100_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_100_HZ: 7>
-    SAMPLE_RATE_12_5_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_12_5_HZ: 4>
-    SAMPLE_RATE_16_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_16_KHZ: 14>
-    SAMPLE_RATE_1_5625_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_1_5625_HZ: 1>
-    SAMPLE_RATE_1_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_1_KHZ: 10>
-    SAMPLE_RATE_200_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_200_HZ: 8>
-    SAMPLE_RATE_25_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_25_HZ: 5>
-    SAMPLE_RATE_2_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_2_KHZ: 11>
-    SAMPLE_RATE_32_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_32_KHZ: 15>
-    SAMPLE_RATE_3_125_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_3_125_HZ: 2>
-    SAMPLE_RATE_400_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_400_HZ: 16>
-    SAMPLE_RATE_4_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_4_KHZ: 12>
-    SAMPLE_RATE_500_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_500_HZ: 9>
-    SAMPLE_RATE_50_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_50_HZ: 6>
-    SAMPLE_RATE_6_25_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_6_25_HZ: 3>
-    SAMPLE_RATE_800_HZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_800_HZ: 17>
-    SAMPLE_RATE_8_KHZ: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_8_KHZ: 13>
-    SAMPLE_RATE_UNKNOWN: typing.ClassVar[
-        OBGyroSampleRate
-    ]  # value = <OBGyroSampleRate.SAMPLE_RATE_UNKNOWN: 0>
+    SAMPLE_RATE_100_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_100_HZ: 7>
+    SAMPLE_RATE_12_5_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_12_5_HZ: 4>
+    SAMPLE_RATE_16_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_16_KHZ: 14>
+    SAMPLE_RATE_1_5625_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_1_5625_HZ: 1>
+    SAMPLE_RATE_1_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_1_KHZ: 10>
+    SAMPLE_RATE_200_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_200_HZ: 8>
+    SAMPLE_RATE_25_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_25_HZ: 5>
+    SAMPLE_RATE_2_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_2_KHZ: 11>
+    SAMPLE_RATE_32_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_32_KHZ: 15>
+    SAMPLE_RATE_3_125_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_3_125_HZ: 2>
+    SAMPLE_RATE_400_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_400_HZ: 16>
+    SAMPLE_RATE_4_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_4_KHZ: 12>
+    SAMPLE_RATE_500_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_500_HZ: 9>
+    SAMPLE_RATE_50_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_50_HZ: 6>
+    SAMPLE_RATE_6_25_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_6_25_HZ: 3>
+    SAMPLE_RATE_800_HZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_800_HZ: 17>
+    SAMPLE_RATE_8_KHZ: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_8_KHZ: 13>
+    SAMPLE_RATE_UNKNOWN: typing.ClassVar[OBGyroSampleRate]  # value = <OBGyroSampleRate.SAMPLE_RATE_UNKNOWN: 0>
     __members__: typing.ClassVar[
         dict[str, OBGyroSampleRate]
     ]  # value = {'SAMPLE_RATE_UNKNOWN': <OBGyroSampleRate.SAMPLE_RATE_UNKNOWN: 0>, 'SAMPLE_RATE_1_5625_HZ': <OBGyroSampleRate.SAMPLE_RATE_1_5625_HZ: 1>, 'SAMPLE_RATE_3_125_HZ': <OBGyroSampleRate.SAMPLE_RATE_3_125_HZ: 2>, 'SAMPLE_RATE_6_25_HZ': <OBGyroSampleRate.SAMPLE_RATE_6_25_HZ: 3>, 'SAMPLE_RATE_12_5_HZ': <OBGyroSampleRate.SAMPLE_RATE_12_5_HZ: 4>, 'SAMPLE_RATE_25_HZ': <OBGyroSampleRate.SAMPLE_RATE_25_HZ: 5>, 'SAMPLE_RATE_50_HZ': <OBGyroSampleRate.SAMPLE_RATE_50_HZ: 6>, 'SAMPLE_RATE_100_HZ': <OBGyroSampleRate.SAMPLE_RATE_100_HZ: 7>, 'SAMPLE_RATE_200_HZ': <OBGyroSampleRate.SAMPLE_RATE_200_HZ: 8>, 'SAMPLE_RATE_500_HZ': <OBGyroSampleRate.SAMPLE_RATE_500_HZ: 9>, 'SAMPLE_RATE_1_KHZ': <OBGyroSampleRate.SAMPLE_RATE_1_KHZ: 10>, 'SAMPLE_RATE_2_KHZ': <OBGyroSampleRate.SAMPLE_RATE_2_KHZ: 11>, 'SAMPLE_RATE_4_KHZ': <OBGyroSampleRate.SAMPLE_RATE_4_KHZ: 12>, 'SAMPLE_RATE_8_KHZ': <OBGyroSampleRate.SAMPLE_RATE_8_KHZ: 13>, 'SAMPLE_RATE_16_KHZ': <OBGyroSampleRate.SAMPLE_RATE_16_KHZ: 14>, 'SAMPLE_RATE_32_KHZ': <OBGyroSampleRate.SAMPLE_RATE_32_KHZ: 15>, 'SAMPLE_RATE_400_HZ': <OBGyroSampleRate.SAMPLE_RATE_400_HZ: 16>, 'SAMPLE_RATE_800_HZ': <OBGyroSampleRate.SAMPLE_RATE_800_HZ: 17>}
@@ -2891,9 +2419,7 @@ class OBGyroSampleRate:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2909,9 +2435,7 @@ class OBHardwareDecimationConfig:
     @property
     def origin_height(self) -> int: ...
     @origin_height.setter
-    def origin_height(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def origin_height(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def origin_width(self) -> int: ...
     @origin_width.setter
@@ -2942,9 +2466,7 @@ class OBHdrConfig:
     @property
     def sequence_name(self) -> int: ...
     @sequence_name.setter
-    def sequence_name(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def sequence_name(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBHoleFillingMode:
     """
@@ -2957,12 +2479,8 @@ class OBHoleFillingMode:
       FURTHEST
     """
 
-    FURTHEST: typing.ClassVar[
-        OBHoleFillingMode
-    ]  # value = <OBHoleFillingMode.FURTHEST: 2>
-    NEAREST: typing.ClassVar[
-        OBHoleFillingMode
-    ]  # value = <OBHoleFillingMode.NEAREST: 1>
+    FURTHEST: typing.ClassVar[OBHoleFillingMode]  # value = <OBHoleFillingMode.FURTHEST: 2>
+    NEAREST: typing.ClassVar[OBHoleFillingMode]  # value = <OBHoleFillingMode.NEAREST: 1>
     TOP: typing.ClassVar[OBHoleFillingMode]  # value = <OBHoleFillingMode.TOP: 0>
     __members__: typing.ClassVar[
         dict[str, OBHoleFillingMode]
@@ -2975,9 +2493,7 @@ class OBHoleFillingMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -2993,9 +2509,7 @@ class OBIntPropertyRange:
     @property
     def default_value(self) -> int: ...
     @default_value.setter
-    def default_value(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def default_value(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def max(self) -> int: ...
     @max.setter
@@ -3068,30 +2582,14 @@ class OBLiDARScanRate:
       LIDAR_SCAN_40HZ
     """
 
-    LIDAR_SCAN_10HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_10HZ: 2>
-    LIDAR_SCAN_15HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_15HZ: 3>
-    LIDAR_SCAN_20HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_20HZ: 4>
-    LIDAR_SCAN_25HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_25HZ: 5>
-    LIDAR_SCAN_30HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_30HZ: 6>
-    LIDAR_SCAN_40HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_40HZ: 7>
-    LIDAR_SCAN_5HZ: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_5HZ: 1>
-    LIDAR_SCAN_UNKNOWN: typing.ClassVar[
-        OBLiDARScanRate
-    ]  # value = <OBLiDARScanRate.LIDAR_SCAN_UNKNOWN: 0>
+    LIDAR_SCAN_10HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_10HZ: 2>
+    LIDAR_SCAN_15HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_15HZ: 3>
+    LIDAR_SCAN_20HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_20HZ: 4>
+    LIDAR_SCAN_25HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_25HZ: 5>
+    LIDAR_SCAN_30HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_30HZ: 6>
+    LIDAR_SCAN_40HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_40HZ: 7>
+    LIDAR_SCAN_5HZ: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_5HZ: 1>
+    LIDAR_SCAN_UNKNOWN: typing.ClassVar[OBLiDARScanRate]  # value = <OBLiDARScanRate.LIDAR_SCAN_UNKNOWN: 0>
     __members__: typing.ClassVar[
         dict[str, OBLiDARScanRate]
     ]  # value = {'LIDAR_SCAN_UNKNOWN': <OBLiDARScanRate.LIDAR_SCAN_UNKNOWN: 0>, 'LIDAR_SCAN_5HZ': <OBLiDARScanRate.LIDAR_SCAN_5HZ: 1>, 'LIDAR_SCAN_10HZ': <OBLiDARScanRate.LIDAR_SCAN_10HZ: 2>, 'LIDAR_SCAN_15HZ': <OBLiDARScanRate.LIDAR_SCAN_15HZ: 3>, 'LIDAR_SCAN_20HZ': <OBLiDARScanRate.LIDAR_SCAN_20HZ: 4>, 'LIDAR_SCAN_25HZ': <OBLiDARScanRate.LIDAR_SCAN_25HZ: 5>, 'LIDAR_SCAN_30HZ': <OBLiDARScanRate.LIDAR_SCAN_30HZ: 6>, 'LIDAR_SCAN_40HZ': <OBLiDARScanRate.LIDAR_SCAN_40HZ: 7>}
@@ -3103,9 +2601,7 @@ class OBLiDARScanRate:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3169,9 +2665,7 @@ class OBLogLevel:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3191,18 +2685,10 @@ class OBMediaState:
       OB_MEDIA_END
     """
 
-    OB_MEDIA_BEGIN: typing.ClassVar[
-        OBMediaState
-    ]  # value = <OBMediaState.OB_MEDIA_BEGIN: 0>
-    OB_MEDIA_END: typing.ClassVar[
-        OBMediaState
-    ]  # value = <OBMediaState.OB_MEDIA_END: 3>
-    OB_MEDIA_PAUSE: typing.ClassVar[
-        OBMediaState
-    ]  # value = <OBMediaState.OB_MEDIA_PAUSE: 1>
-    OB_MEDIA_RESUME: typing.ClassVar[
-        OBMediaState
-    ]  # value = <OBMediaState.OB_MEDIA_RESUME: 2>
+    OB_MEDIA_BEGIN: typing.ClassVar[OBMediaState]  # value = <OBMediaState.OB_MEDIA_BEGIN: 0>
+    OB_MEDIA_END: typing.ClassVar[OBMediaState]  # value = <OBMediaState.OB_MEDIA_END: 3>
+    OB_MEDIA_PAUSE: typing.ClassVar[OBMediaState]  # value = <OBMediaState.OB_MEDIA_PAUSE: 1>
+    OB_MEDIA_RESUME: typing.ClassVar[OBMediaState]  # value = <OBMediaState.OB_MEDIA_RESUME: 2>
     __members__: typing.ClassVar[
         dict[str, OBMediaState]
     ]  # value = {'OB_MEDIA_BEGIN': <OBMediaState.OB_MEDIA_BEGIN: 0>, 'OB_MEDIA_PAUSE': <OBMediaState.OB_MEDIA_PAUSE: 1>, 'OB_MEDIA_RESUME': <OBMediaState.OB_MEDIA_RESUME: 2>, 'OB_MEDIA_END': <OBMediaState.OB_MEDIA_END: 3>}
@@ -3214,9 +2700,7 @@ class OBMediaState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3269,9 +2753,7 @@ class OBMediaType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3285,33 +2767,23 @@ class OBMultiDeviceSyncConfig:
     @property
     def color_delay_us(self) -> int: ...
     @color_delay_us.setter
-    def color_delay_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def color_delay_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def depth_delay_us(self) -> int: ...
     @depth_delay_us.setter
-    def depth_delay_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def depth_delay_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def frames_per_trigger(self) -> int: ...
     @frames_per_trigger.setter
-    def frames_per_trigger(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def frames_per_trigger(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def trigger_out_delay_us(self) -> int: ...
     @trigger_out_delay_us.setter
-    def trigger_out_delay_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def trigger_out_delay_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def trigger_to_image_delay_us(self) -> int: ...
     @trigger_to_image_delay_us.setter
-    def trigger_to_image_delay_us(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def trigger_to_image_delay_us(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBMultiDeviceSyncMode:
     """
@@ -3336,33 +2808,19 @@ class OBMultiDeviceSyncMode:
       SOFTWARE_SYNCED
     """
 
-    FREE_RUN: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.FREE_RUN: 1>
+    FREE_RUN: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.FREE_RUN: 1>
     HARDWARE_TRIGGERING: typing.ClassVar[
         OBMultiDeviceSyncMode
     ]  # value = <OBMultiDeviceSyncMode.HARDWARE_TRIGGERING: 64>
-    IR_IMU_SYNC: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.IR_IMU_SYNC: 128>
-    PRIMARY: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.PRIMARY: 4>
-    SECONDARY: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.SECONDARY: 8>
-    SECONDARY_SYNCED: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.SECONDARY_SYNCED: 16>
-    SOFTWARE_SYNCED: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.SOFTWARE_SYNCED: 256>
+    IR_IMU_SYNC: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.IR_IMU_SYNC: 128>
+    PRIMARY: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.PRIMARY: 4>
+    SECONDARY: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.SECONDARY: 8>
+    SECONDARY_SYNCED: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.SECONDARY_SYNCED: 16>
+    SOFTWARE_SYNCED: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.SOFTWARE_SYNCED: 256>
     SOFTWARE_TRIGGERING: typing.ClassVar[
         OBMultiDeviceSyncMode
     ]  # value = <OBMultiDeviceSyncMode.SOFTWARE_TRIGGERING: 32>
-    STANDALONE: typing.ClassVar[
-        OBMultiDeviceSyncMode
-    ]  # value = <OBMultiDeviceSyncMode.STANDALONE: 2>
+    STANDALONE: typing.ClassVar[OBMultiDeviceSyncMode]  # value = <OBMultiDeviceSyncMode.STANDALONE: 2>
     __members__: typing.ClassVar[
         dict[str, OBMultiDeviceSyncMode]
     ]  # value = {'FREE_RUN': <OBMultiDeviceSyncMode.FREE_RUN: 1>, 'STANDALONE': <OBMultiDeviceSyncMode.STANDALONE: 2>, 'PRIMARY': <OBMultiDeviceSyncMode.PRIMARY: 4>, 'SECONDARY': <OBMultiDeviceSyncMode.SECONDARY: 8>, 'SECONDARY_SYNCED': <OBMultiDeviceSyncMode.SECONDARY_SYNCED: 16>, 'SOFTWARE_TRIGGERING': <OBMultiDeviceSyncMode.SOFTWARE_TRIGGERING: 32>, 'HARDWARE_TRIGGERING': <OBMultiDeviceSyncMode.HARDWARE_TRIGGERING: 64>, 'IR_IMU_SYNC': <OBMultiDeviceSyncMode.IR_IMU_SYNC: 128>, 'SOFTWARE_SYNCED': <OBMultiDeviceSyncMode.SOFTWARE_SYNCED: 256>}
@@ -3374,9 +2832,7 @@ class OBMultiDeviceSyncMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3408,18 +2864,10 @@ class OBPermissionType:
       PERMISSION_READ_WRITE
     """
 
-    PERMISSION_DENY: typing.ClassVar[
-        OBPermissionType
-    ]  # value = <OBPermissionType.PERMISSION_DENY: 0>
-    PERMISSION_READ: typing.ClassVar[
-        OBPermissionType
-    ]  # value = <OBPermissionType.PERMISSION_READ: 1>
-    PERMISSION_READ_WRITE: typing.ClassVar[
-        OBPermissionType
-    ]  # value = <OBPermissionType.PERMISSION_READ_WRITE: 3>
-    PERMISSION_WRITE: typing.ClassVar[
-        OBPermissionType
-    ]  # value = <OBPermissionType.PERMISSION_WRITE: 2>
+    PERMISSION_DENY: typing.ClassVar[OBPermissionType]  # value = <OBPermissionType.PERMISSION_DENY: 0>
+    PERMISSION_READ: typing.ClassVar[OBPermissionType]  # value = <OBPermissionType.PERMISSION_READ: 1>
+    PERMISSION_READ_WRITE: typing.ClassVar[OBPermissionType]  # value = <OBPermissionType.PERMISSION_READ_WRITE: 3>
+    PERMISSION_WRITE: typing.ClassVar[OBPermissionType]  # value = <OBPermissionType.PERMISSION_WRITE: 2>
     __members__: typing.ClassVar[
         dict[str, OBPermissionType]
     ]  # value = {'PERMISSION_DENY': <OBPermissionType.PERMISSION_DENY: 0>, 'PERMISSION_READ': <OBPermissionType.PERMISSION_READ: 1>, 'PERMISSION_WRITE': <OBPermissionType.PERMISSION_WRITE: 2>, 'PERMISSION_READ_WRITE': <OBPermissionType.PERMISSION_READ_WRITE: 3>}
@@ -3431,9 +2879,7 @@ class OBPermissionType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3455,21 +2901,11 @@ class OBPixelType:
       OB_PIXEL_TOF_DEPTH
     """
 
-    OB_PIXEL_DEPTH: typing.ClassVar[
-        OBPixelType
-    ]  # value = <OBPixelType.OB_PIXEL_DEPTH: 0>
-    OB_PIXEL_DISPARITY: typing.ClassVar[
-        OBPixelType
-    ]  # value = <OBPixelType.OB_PIXEL_DISPARITY: 2>
-    OB_PIXEL_RAW_PHASE: typing.ClassVar[
-        OBPixelType
-    ]  # value = <OBPixelType.OB_PIXEL_RAW_PHASE: 3>
-    OB_PIXEL_TOF_DEPTH: typing.ClassVar[
-        OBPixelType
-    ]  # value = <OBPixelType.OB_PIXEL_TOF_DEPTH: 4>
-    OB_PIXEL_UNKNOWN: typing.ClassVar[
-        OBPixelType
-    ]  # value = <OBPixelType.OB_PIXEL_UNKNOWN: -1>
+    OB_PIXEL_DEPTH: typing.ClassVar[OBPixelType]  # value = <OBPixelType.OB_PIXEL_DEPTH: 0>
+    OB_PIXEL_DISPARITY: typing.ClassVar[OBPixelType]  # value = <OBPixelType.OB_PIXEL_DISPARITY: 2>
+    OB_PIXEL_RAW_PHASE: typing.ClassVar[OBPixelType]  # value = <OBPixelType.OB_PIXEL_RAW_PHASE: 3>
+    OB_PIXEL_TOF_DEPTH: typing.ClassVar[OBPixelType]  # value = <OBPixelType.OB_PIXEL_TOF_DEPTH: 4>
+    OB_PIXEL_UNKNOWN: typing.ClassVar[OBPixelType]  # value = <OBPixelType.OB_PIXEL_UNKNOWN: -1>
     __members__: typing.ClassVar[
         dict[str, OBPixelType]
     ]  # value = {'OB_PIXEL_UNKNOWN': <OBPixelType.OB_PIXEL_UNKNOWN: -1>, 'OB_PIXEL_DEPTH': <OBPixelType.OB_PIXEL_DEPTH: 0>, 'OB_PIXEL_DISPARITY': <OBPixelType.OB_PIXEL_DISPARITY: 2>, 'OB_PIXEL_RAW_PHASE': <OBPixelType.OB_PIXEL_RAW_PHASE: 3>, 'OB_PIXEL_TOF_DEPTH': <OBPixelType.OB_PIXEL_TOF_DEPTH: 4>}
@@ -3481,9 +2917,7 @@ class OBPixelType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3521,9 +2955,7 @@ class OBPlaybackStatus:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3586,15 +3018,9 @@ class OBPowerLineFreqMode:
       FREQUENCY_CLOSE
     """
 
-    FREQUENCY_50HZ: typing.ClassVar[
-        OBPowerLineFreqMode
-    ]  # value = <OBPowerLineFreqMode.FREQUENCY_50HZ: 1>
-    FREQUENCY_60HZ: typing.ClassVar[
-        OBPowerLineFreqMode
-    ]  # value = <OBPowerLineFreqMode.FREQUENCY_60HZ: 2>
-    FREQUENCY_CLOSE: typing.ClassVar[
-        OBPowerLineFreqMode
-    ]  # value = <OBPowerLineFreqMode.FREQUENCY_CLOSE: 0>
+    FREQUENCY_50HZ: typing.ClassVar[OBPowerLineFreqMode]  # value = <OBPowerLineFreqMode.FREQUENCY_50HZ: 1>
+    FREQUENCY_60HZ: typing.ClassVar[OBPowerLineFreqMode]  # value = <OBPowerLineFreqMode.FREQUENCY_60HZ: 2>
+    FREQUENCY_CLOSE: typing.ClassVar[OBPowerLineFreqMode]  # value = <OBPowerLineFreqMode.FREQUENCY_CLOSE: 0>
     __members__: typing.ClassVar[
         dict[str, OBPowerLineFreqMode]
     ]  # value = {'FREQUENCY_50HZ': <OBPowerLineFreqMode.FREQUENCY_50HZ: 1>, 'FREQUENCY_60HZ': <OBPowerLineFreqMode.FREQUENCY_60HZ: 2>, 'FREQUENCY_CLOSE': <OBPowerLineFreqMode.FREQUENCY_CLOSE: 0>}
@@ -3606,9 +3032,7 @@ class OBPowerLineFreqMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -3620,9 +3044,7 @@ class OBPresetResolutionConfig:
     @property
     def depth_decimation_factor(self) -> int: ...
     @depth_decimation_factor.setter
-    def depth_decimation_factor(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def depth_decimation_factor(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def height(self) -> int: ...
     @height.setter
@@ -3630,9 +3052,7 @@ class OBPresetResolutionConfig:
     @property
     def ir_decimation_factor(self) -> int: ...
     @ir_decimation_factor.setter
-    def ir_decimation_factor(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def ir_decimation_factor(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def width(self) -> int: ...
     @width.setter
@@ -3974,9 +3394,7 @@ class OBPropertyID:
     OB_PROP_BOOT_INTO_RECOVERY_MODE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_BOOT_INTO_RECOVERY_MODE_BOOL: 132>
-    OB_PROP_BRT_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_BRT_BOOL: 86>
+    OB_PROP_BRT_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_BRT_BOOL: 86>
     OB_PROP_CAPTURE_IMAGE_FRAME_NUMBER_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_CAPTURE_IMAGE_FRAME_NUMBER_INT: 113>
@@ -4013,66 +3431,38 @@ class OBPropertyID:
     OB_PROP_COLOR_BRIGHTNESS_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_BRIGHTNESS_INT: 2005>
-    OB_PROP_COLOR_CONTRAST_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_CONTRAST_INT: 2009>
-    OB_PROP_COLOR_EXPOSURE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_EXPOSURE_INT: 2001>
-    OB_PROP_COLOR_FLIP_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_FLIP_BOOL: 82>
-    OB_PROP_COLOR_FOCUS_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_FOCUS_INT: 2038>
-    OB_PROP_COLOR_GAIN_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_GAIN_INT: 2002>
-    OB_PROP_COLOR_GAMMA_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_GAMMA_INT: 2010>
-    OB_PROP_COLOR_HDR_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_HDR_BOOL: 2034>
-    OB_PROP_COLOR_HUE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_HUE_INT: 2014>
+    OB_PROP_COLOR_CONTRAST_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_CONTRAST_INT: 2009>
+    OB_PROP_COLOR_EXPOSURE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_EXPOSURE_INT: 2001>
+    OB_PROP_COLOR_FLIP_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_FLIP_BOOL: 82>
+    OB_PROP_COLOR_FOCUS_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_FOCUS_INT: 2038>
+    OB_PROP_COLOR_GAIN_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_GAIN_INT: 2002>
+    OB_PROP_COLOR_GAMMA_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_GAMMA_INT: 2010>
+    OB_PROP_COLOR_HDR_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_HDR_BOOL: 2034>
+    OB_PROP_COLOR_HUE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_HUE_INT: 2014>
     OB_PROP_COLOR_MAXIMAL_GAIN_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_MAXIMAL_GAIN_INT: 2030>
     OB_PROP_COLOR_MAXIMAL_SHUTTER_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_MAXIMAL_SHUTTER_INT: 2031>
-    OB_PROP_COLOR_MIRROR_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_MIRROR_BOOL: 81>
+    OB_PROP_COLOR_MIRROR_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_MIRROR_BOOL: 81>
     OB_PROP_COLOR_POWER_LINE_FREQUENCY_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_POWER_LINE_FREQUENCY_INT: 2015>
-    OB_PROP_COLOR_ROLL_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_ROLL_INT: 2011>
-    OB_PROP_COLOR_ROTATE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_ROTATE_INT: 115>
+    OB_PROP_COLOR_ROLL_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_ROLL_INT: 2011>
+    OB_PROP_COLOR_ROTATE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_ROTATE_INT: 115>
     OB_PROP_COLOR_SATURATION_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_SATURATION_INT: 2008>
     OB_PROP_COLOR_SHARPNESS_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_SHARPNESS_INT: 2006>
-    OB_PROP_COLOR_SHUTTER_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_COLOR_SHUTTER_INT: 2007>
+    OB_PROP_COLOR_SHUTTER_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_COLOR_SHUTTER_INT: 2007>
     OB_PROP_COLOR_WHITE_BALANCE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_COLOR_WHITE_BALANCE_INT: 2004>
-    OB_PROP_D2C_PREPROCESS_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_D2C_PREPROCESS_BOOL: 91>
-    OB_PROP_DC_POWER_STATE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DC_POWER_STATE_INT: 122>
+    OB_PROP_D2C_PREPROCESS_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_D2C_PREPROCESS_BOOL: 91>
+    OB_PROP_DC_POWER_STATE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DC_POWER_STATE_INT: 122>
     OB_PROP_DEBUG_ESGM_CONFIDENCE_FLOAT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEBUG_ESGM_CONFIDENCE_FLOAT: 5013>
@@ -4088,27 +3478,17 @@ class OBPropertyID:
     OB_PROP_DEPTH_CROPPING_MODE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_CROPPING_MODE_INT: 90>
-    OB_PROP_DEPTH_EXPOSURE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_EXPOSURE_INT: 2017>
-    OB_PROP_DEPTH_FLIP_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_FLIP_BOOL: 15>
-    OB_PROP_DEPTH_GAIN_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_GAIN_INT: 2018>
+    OB_PROP_DEPTH_EXPOSURE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_EXPOSURE_INT: 2017>
+    OB_PROP_DEPTH_FLIP_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_FLIP_BOOL: 15>
+    OB_PROP_DEPTH_GAIN_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_GAIN_INT: 2018>
     OB_PROP_DEPTH_HOLEFILTER_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_HOLEFILTER_BOOL: 17>
-    OB_PROP_DEPTH_MAX_DIFF_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_MAX_DIFF_INT: 40>
+    OB_PROP_DEPTH_MAX_DIFF_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_MAX_DIFF_INT: 40>
     OB_PROP_DEPTH_MAX_SPECKLE_SIZE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_MAX_SPECKLE_SIZE_INT: 41>
-    OB_PROP_DEPTH_MIRROR_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_MIRROR_BOOL: 14>
+    OB_PROP_DEPTH_MIRROR_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_MIRROR_BOOL: 14>
     OB_PROP_DEPTH_NOISE_REMOVAL_FILTER_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_SOFT_FILTER_BOOL: 24>
@@ -4127,9 +3507,7 @@ class OBPropertyID:
     OB_PROP_DEPTH_RM_FILTER_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_RM_FILTER_BOOL: 2029>
-    OB_PROP_DEPTH_ROTATE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_DEPTH_ROTATE_INT: 118>
+    OB_PROP_DEPTH_ROTATE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_DEPTH_ROTATE_INT: 118>
     OB_PROP_DEPTH_SOFT_FILTER_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_DEPTH_SOFT_FILTER_BOOL: 24>
@@ -4169,15 +3547,9 @@ class OBPropertyID:
     OB_PROP_EXTERNAL_SIGNAL_RESET_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_EXTERNAL_SIGNAL_RESET_BOOL: 88>
-    OB_PROP_FAN_WORK_MODE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_FAN_WORK_MODE_INT: 62>
-    OB_PROP_FLOOD_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_FLOOD_BOOL: 6>
-    OB_PROP_FLOOD_LEVEL_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_FLOOD_LEVEL_INT: 7>
+    OB_PROP_FAN_WORK_MODE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FAN_WORK_MODE_INT: 62>
+    OB_PROP_FLOOD_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FLOOD_BOOL: 6>
+    OB_PROP_FLOOD_LEVEL_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FLOOD_LEVEL_INT: 7>
     OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT: 204>
@@ -4190,12 +3562,8 @@ class OBPropertyID:
     OB_PROP_HARDWARE_DISTORTION_SWITCH_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_HARDWARE_DISTORTION_SWITCH_BOOL: 61>
-    OB_PROP_HDR_MERGE_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_HDR_MERGE_BOOL: 2037>
-    OB_PROP_HEARTBEAT_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_HEARTBEAT_BOOL: 89>
+    OB_PROP_HDR_MERGE_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_HDR_MERGE_BOOL: 2037>
+    OB_PROP_HEARTBEAT_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_HEARTBEAT_BOOL: 89>
     OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_HW_NOISE_REMOVE_FILTER_ENABLE_BOOL: 211>
@@ -4211,57 +3579,35 @@ class OBPropertyID:
     OB_PROP_IR_AUTO_EXPOSURE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_AUTO_EXPOSURE_BOOL: 2025>
-    OB_PROP_IR_BRIGHTNESS_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_BRIGHTNESS_INT: 184>
+    OB_PROP_IR_BRIGHTNESS_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_BRIGHTNESS_INT: 184>
     OB_PROP_IR_CHANNEL_DATA_SOURCE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_CHANNEL_DATA_SOURCE_INT: 2028>
-    OB_PROP_IR_EXPOSURE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_EXPOSURE_INT: 2026>
-    OB_PROP_IR_FLIP_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_FLIP_BOOL: 19>
-    OB_PROP_IR_GAIN_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_GAIN_INT: 2027>
+    OB_PROP_IR_EXPOSURE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_EXPOSURE_INT: 2026>
+    OB_PROP_IR_FLIP_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_FLIP_BOOL: 19>
+    OB_PROP_IR_GAIN_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_GAIN_INT: 2027>
     OB_PROP_IR_LONG_EXPOSURE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_LONG_EXPOSURE_BOOL: 2035>
-    OB_PROP_IR_MIRROR_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_MIRROR_BOOL: 18>
-    OB_PROP_IR_RECTIFY_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_RECTIFY_BOOL: 2040>
-    OB_PROP_IR_RIGHT_FLIP_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_RIGHT_FLIP_BOOL: 114>
+    OB_PROP_IR_MIRROR_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_MIRROR_BOOL: 18>
+    OB_PROP_IR_RECTIFY_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_RECTIFY_BOOL: 2040>
+    OB_PROP_IR_RIGHT_FLIP_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_RIGHT_FLIP_BOOL: 114>
     OB_PROP_IR_RIGHT_MIRROR_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_RIGHT_MIRROR_BOOL: 112>
     OB_PROP_IR_RIGHT_ROTATE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_RIGHT_ROTATE_INT: 117>
-    OB_PROP_IR_ROTATE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_IR_ROTATE_INT: 116>
+    OB_PROP_IR_ROTATE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_IR_ROTATE_INT: 116>
     OB_PROP_IR_SHORT_EXPOSURE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_IR_SHORT_EXPOSURE_BOOL: 2032>
     OB_PROP_LASER_ALWAYS_ON_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LASER_ALWAYS_ON_BOOL: 174>
-    OB_PROP_LASER_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LASER_BOOL: 3>
-    OB_PROP_LASER_CONTROL_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LASER_CONTROL_INT: 182>
-    OB_PROP_LASER_CURRENT_FLOAT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LASER_CURRENT_FLOAT: 5>
+    OB_PROP_LASER_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LASER_BOOL: 3>
+    OB_PROP_LASER_CONTROL_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LASER_CONTROL_INT: 182>
+    OB_PROP_LASER_CURRENT_FLOAT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LASER_CURRENT_FLOAT: 5>
     OB_PROP_LASER_ENERGY_LEVEL_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LASER_POWER_LEVEL_CONTROL_INT: 99>
@@ -4271,9 +3617,7 @@ class OBPropertyID:
     OB_PROP_LASER_HW_ENERGY_LEVEL_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LASER_HW_ENERGY_LEVEL_INT: 119>
-    OB_PROP_LASER_MODE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LASER_MODE_INT: 79>
+    OB_PROP_LASER_MODE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LASER_MODE_INT: 79>
     OB_PROP_LASER_ON_OFF_PATTERN_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LASER_ON_OFF_PATTERN_INT: 175>
@@ -4289,36 +3633,26 @@ class OBPropertyID:
     OB_PROP_LASER_PULSE_WIDTH_PROTECTION_STATUS_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LASER_PULSE_WIDTH_PROTECTION_STATUS_BOOL: 149>
-    OB_PROP_LDP_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LDP_BOOL: 2>
+    OB_PROP_LDP_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LDP_BOOL: 2>
     OB_PROP_LDP_MEASURE_DISTANCE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LDP_MEASURE_DISTANCE_INT: 100>
-    OB_PROP_LDP_STATUS_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_LDP_STATUS_BOOL: 32>
+    OB_PROP_LDP_STATUS_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_LDP_STATUS_BOOL: 32>
     OB_PROP_LIDAR_TAIL_FILTER_LEVEL_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LIDAR_TAIL_FILTER_LEVEL_INT: 8006>
     OB_PROP_LOW_EXPOSURE_LASER_CONTROL_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_LOW_EXPOSURE_LASER_CONTROL_BOOL: 194>
-    OB_PROP_MAX_DEPTH_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_MAX_DEPTH_INT: 23>
-    OB_PROP_MIN_DEPTH_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_MIN_DEPTH_INT: 22>
+    OB_PROP_MAX_DEPTH_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_MAX_DEPTH_INT: 23>
+    OB_PROP_MIN_DEPTH_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_MIN_DEPTH_INT: 22>
     OB_PROP_ON_CHIP_CALIBRATION_ENABLE_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_ON_CHIP_CALIBRATION_ENABLE_BOOL: 210>
     OB_PROP_ON_CHIP_CALIBRATION_HEALTH_CHECK_FLOAT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_ON_CHIP_CALIBRATION_HEALTH_CHECK_FLOAT: 209>
-    OB_PROP_RECTIFY2_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_RECTIFY2_BOOL: 80>
+    OB_PROP_RECTIFY2_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_RECTIFY2_BOOL: 80>
     OB_PROP_RESTORE_FACTORY_SETTINGS_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_RESTORE_FACTORY_SETTINGS_BOOL: 131>
@@ -4346,15 +3680,11 @@ class OBPropertyID:
     OB_PROP_SDK_IR_RIGHT_FRAME_UNPACK_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_SDK_IR_RIGHT_FRAME_UNPACK_BOOL: 3012>
-    OB_PROP_SKIP_FRAME_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_SKIP_FRAME_BOOL: 2036>
+    OB_PROP_SKIP_FRAME_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_SKIP_FRAME_BOOL: 2036>
     OB_PROP_SLAVE_DEVICE_SYNC_STATUS_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_SLAVE_DEVICE_SYNC_STATUS_BOOL: 188>
-    OB_PROP_SWITCH_IR_MODE_INT: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_SWITCH_IR_MODE_INT: 98>
+    OB_PROP_SWITCH_IR_MODE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_SWITCH_IR_MODE_INT: 98>
     OB_PROP_SYNC_SIGNAL_TRIGGER_OUT_BOOL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_SYNC_SIGNAL_TRIGGER_OUT_BOOL: 130>
@@ -4379,9 +3709,7 @@ class OBPropertyID:
     OB_PROP_USB_POWER_STATE_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_USB_POWER_STATE_INT: 121>
-    OB_PROP_WATCHDOG_BOOL: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_PROP_WATCHDOG_BOOL: 87>
+    OB_PROP_WATCHDOG_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_WATCHDOG_BOOL: 87>
     OB_RAW_DATA_CAMERA_CALIB_JSON_FILE: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_RAW_DATA_CAMERA_CALIB_JSON_FILE: 4029>
@@ -4391,18 +3719,12 @@ class OBPropertyID:
     OB_STRUCT_BASELINE_CALIBRATION_PARAM: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_BASELINE_CALIBRATION_PARAM: 1002>
-    OB_STRUCT_COLOR_AE_ROI: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_STRUCT_COLOR_AE_ROI: 1060>
+    OB_STRUCT_COLOR_AE_ROI: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_STRUCT_COLOR_AE_ROI: 1060>
     OB_STRUCT_CURRENT_DEPTH_ALG_MODE: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_CURRENT_DEPTH_ALG_MODE: 1043>
-    OB_STRUCT_DEPTH_AE_ROI: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_STRUCT_DEPTH_AE_ROI: 1061>
-    OB_STRUCT_DEPTH_HDR_CONFIG: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_STRUCT_DEPTH_HDR_CONFIG: 1059>
+    OB_STRUCT_DEPTH_AE_ROI: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_STRUCT_DEPTH_AE_ROI: 1061>
+    OB_STRUCT_DEPTH_HDR_CONFIG: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_STRUCT_DEPTH_HDR_CONFIG: 1059>
     OB_STRUCT_DEPTH_PRECISION_SUPPORT_LIST: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_DEPTH_PRECISION_SUPPORT_LIST: 1045>
@@ -4418,18 +3740,14 @@ class OBPropertyID:
     OB_STRUCT_DEVICE_TEMPERATURE: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_DEVICE_TEMPERATURE: 1003>
-    OB_STRUCT_DEVICE_TIME: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_STRUCT_DEVICE_TIME: 1037>
+    OB_STRUCT_DEVICE_TIME: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_STRUCT_DEVICE_TIME: 1037>
     OB_STRUCT_DISP_OFFSET_CONFIG: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_DISP_OFFSET_CONFIG: 1064>
     OB_STRUCT_MULTI_DEVICE_SYNC_CONFIG: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_MULTI_DEVICE_SYNC_CONFIG: 1038>
-    OB_STRUCT_RGB_CROP_ROI: typing.ClassVar[
-        OBPropertyID
-    ]  # value = <OBPropertyID.OB_STRUCT_RGB_CROP_ROI: 1040>
+    OB_STRUCT_RGB_CROP_ROI: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_STRUCT_RGB_CROP_ROI: 1040>
     OB_STRUCT_TOF_EXPOSURE_THRESHOLD_CONTROL: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_STRUCT_TOF_EXPOSURE_THRESHOLD_CONTROL: 1024>
@@ -4444,9 +3762,7 @@ class OBPropertyID:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4501,18 +3817,10 @@ class OBPropertyType:
       OB_STRUCT_PROPERTY : Struct property
     """
 
-    OB_BOOL_PROPERTY: typing.ClassVar[
-        OBPropertyType
-    ]  # value = <OBPropertyType.OB_BOOL_PROPERTY: 0>
-    OB_FLOAT_PROPERTY: typing.ClassVar[
-        OBPropertyType
-    ]  # value = <OBPropertyType.OB_FLOAT_PROPERTY: 2>
-    OB_INT_PROPERTY: typing.ClassVar[
-        OBPropertyType
-    ]  # value = <OBPropertyType.OB_INT_PROPERTY: 1>
-    OB_STRUCT_PROPERTY: typing.ClassVar[
-        OBPropertyType
-    ]  # value = <OBPropertyType.OB_STRUCT_PROPERTY: 3>
+    OB_BOOL_PROPERTY: typing.ClassVar[OBPropertyType]  # value = <OBPropertyType.OB_BOOL_PROPERTY: 0>
+    OB_FLOAT_PROPERTY: typing.ClassVar[OBPropertyType]  # value = <OBPropertyType.OB_FLOAT_PROPERTY: 2>
+    OB_INT_PROPERTY: typing.ClassVar[OBPropertyType]  # value = <OBPropertyType.OB_INT_PROPERTY: 1>
+    OB_STRUCT_PROPERTY: typing.ClassVar[OBPropertyType]  # value = <OBPropertyType.OB_STRUCT_PROPERTY: 3>
     __members__: typing.ClassVar[
         dict[str, OBPropertyType]
     ]  # value = {'OB_BOOL_PROPERTY': <OBPropertyType.OB_BOOL_PROPERTY: 0>, 'OB_INT_PROPERTY': <OBPropertyType.OB_INT_PROPERTY: 1>, 'OB_FLOAT_PROPERTY': <OBPropertyType.OB_FLOAT_PROPERTY: 2>, 'OB_STRUCT_PROPERTY': <OBPropertyType.OB_STRUCT_PROPERTY: 3>}
@@ -4524,9 +3832,7 @@ class OBPropertyType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4599,18 +3905,10 @@ class OBRotateDegreeType:
       ROTATE_270
     """
 
-    ROTATE_0: typing.ClassVar[
-        OBRotateDegreeType
-    ]  # value = <OBRotateDegreeType.ROTATE_0: 0>
-    ROTATE_180: typing.ClassVar[
-        OBRotateDegreeType
-    ]  # value = <OBRotateDegreeType.ROTATE_180: 180>
-    ROTATE_270: typing.ClassVar[
-        OBRotateDegreeType
-    ]  # value = <OBRotateDegreeType.ROTATE_270: 270>
-    ROTATE_90: typing.ClassVar[
-        OBRotateDegreeType
-    ]  # value = <OBRotateDegreeType.ROTATE_90: 90>
+    ROTATE_0: typing.ClassVar[OBRotateDegreeType]  # value = <OBRotateDegreeType.ROTATE_0: 0>
+    ROTATE_180: typing.ClassVar[OBRotateDegreeType]  # value = <OBRotateDegreeType.ROTATE_180: 180>
+    ROTATE_270: typing.ClassVar[OBRotateDegreeType]  # value = <OBRotateDegreeType.ROTATE_270: 270>
+    ROTATE_90: typing.ClassVar[OBRotateDegreeType]  # value = <OBRotateDegreeType.ROTATE_90: 90>
     __members__: typing.ClassVar[
         dict[str, OBRotateDegreeType]
     ]  # value = {'ROTATE_0': <OBRotateDegreeType.ROTATE_0: 0>, 'ROTATE_90': <OBRotateDegreeType.ROTATE_90: 90>, 'ROTATE_180': <OBRotateDegreeType.ROTATE_180: 180>, 'ROTATE_270': <OBRotateDegreeType.ROTATE_270: 270>}
@@ -4622,9 +3920,7 @@ class OBRotateDegreeType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4664,44 +3960,20 @@ class OBSensorType:
       TYPE_COUNT_SENSOR
     """
 
-    ACCEL_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.ACCEL_SENSOR: 4>
-    COLOR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.COLOR_SENSOR: 2>
-    CONFIDENCE_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.CONFIDENCE_SENSOR: 9>
-    DEPTH_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.DEPTH_SENSOR: 3>
+    ACCEL_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.ACCEL_SENSOR: 4>
+    COLOR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.COLOR_SENSOR: 2>
+    CONFIDENCE_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.CONFIDENCE_SENSOR: 9>
+    DEPTH_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.DEPTH_SENSOR: 3>
     GYRO_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.GYRO_SENSOR: 5>
     IR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.IR_SENSOR: 1>
-    LEFT_COLOR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.LEFT_COLOR_SENSOR: 11>
-    LEFT_IR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.LEFT_IR_SENSOR: 6>
-    LIDAR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.LIDAR_SENSOR: 10>
-    RAW_PHASE_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.RAW_PHASE_SENSOR: 8>
-    RIGHT_COLOR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.RIGHT_COLOR_SENSOR: 12>
-    RIGHT_IR_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.RIGHT_IR_SENSOR: 7>
-    TYPE_COUNT_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.TYPE_COUNT_SENSOR: 13>
-    UNKNOWN_SENSOR: typing.ClassVar[
-        OBSensorType
-    ]  # value = <OBSensorType.UNKNOWN_SENSOR: 0>
+    LEFT_COLOR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.LEFT_COLOR_SENSOR: 11>
+    LEFT_IR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.LEFT_IR_SENSOR: 6>
+    LIDAR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.LIDAR_SENSOR: 10>
+    RAW_PHASE_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.RAW_PHASE_SENSOR: 8>
+    RIGHT_COLOR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.RIGHT_COLOR_SENSOR: 12>
+    RIGHT_IR_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.RIGHT_IR_SENSOR: 7>
+    TYPE_COUNT_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.TYPE_COUNT_SENSOR: 13>
+    UNKNOWN_SENSOR: typing.ClassVar[OBSensorType]  # value = <OBSensorType.UNKNOWN_SENSOR: 0>
     __members__: typing.ClassVar[
         dict[str, OBSensorType]
     ]  # value = {'UNKNOWN_SENSOR': <OBSensorType.UNKNOWN_SENSOR: 0>, 'IR_SENSOR': <OBSensorType.IR_SENSOR: 1>, 'COLOR_SENSOR': <OBSensorType.COLOR_SENSOR: 2>, 'DEPTH_SENSOR': <OBSensorType.DEPTH_SENSOR: 3>, 'ACCEL_SENSOR': <OBSensorType.ACCEL_SENSOR: 4>, 'GYRO_SENSOR': <OBSensorType.GYRO_SENSOR: 5>, 'LEFT_IR_SENSOR': <OBSensorType.LEFT_IR_SENSOR: 6>, 'RIGHT_IR_SENSOR': <OBSensorType.RIGHT_IR_SENSOR: 7>, 'RAW_PHASE_SENSOR': <OBSensorType.RAW_PHASE_SENSOR: 8>, 'CONFIDENCE_SENSOR': <OBSensorType.CONFIDENCE_SENSOR: 9>, 'LIDAR_SENSOR': <OBSensorType.LIDAR_SENSOR: 10>, 'LEFT_COLOR_SENSOR': <OBSensorType.LEFT_COLOR_SENSOR: 11>, 'RIGHT_COLOR_SENSOR': <OBSensorType.RIGHT_COLOR_SENSOR: 12>, 'TYPE_COUNT_SENSOR': <OBSensorType.TYPE_COUNT_SENSOR: 13>}
@@ -4713,9 +3985,7 @@ class OBSensorType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4728,9 +3998,7 @@ class OBSequenceIdItem:
     @property
     def sequence_select_id(self) -> int: ...
     @sequence_select_id.setter
-    def sequence_select_id(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def sequence_select_id(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class OBSpatialAdvancedFilterParams:
     def __init__(self) -> None: ...
@@ -4774,9 +4042,7 @@ class OBStatus:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4818,47 +4084,21 @@ class OBStreamType:
       TYPE_COUNT_STREAM
     """
 
-    ACCEL_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.ACCEL_STREAM: 4>
-    COLOR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.COLOR_STREAM: 2>
-    CONFIDENCE_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.CONFIDENCE_STREAM: 9>
-    DEPTH_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.DEPTH_STREAM: 3>
+    ACCEL_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.ACCEL_STREAM: 4>
+    COLOR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.COLOR_STREAM: 2>
+    CONFIDENCE_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.CONFIDENCE_STREAM: 9>
+    DEPTH_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.DEPTH_STREAM: 3>
     GYRO_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.GYRO_STREAM: 5>
     IR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.IR_STREAM: 1>
-    LEFT_COLOR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.LEFT_COLOR_STREAM: 11>
-    LEFT_IR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.LEFT_IR_STREAM: 6>
-    LIDAR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.LIDAR_STREAM: 10>
-    RAW_PHASE_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.RAW_PHASE_STREAM: 8>
-    RIGHT_COLOR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.RIGHT_COLOR_STREAM: 12>
-    RIGHT_IR_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.RIGHT_IR_STREAM: 7>
-    TYPE_COUNT_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.TYPE_COUNT_STREAM: 13>
-    UNKNOWN_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.UNKNOWN_STREAM: -1>
-    VIDEO_STREAM: typing.ClassVar[
-        OBStreamType
-    ]  # value = <OBStreamType.VIDEO_STREAM: 0>
+    LEFT_COLOR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.LEFT_COLOR_STREAM: 11>
+    LEFT_IR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.LEFT_IR_STREAM: 6>
+    LIDAR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.LIDAR_STREAM: 10>
+    RAW_PHASE_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.RAW_PHASE_STREAM: 8>
+    RIGHT_COLOR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.RIGHT_COLOR_STREAM: 12>
+    RIGHT_IR_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.RIGHT_IR_STREAM: 7>
+    TYPE_COUNT_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.TYPE_COUNT_STREAM: 13>
+    UNKNOWN_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.UNKNOWN_STREAM: -1>
+    VIDEO_STREAM: typing.ClassVar[OBStreamType]  # value = <OBStreamType.VIDEO_STREAM: 0>
     __members__: typing.ClassVar[
         dict[str, OBStreamType]
     ]  # value = {'UNKNOWN_STREAM': <OBStreamType.UNKNOWN_STREAM: -1>, 'VIDEO_STREAM': <OBStreamType.VIDEO_STREAM: 0>, 'IR_STREAM': <OBStreamType.IR_STREAM: 1>, 'COLOR_STREAM': <OBStreamType.COLOR_STREAM: 2>, 'DEPTH_STREAM': <OBStreamType.DEPTH_STREAM: 3>, 'ACCEL_STREAM': <OBStreamType.ACCEL_STREAM: 4>, 'GYRO_STREAM': <OBStreamType.GYRO_STREAM: 5>, 'LEFT_IR_STREAM': <OBStreamType.LEFT_IR_STREAM: 6>, 'RIGHT_IR_STREAM': <OBStreamType.RIGHT_IR_STREAM: 7>, 'RAW_PHASE_STREAM': <OBStreamType.RAW_PHASE_STREAM: 8>, 'CONFIDENCE_STREAM': <OBStreamType.CONFIDENCE_STREAM: 9>, 'LIDAR_STREAM': <OBStreamType.LIDAR_STREAM: 10>, 'LEFT_COLOR_STREAM': <OBStreamType.LEFT_COLOR_STREAM: 11>, 'RIGHT_COLOR_STREAM': <OBStreamType.RIGHT_COLOR_STREAM: 12>, 'TYPE_COUNT_STREAM': <OBStreamType.TYPE_COUNT_STREAM: 13>}
@@ -4870,9 +4110,7 @@ class OBStreamType:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4907,19 +4145,11 @@ class OBSyncMode:
     CLOSE: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.CLOSE: 0>
     IR_IMU_SYNC: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.IR_IMU_SYNC: 8>
     PRIMARY: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.PRIMARY: 2>
-    PRIMARY_IR_TRIGGER: typing.ClassVar[
-        OBSyncMode
-    ]  # value = <OBSyncMode.PRIMARY_IR_TRIGGER: 5>
-    PRIMARY_MCU_TRIGGER: typing.ClassVar[
-        OBSyncMode
-    ]  # value = <OBSyncMode.PRIMARY_MCU_TRIGGER: 4>
-    PRIMARY_SOFT_TRIGGER: typing.ClassVar[
-        OBSyncMode
-    ]  # value = <OBSyncMode.PRIMARY_SOFT_TRIGGER: 6>
+    PRIMARY_IR_TRIGGER: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.PRIMARY_IR_TRIGGER: 5>
+    PRIMARY_MCU_TRIGGER: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.PRIMARY_MCU_TRIGGER: 4>
+    PRIMARY_SOFT_TRIGGER: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.PRIMARY_SOFT_TRIGGER: 6>
     SECONDARY: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.SECONDARY: 3>
-    SECONDARY_SOFT_TRIGGER: typing.ClassVar[
-        OBSyncMode
-    ]  # value = <OBSyncMode.SECONDARY_SOFT_TRIGGER: 7>
+    SECONDARY_SOFT_TRIGGER: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.SECONDARY_SOFT_TRIGGER: 7>
     STANDALONE: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.STANDALONE: 1>
     UNKNOWN: typing.ClassVar[OBSyncMode]  # value = <OBSyncMode.UNKNOWN: 255>
     __members__: typing.ClassVar[
@@ -4933,9 +4163,7 @@ class OBSyncMode:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -4981,9 +4209,7 @@ class OBTofFilterRange:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -5004,15 +4230,9 @@ class OBUSBPowerState:
     """
 
     OFF: typing.ClassVar[OBUSBPowerState]  # value = <OBUSBPowerState.OFF: 0>
-    POWER_5V_0A9: typing.ClassVar[
-        OBUSBPowerState
-    ]  # value = <OBUSBPowerState.POWER_5V_0A9: 1>
-    POWER_5V_1A5: typing.ClassVar[
-        OBUSBPowerState
-    ]  # value = <OBUSBPowerState.POWER_5V_1A5: 2>
-    POWER_5V_3A0: typing.ClassVar[
-        OBUSBPowerState
-    ]  # value = <OBUSBPowerState.POWER_5V_3A0: 3>
+    POWER_5V_0A9: typing.ClassVar[OBUSBPowerState]  # value = <OBUSBPowerState.POWER_5V_0A9: 1>
+    POWER_5V_1A5: typing.ClassVar[OBUSBPowerState]  # value = <OBUSBPowerState.POWER_5V_1A5: 2>
+    POWER_5V_3A0: typing.ClassVar[OBUSBPowerState]  # value = <OBUSBPowerState.POWER_5V_3A0: 3>
     __members__: typing.ClassVar[
         dict[str, OBUSBPowerState]
     ]  # value = {'OFF': <OBUSBPowerState.OFF: 0>, 'POWER_5V_0A9': <OBUSBPowerState.POWER_5V_0A9: 1>, 'POWER_5V_1A5': <OBUSBPowerState.POWER_5V_1A5: 2>, 'POWER_5V_3A0': <OBUSBPowerState.POWER_5V_3A0: 3>}
@@ -5024,9 +4244,7 @@ class OBUSBPowerState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -5042,9 +4260,7 @@ class OBUint16PropertyRange:
     @property
     def default_value(self) -> int: ...
     @default_value.setter
-    def default_value(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def default_value(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def max(self) -> int: ...
     @max.setter
@@ -5067,9 +4283,7 @@ class OBUint8PropertyRange:
     @property
     def default_value(self) -> int: ...
     @default_value.setter
-    def default_value(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def default_value(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     @property
     def max(self) -> int: ...
     @max.setter
@@ -5131,58 +4345,26 @@ class OBUpgradeState:
     """
 
     DONE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.DONE: 3>
-    DONE_REBOOT_AND_REUPDATE: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.DONE_REBOOT_AND_REUPDATE: 7>
-    DONE_WITH_DUPLICATES: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.DONE_WITH_DUPLICATES: 6>
+    DONE_REBOOT_AND_REUPDATE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.DONE_REBOOT_AND_REUPDATE: 7>
+    DONE_WITH_DUPLICATES: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.DONE_WITH_DUPLICATES: 6>
     ERR_DDR: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_DDR: -7>
     ERR_ERASE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_ERASE: -3>
-    ERR_FILE_READ: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_FILE_READ: -12>
-    ERR_FLASH_TYPE: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_FLASH_TYPE: -4>
-    ERR_IMAGE_SIZE: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_IMAGE_SIZE: -5>
-    ERR_INVALID_COUNT: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_INVALID_COUNT: -11>
-    ERR_MISMATCH: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_MISMATCH: -9>
+    ERR_FILE_READ: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_FILE_READ: -12>
+    ERR_FLASH_TYPE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_FLASH_TYPE: -4>
+    ERR_IMAGE_SIZE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_IMAGE_SIZE: -5>
+    ERR_INVALID_COUNT: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_INVALID_COUNT: -11>
+    ERR_MISMATCH: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_MISMATCH: -9>
     ERR_OTHER: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_OTHER: -6>
-    ERR_PROGRAM: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_PROGRAM: -2>
-    ERR_TIMEOUT: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_TIMEOUT: -8>
-    ERR_TRANSFER: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_TRANSFER: -13>
-    ERR_UNSUPPORT_DEV: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_UNSUPPORT_DEV: -10>
-    ERR_VERIFY: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.ERR_VERIFY: -1>
-    FILE_TRANSFER: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.FILE_TRANSFER: 4>
-    IN_PROGRESS: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.IN_PROGRESS: 2>
+    ERR_PROGRAM: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_PROGRAM: -2>
+    ERR_TIMEOUT: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_TIMEOUT: -8>
+    ERR_TRANSFER: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_TRANSFER: -13>
+    ERR_UNSUPPORT_DEV: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_UNSUPPORT_DEV: -10>
+    ERR_VERIFY: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.ERR_VERIFY: -1>
+    FILE_TRANSFER: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.FILE_TRANSFER: 4>
+    IN_PROGRESS: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.IN_PROGRESS: 2>
     START: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.START: 1>
-    VERIFY_IMAGE: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.VERIFY_IMAGE: 0>
-    VERIFY_SUCCESS: typing.ClassVar[
-        OBUpgradeState
-    ]  # value = <OBUpgradeState.VERIFY_SUCCESS: 5>
+    VERIFY_IMAGE: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.VERIFY_IMAGE: 0>
+    VERIFY_SUCCESS: typing.ClassVar[OBUpgradeState]  # value = <OBUpgradeState.VERIFY_SUCCESS: 5>
     __members__: typing.ClassVar[
         dict[str, OBUpgradeState]
     ]  # value = {'DONE_REBOOT_AND_REUPDATE': <OBUpgradeState.DONE_REBOOT_AND_REUPDATE: 7>, 'DONE_WITH_DUPLICATES': <OBUpgradeState.DONE_WITH_DUPLICATES: 6>, 'VERIFY_SUCCESS': <OBUpgradeState.VERIFY_SUCCESS: 5>, 'FILE_TRANSFER': <OBUpgradeState.FILE_TRANSFER: 4>, 'DONE': <OBUpgradeState.DONE: 3>, 'IN_PROGRESS': <OBUpgradeState.IN_PROGRESS: 2>, 'START': <OBUpgradeState.START: 1>, 'VERIFY_IMAGE': <OBUpgradeState.VERIFY_IMAGE: 0>, 'ERR_VERIFY': <OBUpgradeState.ERR_VERIFY: -1>, 'ERR_PROGRAM': <OBUpgradeState.ERR_PROGRAM: -2>, 'ERR_ERASE': <OBUpgradeState.ERR_ERASE: -3>, 'ERR_FLASH_TYPE': <OBUpgradeState.ERR_FLASH_TYPE: -4>, 'ERR_IMAGE_SIZE': <OBUpgradeState.ERR_IMAGE_SIZE: -5>, 'ERR_OTHER': <OBUpgradeState.ERR_OTHER: -6>, 'ERR_DDR': <OBUpgradeState.ERR_DDR: -7>, 'ERR_TIMEOUT': <OBUpgradeState.ERR_TIMEOUT: -8>, 'ERR_MISMATCH': <OBUpgradeState.ERR_MISMATCH: -9>, 'ERR_UNSUPPORT_DEV': <OBUpgradeState.ERR_UNSUPPORT_DEV: -10>, 'ERR_INVALID_COUNT': <OBUpgradeState.ERR_INVALID_COUNT: -11>, 'ERR_FILE_READ': <OBUpgradeState.ERR_FILE_READ: -12>, 'ERR_TRANSFER': <OBUpgradeState.ERR_TRANSFER: -13>}
@@ -5194,9 +4376,7 @@ class OBUpgradeState:
     def __int__(self) -> int: ...
     def __ne__(self, other: typing.Any) -> bool: ...
     def __repr__(self) -> str: ...
-    def __setstate__(
-        self, state: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def __setstate__(self, state: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def __str__(self) -> str: ...
     @property
     def name(self) -> str: ...
@@ -5212,9 +4392,7 @@ class Pipeline:
     def enable_frame_sync(self) -> None: ...
     def get_camera_param(self) -> OBCameraParam: ...
     def get_config(self) -> Config: ...
-    def get_d2c_depth_profile_list(
-        self, arg0: StreamProfile, arg1: OBAlignMode
-    ) -> StreamProfileList: ...
+    def get_d2c_depth_profile_list(self, arg0: StreamProfile, arg1: OBAlignMode) -> StreamProfileList: ...
     def get_device(self) -> Device: ...
     def get_stream_profile_list(self, arg0: OBSensorType) -> StreamProfileList: ...
     @typing.overload
@@ -5224,9 +4402,7 @@ class Pipeline:
     @typing.overload
     def start(self) -> None: ...
     def stop(self) -> None: ...
-    def wait_for_frames(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> FrameSet: ...
+    def wait_for_frames(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> FrameSet: ...
 
 class PlaybackDevice(Device):
     def __init__(self, file: str) -> None: ...
@@ -5236,12 +4412,8 @@ class PlaybackDevice(Device):
     def pause(self) -> None: ...
     def resume(self) -> None: ...
     def seek(self, timestamp: typing.SupportsInt | typing.SupportsIndex) -> None: ...
-    def set_playback_rate(
-        self, rate: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
-    def set_playback_status_change_callback(
-        self, arg0: collections.abc.Callable
-    ) -> None: ...
+    def set_playback_rate(self, rate: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
+    def set_playback_status_change_callback(self, arg0: collections.abc.Callable) -> None: ...
 
 class PointCloudFilter(Filter):
     def __init__(self) -> None: ...
@@ -5250,13 +4422,9 @@ class PointCloudFilter(Filter):
     def set_camera_param(self, arg0: OBCameraParam) -> None: ...
     def set_color_data_normalization(self, arg0: bool) -> None: ...
     def set_create_point_format(self, arg0: OBFormat) -> None: ...
-    def set_decimation_factor(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def set_decimation_factor(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def set_frame_align_state(self, arg0: bool) -> None: ...
-    def set_position_data_scaled(
-        self, arg0: typing.SupportsFloat | typing.SupportsIndex
-    ) -> None: ...
+    def set_position_data_scaled(self, arg0: typing.SupportsFloat | typing.SupportsIndex) -> None: ...
 
 class PointsFrame(Frame):
     def get_height(self) -> int: ...
@@ -5291,27 +4459,19 @@ class Sensor:
     def switch_profile(self, arg0: StreamProfile) -> None: ...
 
 class SensorList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> Sensor: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Sensor: ...
     def __len__(self) -> int: ...
     def get_count(self) -> int: ...
-    def get_sensor_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> Sensor: ...
+    def get_sensor_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> Sensor: ...
     def get_sensor_by_type(self, arg0: OBSensorType) -> Sensor: ...
-    def get_type_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> OBSensorType: ...
+    def get_type_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> OBSensorType: ...
 
 class SequenceIdFilter(Filter):
     def __init__(self) -> None: ...
     def get_select_sequence_id(self) -> int: ...
     def get_sequence_id_list(self) -> list: ...
     def get_sequence_id_list_size(self) -> int: ...
-    def select_sequence_id(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def select_sequence_id(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
 
 class SpatialAdvancedFilter(Filter):
     def __init__(self) -> None: ...
@@ -5343,24 +4503,14 @@ class StreamProfile:
     def is_video_stream_profile(self) -> bool: ...
 
 class StreamProfileList:
-    def __getitem__(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> StreamProfile: ...
+    def __getitem__(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> StreamProfile: ...
     def __len__(self) -> int: ...
-    def get_accel_stream_profile(
-        self, arg0: OBAccelFullScaleRange, arg1: OBGyroSampleRate
-    ) -> AccelStreamProfile: ...
+    def get_accel_stream_profile(self, arg0: OBAccelFullScaleRange, arg1: OBGyroSampleRate) -> AccelStreamProfile: ...
     def get_count(self) -> int: ...
     def get_default_video_stream_profile(self) -> VideoStreamProfile: ...
-    def get_gyro_stream_profile(
-        self, arg0: OBGyroFullScaleRange, arg1: OBGyroSampleRate
-    ) -> GyroStreamProfile: ...
-    def get_lidar_stream_profile(
-        self, arg0: OBLiDARScanRate, arg1: OBFormat
-    ) -> LiDARStreamProfile: ...
-    def get_stream_profile_by_index(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> StreamProfile: ...
+    def get_gyro_stream_profile(self, arg0: OBGyroFullScaleRange, arg1: OBGyroSampleRate) -> GyroStreamProfile: ...
+    def get_lidar_stream_profile(self, arg0: OBLiDARScanRate, arg1: OBFormat) -> LiDARStreamProfile: ...
+    def get_stream_profile_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> StreamProfile: ...
     @typing.overload
     def get_video_stream_profile(
         self,
@@ -5419,9 +4569,7 @@ class VideoFrame(Frame):
     def get_pixel_available_bit_size(self) -> int: ...
     def get_pixel_type(self) -> OBPixelType: ...
     def get_width(self) -> int: ...
-    def set_pixel_available_bit_size(
-        self, arg0: typing.SupportsInt | typing.SupportsIndex
-    ) -> None: ...
+    def set_pixel_available_bit_size(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> None: ...
     def set_pixel_type(self, arg0: OBPixelType) -> None: ...
 
 class VideoStreamProfile(StreamProfile):
@@ -5434,9 +4582,7 @@ class VideoStreamProfile(StreamProfile):
     def get_width(self) -> int: ...
 
 def get_version() -> str: ...
-def save_lidar_point_cloud_to_ply(
-    arg0: str, arg1: LiDARPointsFrame, arg2: bool
-) -> None: ...
+def save_lidar_point_cloud_to_ply(arg0: str, arg1: LiDARPointsFrame, arg2: bool) -> None: ...
 def save_point_cloud_to_ply(
     file_name: str,
     frame: Frame,
@@ -5471,41 +4617,23 @@ COUNT: OBPlaybackStatus  # value = <OBPlaybackStatus.COUNT: 4>
 PAUSED: OBPlaybackStatus  # value = <OBPlaybackStatus.PAUSED: 2>
 PLAYING: OBPlaybackStatus  # value = <OBPlaybackStatus.PLAYING: 1>
 SAMPLE_RATE_100_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_100_HZ: 7>
-SAMPLE_RATE_12_5_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_12_5_HZ: 4>
-)
-SAMPLE_RATE_16_KHZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_16_KHZ: 14>
-)
-SAMPLE_RATE_1_5625_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_1_5625_HZ: 1>
-)
+SAMPLE_RATE_12_5_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_12_5_HZ: 4>
+SAMPLE_RATE_16_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_16_KHZ: 14>
+SAMPLE_RATE_1_5625_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_1_5625_HZ: 1>
 SAMPLE_RATE_1_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_1_KHZ: 10>
 SAMPLE_RATE_200_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_200_HZ: 8>
 SAMPLE_RATE_25_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_25_HZ: 5>
 SAMPLE_RATE_2_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_2_KHZ: 11>
-SAMPLE_RATE_32_KHZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_32_KHZ: 15>
-)
-SAMPLE_RATE_3_125_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_3_125_HZ: 2>
-)
-SAMPLE_RATE_400_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_400_HZ: 16>
-)
+SAMPLE_RATE_32_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_32_KHZ: 15>
+SAMPLE_RATE_3_125_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_3_125_HZ: 2>
+SAMPLE_RATE_400_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_400_HZ: 16>
 SAMPLE_RATE_4_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_4_KHZ: 12>
 SAMPLE_RATE_500_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_500_HZ: 9>
 SAMPLE_RATE_50_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_50_HZ: 6>
-SAMPLE_RATE_6_25_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_6_25_HZ: 3>
-)
-SAMPLE_RATE_800_HZ: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_800_HZ: 17>
-)
+SAMPLE_RATE_6_25_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_6_25_HZ: 3>
+SAMPLE_RATE_800_HZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_800_HZ: 17>
 SAMPLE_RATE_8_KHZ: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_8_KHZ: 13>
-SAMPLE_RATE_UNKNOWN: (
-    OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_UNKNOWN: 0>
-)
+SAMPLE_RATE_UNKNOWN: OBGyroSampleRate  # value = <OBGyroSampleRate.SAMPLE_RATE_UNKNOWN: 0>
 STOPPED: OBPlaybackStatus  # value = <OBPlaybackStatus.STOPPED: 3>
 UNKNOWN: OBPlaybackStatus  # value = <OBPlaybackStatus.UNKNOWN: 0>
 OBAccelSampleRate = OBGyroSampleRate

@@ -55,17 +55,13 @@ def main():
                         getattr(OBFrameMetadataType, attr)
                         for attr in dir(OBFrameMetadataType)
                         if not attr.startswith("__")
-                        and isinstance(
-                            getattr(OBFrameMetadataType, attr), OBFrameMetadataType
-                        )
+                        and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
                     ]
 
                     for metadata_type in metadata_types:
                         if frame.has_metadata(metadata_type):
                             metadata_value = frame.get_metadata_value(metadata_type)
-                            print(
-                                f"  Metadata type: {metadata_type.name}, value: {metadata_value}"
-                            )
+                            print(f"  Metadata type: {metadata_type.name}, value: {metadata_value}")
 
         except KeyboardInterrupt:
             break

@@ -143,9 +143,7 @@ def _windows_uninstall() -> int:
         print(_red(f"[ERROR] Script not found: {_PS_SCRIPT}"))
         return 1
     if not _is_admin_windows():
-        print(
-            _red("[ERROR] Administrator privileges required. Re-run as Administrator.")
-        )
+        print(_red("[ERROR] Administrator privileges required. Re-run as Administrator."))
         return 1
     return _run_ps_script("remove_all")
 

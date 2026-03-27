@@ -123,9 +123,7 @@ def main():
             if device_status is not True:
                 print("Failed to apply the new IP configuration.")
             else:
-                print(
-                    "The new IP configuration has been successfully applied to the device."
-                )
+                print("The new IP configuration has been successfully applied to the device.")
 
     except Exception as e:
         print(f"An error occurred: {e}")

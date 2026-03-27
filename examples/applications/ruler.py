@@ -35,8 +35,16 @@ import cv2
 import numpy as np
 from utils import frame_to_bgr_image
 
-from pyorbbecsdk import (AlignFilter, Config, Context, OBError, OBLogLevel,
-                         OBSensorType, OBStreamType, Pipeline)
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    Context,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -138,9 +146,7 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
         my = (seg_start[1] + seg_end[1]) // 2
         label = f"{dist:.1f} mm" if dist is not None else "no depth"
         # Black outline for readability
-        cv2.putText(
-            out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3
-        )
+        cv2.putText(out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
         cv2.putText(
             out,
             label,
@@ -160,9 +166,7 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
     h = out.shape[0]
     hint = "Drag to measure | C = clear | Q/ESC = quit"
     cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2)
-    cv2.putText(
-        out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1
-    )
+    cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
 
     return out
 

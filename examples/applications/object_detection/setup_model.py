@@ -61,9 +61,7 @@ ONNX_URLS = [
 
 # For the export fallback we download the repo as a zip (no git required).
 YOLOV5_ZIP_URL = "https://github.com/ultralytics/yolov5/archive/refs/tags/v7.0.zip"
-YOLOV5_PT_URL = (
-    "https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt"
-)
+YOLOV5_PT_URL = "https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt"
 
 
 # ===========================================================================
@@ -159,11 +157,7 @@ def try_export():
         with zipfile.ZipFile(zip_path) as zf:
             zf.extractall(tmpdir)
         # The zip contains a top-level directory like  yolov5-7.0/
-        subdirs = [
-            d
-            for d in os.listdir(tmpdir)
-            if os.path.isdir(os.path.join(tmpdir, d)) and d.startswith("yolov5")
-        ]
+        subdirs = [d for d in os.listdir(tmpdir) if os.path.isdir(os.path.join(tmpdir, d)) and d.startswith("yolov5")]
         if not subdirs:
             print("  Could not find yolov5 folder in extracted zip.")
             return False
@@ -262,9 +256,7 @@ def _run_export(repo_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="One-click setup: install deps + download YOLOv5s ONNX model"
-    )
+    parser = argparse.ArgumentParser(description="One-click setup: install deps + download YOLOv5s ONNX model")
     parser.add_argument(
         "--force",
         action="store_true",
@@ -333,12 +325,8 @@ def main():
         else:
             print("\n  ALL methods failed. Please download manually:")
             print("    1. git clone https://github.com/ultralytics/yolov5.git")
-            print(
-                "    2. cd yolov5 && pip install -r requirements.txt && pip install onnx"
-            )
-            print(
-                "    3. python export.py --weights yolov5s.pt --include onnx --opset 12"
-            )
+            print("    2. cd yolov5 && pip install -r requirements.txt && pip install onnx")
+            print("    3. python export.py --weights yolov5s.pt --include onnx --opset 12")
             print(f"    4. Copy yolov5s.onnx to: {MODEL_PATH}")
             return 1
 

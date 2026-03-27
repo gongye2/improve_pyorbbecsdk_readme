@@ -33,8 +33,15 @@ import time
 
 import pytest
 
-from pyorbbecsdk import (Config, Context, OBLogLevel, OBPermissionType,
-                         OBPropertyID, OBSensorType, Pipeline)
+from pyorbbecsdk import (
+    Config,
+    Context,
+    OBLogLevel,
+    OBPermissionType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Device name sets used for fixture matching
@@ -72,19 +79,13 @@ def _device_matches(name: str, prefixes: list) -> bool:
 
 
 def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "hardware: test requires a physical Orbbec camera"
-    )
+    config.addinivalue_line("markers", "hardware: test requires a physical Orbbec camera")
     config.addinivalue_line(
         "markers",
         "g300_series: test for G300 series cameras (Gemini 330/335/336/305/345)",
     )
-    config.addinivalue_line(
-        "markers", "femto: test for Femto Bolt / Femto Mega cameras"
-    )
-    config.addinivalue_line(
-        "markers", "astra_mini: test for Astra Mini Pro / S Pro cameras"
-    )
+    config.addinivalue_line("markers", "femto: test for Femto Bolt / Femto Mega cameras")
+    config.addinivalue_line("markers", "astra_mini: test for Astra Mini Pro / S Pro cameras")
     config.addinivalue_line("markers", "astra2: test for Astra 2 cameras")
     config.addinivalue_line(
         "markers",

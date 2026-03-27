@@ -19,7 +19,12 @@
 # ******************************************************************************
 
 from pyorbbecsdk import (  # type: ignore  # compiled extension; stubs in stubs/pyorbbecsdk.pyi
-    Context, OBError, OBLogLevel, OBSensorType, Pipeline)
+    Context,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Step 1: Configure SDK logging
@@ -29,9 +34,7 @@ from pyorbbecsdk import (  # type: ignore  # compiled extension; stubs in stubs/
 #     NONE  ERROR  WARNING  INFO  DEBUG
 #   Tip: use DEBUG while diagnosing issues; use WARNING for normal use.
 # ---------------------------------------------------------------------------
-Context.set_logger_to_console(
-    OBLogLevel.WARNING
-)  # terminal: WARNING+  # type: ignore[name-defined]
+Context.set_logger_to_console(OBLogLevel.WARNING)  # terminal: WARNING+  # type: ignore[name-defined]
 
 # Optionally write a full DEBUG log to a file (uncomment if needed):
 # import os
@@ -99,8 +102,7 @@ for i in range(device_list.get_count()):
             profiles = pipeline.get_stream_profile_list(sensor_type)
             p = profiles.get_default_video_stream_profile()
             print(
-                f"    {label:<10} : {p.get_width()}x{p.get_height()} "
-                f"@ {p.get_fps()} fps  format={p.get_format()}"
+                f"    {label:<10} : {p.get_width()}x{p.get_height()} " f"@ {p.get_fps()} fps  format={p.get_format()}"
             )
         except OBError:
             pass  # sensor not present on this device

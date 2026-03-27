@@ -98,9 +98,7 @@ class TestAstra2DepthStream:
         assert frames
         frame = frames[-1].as_depth_frame()
         scale = frame.get_depth_scale()
-        data = (
-            np.frombuffer(frame.get_data(), dtype=np.uint16).astype(np.float32) * scale
-        )
+        data = np.frombuffer(frame.get_data(), dtype=np.uint16).astype(np.float32) * scale
         valid = data[data > 0]
         if len(valid) > 0:
             assert valid.min() >= ASTRA2_DEPTH_MIN_MM
@@ -108,9 +106,7 @@ class TestAstra2DepthStream:
 
     def test_depth_timestamps_monotonic(self, pipeline, astra2_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -119,18 +115,12 @@ class TestAstra2DepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, astra2_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
-            assert (
-                TARGET_FPS * (1 - FPS_TOLERANCE)
-                <= actual_fps
-                <= TARGET_FPS * (1 + FPS_TOLERANCE)
-            )
+            assert TARGET_FPS * (1 - FPS_TOLERANCE) <= actual_fps <= TARGET_FPS * (1 + FPS_TOLERANCE)
 
 
 class TestAstra2ColorStream:
@@ -152,9 +142,7 @@ class TestAstra2ColorStream:
 
     def test_color_timestamps_monotonic(self, pipeline, astra2_device):
         _start_single_stream(pipeline, OBSensorType.COLOR_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -167,11 +155,7 @@ class TestAstra2IRStream:
         config = Config()
         for st in [OBSensorType.IR_SENSOR, OBSensorType.LEFT_IR_SENSOR]:
             try:
-                config.enable_stream(
-                    pipeline.get_stream_profile_list(
-                        st
-                    ).get_default_video_stream_profile()
-                )
+                config.enable_stream(pipeline.get_stream_profile_list(st).get_default_video_stream_profile())
                 pipeline.start(config)
                 return
             except OBError:
@@ -186,11 +170,7 @@ class TestAstra2IRStream:
             (OBSensorType.LEFT_IR_SENSOR, OBFrameType.IR_FRAME),
         ]:
             try:
-                config.enable_stream(
-                    pipeline.get_stream_profile_list(
-                        st
-                    ).get_default_video_stream_profile()
-                )
+                config.enable_stream(pipeline.get_stream_profile_list(st).get_default_video_stream_profile())
                 frame_type = ft
                 break
             except OBError:
@@ -209,14 +189,10 @@ class TestAstra2MultiStreamSync:
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Dual stream not available: {e}")
@@ -231,9 +207,7 @@ class TestAstra2MultiStreamSync:
                     deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas
         median = sorted(deltas)[len(deltas) // 2]
-        assert (
-            median <= SYNC_DELTA_MS
-        ), f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"
+        assert median <= SYNC_DELTA_MS, f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"
 
 
 class TestAstra2Controls:
@@ -243,9 +217,7 @@ class TestAstra2Controls:
         from pyorbbecsdk import OBPermissionType, OBPropertyID
 
         prop = OBPropertyID.OB_PROP_DEPTH_MIRROR_BOOL
-        if not astra2_device.is_property_supported(
-            prop, OBPermissionType.PERMISSION_READ_WRITE
-        ):
+        if not astra2_device.is_property_supported(prop, OBPermissionType.PERMISSION_READ_WRITE):
             pytest.skip("Mirror property not supported")
         original = astra2_device.get_bool_property(prop)
         astra2_device.set_bool_property(prop, not original)
@@ -256,9 +228,7 @@ class TestAstra2Controls:
         from pyorbbecsdk import OBPermissionType, OBPropertyID
 
         prop = OBPropertyID.OB_PROP_COLOR_AUTO_EXPOSURE_BOOL
-        if not astra2_device.is_property_supported(
-            prop, OBPermissionType.PERMISSION_READ_WRITE
-        ):
+        if not astra2_device.is_property_supported(prop, OBPermissionType.PERMISSION_READ_WRITE):
             pytest.skip("Color auto-exposure not supported")
         original = astra2_device.get_bool_property(prop)
         astra2_device.set_bool_property(prop, not original)
@@ -269,9 +239,7 @@ class TestAstra2Controls:
         from pyorbbecsdk import OBPermissionType, OBPropertyID
 
         prop = OBPropertyID.OB_PROP_LASER_BOOL
-        if not astra2_device.is_property_supported(
-            prop, OBPermissionType.PERMISSION_READ_WRITE
-        ):
+        if not astra2_device.is_property_supported(prop, OBPermissionType.PERMISSION_READ_WRITE):
             pytest.skip("Laser property not supported")
         original = astra2_device.get_bool_property(prop)
         astra2_device.set_bool_property(prop, not original)

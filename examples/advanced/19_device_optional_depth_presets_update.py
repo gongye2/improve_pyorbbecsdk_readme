@@ -109,9 +109,7 @@ def main():
         try:
             device.update_optional_depth_presets(
                 preset_paths,
-                lambda state, message, percent: preset_update_callback(
-                    True, state, message, percent
-                ),
+                lambda state, message, percent: preset_update_callback(True, state, message, percent),
             )
         except Exception as e:
             print(f"\nThe update was interrupted! An error occurred: {str(e)}")

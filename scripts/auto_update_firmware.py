@@ -22,9 +22,7 @@ except ImportError:
     print("Please install it via pip: pip install pyorbbecsdk2")
     sys.exit(1)
 
-CONFIG_FILE_PATH = os.path.join(
-    project_root, "config", "firmware_compatibility_pid.json"
-)
+CONFIG_FILE_PATH = os.path.join(project_root, "config", "firmware_compatibility_pid.json")
 
 
 def clear_screen():
@@ -163,9 +161,7 @@ def main():
             print("    Please connect your camera and try again.")
             sys.exit(1)
 
-        print(
-            f"\n[Step 1] Checking Connected Devices (Found {device_list.get_count()} devices)"
-        )
+        print(f"\n[Step 1] Checking Connected Devices (Found {device_list.get_count()} devices)")
 
         devices_to_update = []
 
@@ -194,9 +190,7 @@ def main():
                 comparison = compare_versions(current_fw, rec_fw)
 
                 if comparison >= 0:
-                    print(
-                        "    Status: Already compatible with your firmware, no need to update."
-                    )
+                    print("    Status: Already compatible with your firmware, no need to update.")
                 else:
                     print(f"    Status: Update available ({current_fw} -> {rec_fw})")
                     devices_to_update.append((device, dev_config, name))
@@ -214,13 +208,7 @@ def main():
             print(f"\nPreparing to update {name}...")
             url = dev_config["download_url"]
 
-            confirm = (
-                input(
-                    f"  > Do you want to download and update firmware for {name}? (y/n) [y]: "
-                )
-                .strip()
-                .lower()
-            )
+            confirm = input(f"  > Do you want to download and update firmware for {name}? (y/n) [y]: ").strip().lower()
             if confirm not in ("", "y", "yes"):
                 print("  Skipping update.")
                 continue

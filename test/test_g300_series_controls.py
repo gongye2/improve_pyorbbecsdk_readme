@@ -55,9 +55,7 @@ def _clamp(val, lo, hi):
 
 class TestDepthControls:
 
-    def test_depth_exposure_get_set(
-        self, g300_series_device, disable_depth_auto_exposure
-    ):
+    def test_depth_exposure_get_set(self, g300_series_device, disable_depth_auto_exposure):
         prop = OBPropertyID.OB_PROP_DEPTH_EXPOSURE_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -124,9 +122,7 @@ class TestDepthControls:
 
 class TestColorControls:
 
-    def test_color_exposure_get_set(
-        self, g300_series_device, disable_color_auto_exposure
-    ):
+    def test_color_exposure_get_set(self, g300_series_device, disable_color_auto_exposure):
         prop = OBPropertyID.OB_PROP_COLOR_EXPOSURE_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)

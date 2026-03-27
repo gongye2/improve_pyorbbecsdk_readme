@@ -16,8 +16,13 @@
 import cv2
 
 from pyorbbecsdk import OBError  # type: ignore
-from pyorbbecsdk import (Config, OBFrameAggregateOutputMode, OBFrameType,
-                         OBSensorType, Pipeline)
+from pyorbbecsdk import (
+    Config,
+    OBFrameAggregateOutputMode,
+    OBFrameType,
+    OBSensorType,
+    Pipeline,
+)
 
 ESC_KEY = 27
 
@@ -36,9 +41,7 @@ def main():
 
     config.enable_accel_stream()
     config.enable_gyro_stream()
-    config.set_frame_aggregate_output_mode(
-        OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-    )
+    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
     try:
         pipeline.start(config)
     except OBError as e:
@@ -59,20 +62,14 @@ def main():
             if accel_frame is not None and frame_counter % 50 == 0:
                 print("AccelFrame: ts={}".format(accel_frame.get_timestamp()))
                 print(
-                    "AccelFrame: x={}, y={}, z={}".format(
-                        accel_frame.get_x(), accel_frame.get_y(), accel_frame.get_z()
-                    )
+                    "AccelFrame: x={}, y={}, z={}".format(accel_frame.get_x(), accel_frame.get_y(), accel_frame.get_z())
                 )
 
             gyro_frame = frames.get_gyro_frame()
 
             if gyro_frame is not None and frame_counter % 50 == 0:
                 print("GyroFrame: ts={}".format(gyro_frame.get_timestamp()))
-                print(
-                    "GyroFrame: x={}, y={}, z={}".format(
-                        gyro_frame.get_x(), gyro_frame.get_y(), gyro_frame.get_z()
-                    )
-                )
+                print("GyroFrame: x={}, y={}, z={}".format(gyro_frame.get_x(), gyro_frame.get_y(), gyro_frame.get_z()))
 
             key = cv2.waitKey(1)
             if key == ord("q") or key == ESC_KEY:
