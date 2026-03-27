@@ -22,14 +22,14 @@ def test_pipeline_creation():
 
     try:
         import pyorbbecsdk
-        from pyorbbecsdk import OBSensorType, OBFormat
+        from pyorbbecsdk import OBFormat, OBSensorType
 
         ctx = pyorbbecsdk.Context()
         pipeline = pyorbbecsdk.Pipeline()
-        
+
         print(f"✓ Pipeline created successfully")
         print(f"  Pipeline object: {pipeline}")
-        
+
         return ctx, pipeline
     except Exception as e:
         print(f"✗ Pipeline creation failed: {e}")
@@ -49,7 +49,7 @@ def test_config_creation(ctx, pipeline):
 
     try:
         import pyorbbecsdk
-        from pyorbbecsdk import OBSensorType, OBFormat
+        from pyorbbecsdk import OBFormat, OBSensorType
 
         config = pyorbbecsdk.Config()
         print(f"✓ Config created successfully")
@@ -70,7 +70,7 @@ def test_config_creation(ctx, pipeline):
             print(f"✓ Depth stream configured")
         except Exception as e:
             print(f"  Depth stream config skipped: {type(e).__name__}")
-        
+
         return config
     except Exception as e:
         print(f"✗ Config creation failed: {e}")
@@ -83,17 +83,17 @@ def test_pipeline_start(ctx, pipeline, config):
     print("=" * 50)
     print("Pipeline Start Test")
     print("=" * 50)
-    
+
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
         return False
-    
+
     try:
         if config:
             pipeline.start(config)
         else:
             pipeline.start()
-        
+
         print(f"✓ Pipeline started successfully")
         return True
     except Exception as e:
@@ -107,23 +107,23 @@ def test_frame_capture(pipeline, duration=3):
     print("=" * 50)
     print("Frame Capture Test")
     print("=" * 50)
-    
+
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
         return False
-    
+
     try:
         print(f"  Capturing frames for {duration} seconds...")
-        
+
         frame_count = 0
         start_time = time.time()
-        
+
         while time.time() - start_time < duration:
             try:
                 frames = pipeline.wait_for_frames(1000)
                 if frames:
                     frame_count += 1
-                    
+
                     # Try to get color frame
                     try:
                         color_frame = frames.get_color_frame()
@@ -133,7 +133,7 @@ def test_frame_capture(pipeline, duration=3):
                             print(f"  Frame {frame_count}: Color {width}x{height}")
                     except:
                         pass
-                    
+
                     # Try to get depth frame
                     try:
                         depth_frame = frames.get_depth_frame()
@@ -146,7 +146,7 @@ def test_frame_capture(pipeline, duration=3):
             except Exception as e:
                 # Timeout is OK, just continue
                 pass
-        
+
         print(f"✓ Captured {frame_count} frames")
         return True
     except Exception as e:
@@ -160,11 +160,11 @@ def test_pipeline_stop(pipeline):
     print("=" * 50)
     print("Pipeline Stop Test")
     print("=" * 50)
-    
+
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
         return True
-    
+
     try:
         pipeline.stop()
         print(f"✓ Pipeline stopped successfully")
@@ -180,7 +180,7 @@ def test_cleanup(ctx, pipeline):
     print("=" * 50)
     print("Cleanup Test")
     print("=" * 50)
-    
+
     try:
         if pipeline:
             del pipeline
@@ -200,51 +200,51 @@ def main():
     print("║  pyorbbecsdk macOS Capture Test Suite       ║")
     print("╚" + "=" * 48 + "╝")
     print()
-    
+
     results = []
-    
+
     # Test pipeline creation
     ctx, pipeline = test_pipeline_creation()
     results.append(("Pipeline Creation", pipeline is not None))
-    
+
     # Test config creation
     config = test_config_creation(ctx, pipeline)
     results.append(("Configuration", config is not None))
-    
+
     # Test pipeline start
     start_success = test_pipeline_start(ctx, pipeline, config)
     results.append(("Pipeline Start", start_success))
-    
+
     # Test frame capture
     capture_success = False
     if start_success:
         capture_success = test_frame_capture(pipeline)
     results.append(("Frame Capture", capture_success))
-    
+
     # Test pipeline stop
     stop_success = test_pipeline_stop(pipeline)
     results.append(("Pipeline Stop", stop_success))
-    
+
     # Test cleanup
     cleanup_success = test_cleanup(ctx, pipeline)
     results.append(("Cleanup", cleanup_success))
-    
+
     # Summary
     print()
     print("=" * 50)
     print("Test Summary")
     print("=" * 50)
-    
+
     passed = sum(1 for _, result in results if result)
     total = len(results)
-    
+
     for name, result in results:
         status = "✓ PASS" if result else "✗ FAIL"
         print(f"{status}: {name}")
-    
+
     print()
     print(f"Total: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("\n✓ All tests passed!")
         return 0

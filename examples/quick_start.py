@@ -47,16 +47,16 @@
 
 import cv2
 import numpy as np
-
-from pyorbbecsdk import Pipeline, OBFormat, OBError  # type: ignore
 from utils import frame_to_bgr_image
+
+from pyorbbecsdk import OBError, OBFormat, Pipeline  # type: ignore
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 ESC_KEY = 27
-MIN_DEPTH = 20      # mm — ignore noisy near-range readings
-MAX_DEPTH = 5000   # mm — ignore far-range readings
+MIN_DEPTH = 20  # mm — ignore noisy near-range readings
+MAX_DEPTH = 5000  # mm — ignore far-range readings
 
 WINDOW_NAME = "QuickStart Viewer"
 WINDOW_WIDTH = 1280
@@ -87,8 +87,8 @@ def render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
     grad_y = cv2.Scharr(depth_8bit, cv2.CV_32F, 0, 1)
     mag = cv2.magnitude(grad_x, grad_y) + 1.0
 
-    lighting = -0.707 * (grad_x + grad_y) / mag   # diffuse term
-    lighting = lighting * 0.15 + 0.85               # ambient 85% + diffuse 15%
+    lighting = -0.707 * (grad_x + grad_y) / mag  # diffuse term
+    lighting = lighting * 0.15 + 0.85  # ambient 85% + diffuse 15%
     np.clip(lighting, 0.7, 1.0, out=lighting)
 
     # 5. Apply colormap then multiply by lighting
@@ -166,7 +166,7 @@ def main():
 
             cv2.imshow(WINDOW_NAME, combined)
 
-            if cv2.waitKey(1) in (ord('q'), ord('Q'), ESC_KEY):
+            if cv2.waitKey(1) in (ord("q"), ord("Q"), ESC_KEY):
                 break
 
         except KeyboardInterrupt:

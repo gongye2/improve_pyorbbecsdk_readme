@@ -12,23 +12,28 @@
 #    python examples/beginner/08_net_device.py
 # ******************************************************************************
 
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-import cv2
-import av
 import threading
 import time
+
+import av
+import cv2
 import pygame
-from pyorbbecsdk import (Pipeline, Context, Config, OBSensorType, OBFormat, OBError)
 from utils import frame_to_bgr_image
+
+from pyorbbecsdk import (Config, Context, OBError, OBFormat, OBSensorType,
+                         Pipeline)
 
 ESC_KEY = 27
 # Gemini 335Le
 GEMINI_335LE_PRODUCT_ID = 0x080E
 # Gemini 435Le
 GEMINI_435LE_PRODUCT_ID = 0x0815
+
 
 def get_stream_profile(pipeline, sensor_type, width, height, fmt, fps):
     profile_list = pipeline.get_stream_profile_list(sensor_type)
@@ -38,15 +43,17 @@ def get_stream_profile(pipeline, sensor_type, width, height, fmt, fps):
         profile = profile_list.get_default_video_stream_profile()
     return profile
 
+
 def decode_h26x_frame(decoder, byte_data):
     try:
         packet = av.Packet(byte_data)
         frames = decoder.decode(packet)
         for frame in frames:
-            return frame.to_ndarray(format='bgr24')
+            return frame.to_ndarray(format="bgr24")
     except av.AVError as e:
         print(f"Decoding error: {e}")
     return None
+
 
 class FrameProcessor(threading.Thread):
     def __init__(self, decoder, display_width, display_height):
@@ -67,7 +74,9 @@ class FrameProcessor(threading.Thread):
                     color_image = decode_h26x_frame(self.decoder, self.latest_frame)
                     if color_image is not None:
                         # Resize the image to 1080p
-                        resized_image = cv2.resize(color_image, (self.display_width, self.display_height))
+                        resized_image = cv2.resize(
+                            color_image, (self.display_width, self.display_height)
+                        )
                         rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
                         self.processed_frame = rgb_image
                     self.latest_frame = None
@@ -84,9 +93,13 @@ class FrameProcessor(threading.Thread):
     def stop(self):
         self.running = False
 
+
 def main():
     ctx = Context()
-    ip = input("Enter the IP address of the device (default: 192.168.1.10): ") or "192.168.1.10"
+    ip = (
+        input("Enter the IP address of the device (default: 192.168.1.10): ")
+        or "192.168.1.10"
+    )
     device = ctx.create_net_device(ip, 8090)
     if device is None:
         print("Failed to create net device")
@@ -101,24 +114,28 @@ def main():
     if device_info.get_pid() in SUPPORTED_PIDS:
         # Set up 1280*800 capture
         print("Current device is GEMINI 435Le or GEMINI 335Le, use OBFormat.MJPG")
-        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10)
+        color_profile = get_stream_profile(
+            pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10
+        )
     else:
         # Set up 4K capture
-        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25)
+        color_profile = get_stream_profile(
+            pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25
+        )
 
     config.enable_stream(color_profile)
     pipeline.start(config)
 
     # Choose the correct decoder based on the format
     if color_profile.get_format() == OBFormat.H264:
-        color_codec_name = 'h264'
+        color_codec_name = "h264"
     elif color_profile.get_format() == OBFormat.MJPG:
-        color_codec_name = 'mjpeg'
+        color_codec_name = "mjpeg"
     else:
-        color_codec_name = 'hevc'
+        color_codec_name = "hevc"
 
     try:
-        decoder = av.codec.CodecContext.create(color_codec_name, 'r')
+        decoder = av.codec.CodecContext.create(color_codec_name, "r")
     except av.AVError as e:
         print(f"Failed to create decoder for {color_codec_name}: {e}")
         pipeline.stop()
@@ -170,6 +187,7 @@ def main():
         pipeline.stop()
         print("Exiting the program...")
         os._exit(0)
+
 
 if __name__ == "__main__":
     main()

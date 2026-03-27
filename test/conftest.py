@@ -30,18 +30,11 @@ Usage:
 """
 
 import time
+
 import pytest
 
-from pyorbbecsdk import (
-    Context,
-    Pipeline,
-    Config,
-    OBSensorType,
-    OBPropertyID,
-    OBPermissionType,
-    OBLogLevel,
-)
-
+from pyorbbecsdk import (Config, Context, OBLogLevel, OBPermissionType,
+                         OBPropertyID, OBSensorType, Pipeline)
 
 # ---------------------------------------------------------------------------
 # Device name sets used for fixture matching
@@ -49,8 +42,13 @@ from pyorbbecsdk import (
 
 # Gemini 330 series: 330, 335, 335L, 335Le, 335Lg, 336, 336L, 330L, 335Le
 _G300_NAME_PREFIXES = [
-    "Gemini 330", "Gemini 335", "Gemini 336", "Gemini 305",
-    "Gemini 345", "Gemini345", "Gemini305",
+    "Gemini 330",
+    "Gemini 335",
+    "Gemini 336",
+    "Gemini 305",
+    "Gemini 345",
+    "Gemini345",
+    "Gemini305",
 ]
 
 # Femto Bolt and Femto Mega family
@@ -72,20 +70,40 @@ def _device_matches(name: str, prefixes: list) -> bool:
 # Marker registration
 # ---------------------------------------------------------------------------
 
+
 def pytest_configure(config):
-    config.addinivalue_line("markers", "hardware: test requires a physical Orbbec camera")
-    config.addinivalue_line("markers", "g300_series: test for G300 series cameras (Gemini 330/335/336/305/345)")
-    config.addinivalue_line("markers", "femto: test for Femto Bolt / Femto Mega cameras")
-    config.addinivalue_line("markers", "astra_mini: test for Astra Mini Pro / S Pro cameras")
+    config.addinivalue_line(
+        "markers", "hardware: test requires a physical Orbbec camera"
+    )
+    config.addinivalue_line(
+        "markers",
+        "g300_series: test for G300 series cameras (Gemini 330/335/336/305/345)",
+    )
+    config.addinivalue_line(
+        "markers", "femto: test for Femto Bolt / Femto Mega cameras"
+    )
+    config.addinivalue_line(
+        "markers", "astra_mini: test for Astra Mini Pro / S Pro cameras"
+    )
     config.addinivalue_line("markers", "astra2: test for Astra 2 cameras")
-    config.addinivalue_line("markers", "functional: API correctness — device info, stream start, sensor controls, calibration, filters")
-    config.addinivalue_line("markers", "stability: multi-frame reliability — timestamp monotonicity, sync accuracy, drop rate")
-    config.addinivalue_line("markers", "performance: long-running benchmark — FPS, latency, throughput (60+ seconds)")
+    config.addinivalue_line(
+        "markers",
+        "functional: API correctness — device info, stream start, sensor controls, calibration, filters",
+    )
+    config.addinivalue_line(
+        "markers",
+        "stability: multi-frame reliability — timestamp monotonicity, sync accuracy, drop rate",
+    )
+    config.addinivalue_line(
+        "markers",
+        "performance: long-running benchmark — FPS, latency, throughput (60+ seconds)",
+    )
 
 
 # ---------------------------------------------------------------------------
 # Session-scoped device fixture (shared across all tests in one run)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def context():
@@ -117,6 +135,7 @@ def device_info(device):
 # ---------------------------------------------------------------------------
 # Device-specific fixtures — each skips if wrong model is connected
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="session")
 def g300_series_device(device, device_info):
@@ -172,15 +191,14 @@ def astra2_device(device, device_info):
     """
     name = device_info.get_name() or ""
     if not _device_matches(name, _ASTRA2_NAME_PREFIXES):
-        pytest.skip(
-            f"Connected device is '{name}', not an Astra 2 — skipping."
-        )
+        pytest.skip(f"Connected device is '{name}', not an Astra 2 — skipping.")
     return device
 
 
 # ---------------------------------------------------------------------------
 # Function-scoped pipeline fixture (fresh pipeline per test)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def pipeline(device):
@@ -196,6 +214,7 @@ def pipeline(device):
 # ---------------------------------------------------------------------------
 # Helper fixtures for sensor control tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def disable_depth_auto_exposure(device):
@@ -244,6 +263,7 @@ def disable_ir_auto_exposure(device):
 # Utility helpers (not fixtures)
 # ---------------------------------------------------------------------------
 
+
 def collect_frames(pipeline, sensor_type, count=30, timeout_ms=2000):
     """
     Start pipeline with the default profile for `sensor_type`,
@@ -261,9 +281,7 @@ def collect_frames(pipeline, sensor_type, count=30, timeout_ms=2000):
         frame_set = pipeline.wait_for_frames(timeout_ms)
         if frame_set is None:
             continue
-        frame = frame_set.get_frame_by_type(
-            _sensor_to_frame_type(sensor_type)
-        )
+        frame = frame_set.get_frame_by_type(_sensor_to_frame_type(sensor_type))
         if frame is not None:
             frames.append(frame)
 
@@ -273,13 +291,14 @@ def collect_frames(pipeline, sensor_type, count=30, timeout_ms=2000):
 
 def _sensor_to_frame_type(sensor_type):
     from pyorbbecsdk import OBFrameType
+
     mapping = {
-        OBSensorType.DEPTH_SENSOR:     OBFrameType.DEPTH_FRAME,
-        OBSensorType.COLOR_SENSOR:     OBFrameType.COLOR_FRAME,
-        OBSensorType.IR_SENSOR:        OBFrameType.IR_FRAME,
-        OBSensorType.LEFT_IR_SENSOR:   OBFrameType.IR_FRAME,
-        OBSensorType.RIGHT_IR_SENSOR:  OBFrameType.IR_FRAME,
-        OBSensorType.ACCEL_SENSOR:     OBFrameType.ACCEL_FRAME,
-        OBSensorType.GYRO_SENSOR:      OBFrameType.GYRO_FRAME,
+        OBSensorType.DEPTH_SENSOR: OBFrameType.DEPTH_FRAME,
+        OBSensorType.COLOR_SENSOR: OBFrameType.COLOR_FRAME,
+        OBSensorType.IR_SENSOR: OBFrameType.IR_FRAME,
+        OBSensorType.LEFT_IR_SENSOR: OBFrameType.IR_FRAME,
+        OBSensorType.RIGHT_IR_SENSOR: OBFrameType.IR_FRAME,
+        OBSensorType.ACCEL_SENSOR: OBFrameType.ACCEL_FRAME,
+        OBSensorType.GYRO_SENSOR: OBFrameType.GYRO_FRAME,
     }
     return mapping.get(sensor_type, OBFrameType.DEPTH_FRAME)

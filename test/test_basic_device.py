@@ -10,8 +10,8 @@ Usage:
 Note: Requires an Orbbec camera to be connected for full testing.
 """
 
-import sys
 import platform
+import sys
 
 
 def test_context_creation():
@@ -19,14 +19,14 @@ def test_context_creation():
     print("=" * 50)
     print("Context Creation Test")
     print("=" * 50)
-    
+
     try:
         import pyorbbecsdk
-        
+
         ctx = pyorbbecsdk.Context()
         print(f"✓ Context created successfully")
         print(f"  Context object: {ctx}")
-        
+
         return ctx
     except Exception as e:
         print(f"✗ Context creation failed: {e}")
@@ -39,11 +39,11 @@ def test_device_enumeration(ctx):
     print("=" * 50)
     print("Device Enumeration Test")
     print("=" * 50)
-    
+
     if ctx is None:
         print("✗ Skipped (no context)")
         return False, []
-    
+
     try:
         devices = ctx.query_devices()
         device_count = devices.get_count() if devices else 0
@@ -83,30 +83,32 @@ def test_device_info(ctx, devices):
     print("=" * 50)
     print("Device Information Test")
     print("=" * 50)
-    
+
     if not devices:
         print("  Skipped (no devices)")
         return True
-    
+
     try:
-        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
+        device = (
+            devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
+        )
         device_info = device.get_device_info()
 
         # Try to get various device info
         info_tests = [
-            ('Name', lambda: device_info.get_name()),
-            ('Serial Number', lambda: device_info.get_serial_number()),
-            ('Firmware Version', lambda: device_info.get_firmware_version()),
-            ('USB Bandwidth', lambda: str(device.get_usb_bandwidth())),
+            ("Name", lambda: device_info.get_name()),
+            ("Serial Number", lambda: device_info.get_serial_number()),
+            ("Firmware Version", lambda: device_info.get_firmware_version()),
+            ("USB Bandwidth", lambda: str(device.get_usb_bandwidth())),
         ]
-        
+
         for name, getter in info_tests:
             try:
                 value = getter()
                 print(f"✓ {name}: {value}")
             except Exception as e:
                 print(f"  {name}: <not available> ({type(e).__name__})")
-        
+
         return True
     except Exception as e:
         print(f"✗ Device info test failed: {e}")
@@ -119,13 +121,15 @@ def test_sensor_enumeration(ctx, devices):
     print("=" * 50)
     print("Sensor Enumeration Test")
     print("=" * 50)
-    
+
     if not devices:
         print("  Skipped (no devices)")
         return True
-    
+
     try:
-        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
+        device = (
+            devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
+        )
         sensors = device.get_sensor_list()
         sensor_count = sensors.get_count() if sensors else 0
 
@@ -144,7 +148,7 @@ def test_sensor_enumeration(ctx, devices):
                 print(f"  Sensor {i + 1}: {sensor_type}")
             except Exception as e:
                 print(f"  Sensor {i + 1}: <unknown> ({e})")
-        
+
         return True
     except Exception as e:
         print(f"✗ Sensor enumeration failed: {e}")
@@ -157,7 +161,7 @@ def test_cleanup(ctx):
     print("=" * 50)
     print("Cleanup Test")
     print("=" * 50)
-    
+
     try:
         if ctx:
             del ctx
@@ -175,45 +179,45 @@ def main():
     print("║  pyorbbecsdk macOS Device Test Suite        ║")
     print("╚" + "=" * 48 + "╝")
     print()
-    
+
     results = []
-    
+
     # Test context creation
     ctx = test_context_creation()
     results.append(("Context Creation", ctx is not None))
-    
+
     # Test device enumeration
     enum_success, devices = test_device_enumeration(ctx)
     results.append(("Device Enumeration", enum_success))
-    
+
     # Test device info
     info_success = test_device_info(ctx, devices)
     results.append(("Device Information", info_success))
-    
+
     # Test sensor enumeration
     sensor_success = test_sensor_enumeration(ctx, devices)
     results.append(("Sensor Enumeration", sensor_success))
-    
+
     # Test cleanup
     cleanup_success = test_cleanup(ctx)
     results.append(("Cleanup", cleanup_success))
-    
+
     # Summary
     print()
     print("=" * 50)
     print("Test Summary")
     print("=" * 50)
-    
+
     passed = sum(1 for _, result in results if result)
     total = len(results)
-    
+
     for name, result in results:
         status = "✓ PASS" if result else "✗ FAIL"
         print(f"{status}: {name}")
-    
+
     print()
     print(f"Total: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("\n✓ All tests passed!")
         return 0

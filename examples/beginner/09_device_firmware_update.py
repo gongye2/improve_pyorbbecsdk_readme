@@ -17,6 +17,7 @@
 
 import os
 import sys
+
 from pyorbbecsdk import Context  # type: ignore
 
 devices = []
@@ -26,13 +27,17 @@ first_call = True
 def get_firmware_path():
     """Prompt user for the firmware file path with improved Windows compatibility."""
     while True:
-        firmware_path = input("Please input the path of the firmware file (.bin) to be updated (or 'q' to quit): ")
+        firmware_path = input(
+            "Please input the path of the firmware file (.bin) to be updated (or 'q' to quit): "
+        )
 
-        if firmware_path.lower() == 'q':
+        if firmware_path.lower() == "q":
             sys.exit("Exiting...")
 
         # Clean up the input path
-        firmware_path = firmware_path.strip().strip("'").strip('"')  # Remove quotes and extra spaces
+        firmware_path = (
+            firmware_path.strip().strip("'").strip('"')
+        )  # Remove quotes and extra spaces
 
         # Normalize path separators for Windows compatibility
         firmware_path = os.path.normpath(firmware_path)
@@ -45,16 +50,20 @@ def get_firmware_path():
             if os.path.isfile(firmware_path):
                 # Try to open the file to verify access permissions
                 try:
-                    with open(firmware_path, 'rb') as f:
+                    with open(firmware_path, "rb") as f:
                         pass
                     print(f"Firmware file confirmed: {firmware_path}\n")
                     return firmware_path
                 except PermissionError:
-                    print("Error: Permission denied. Cannot access the specified file.\n")
+                    print(
+                        "Error: Permission denied. Cannot access the specified file.\n"
+                    )
                 except Exception as e:
                     print(f"Error accessing file: {str(e)}\n")
             else:
-                print("Invalid file format or path. Please provide a valid .bin file.\n")
+                print(
+                    "Invalid file format or path. Please provide a valid .bin file.\n"
+                )
         except Exception as e:
             print(f"Error processing path: {str(e)}\n")
             print("Please provide a valid file path.\n")
@@ -62,24 +71,30 @@ def get_firmware_path():
 
 def print_device_list():
     """Print the list of connected devices."""
-    print("--------------------------------------------------------------------------------")
+    print(
+        "--------------------------------------------------------------------------------"
+    )
     for i, device in enumerate(devices):
         device_info = device.get_device_info()
         print(
-            f"[{i}] Device: {device_info.get_name()} | SN: {device_info.get_serial_number()} | Firmware version: {device_info.get_firmware_version()}")
-    print("--------------------------------------------------------------------------------")
+            f"[{i}] Device: {device_info.get_name()} | SN: {device_info.get_serial_number()} | Firmware version: {device_info.get_firmware_version()}"
+        )
+    print(
+        "--------------------------------------------------------------------------------"
+    )
 
 
 def select_device():
     """Allow user to select a device by index."""
     while True:
         choice = input(
-            "Please select a device to update the firmware, enter 'l' to list devices, or 'q' to quit: \n").strip()
+            "Please select a device to update the firmware, enter 'l' to list devices, or 'q' to quit: \n"
+        ).strip()
 
-        if choice.lower() == 'q':
+        if choice.lower() == "q":
             return None
 
-        if choice.lower() == 'l':
+        if choice.lower() == "l":
             print_device_list()
             continue
 
@@ -135,15 +150,22 @@ def main():
 
             print("Upgrading device firmware, please wait...\n")
             try:
-                devices[device_index].update_firmware(firmware_path, firmware_update_callback, async_update=False)
-                print("Firmware update completed successfully! Please reboot the device.")
+                devices[device_index].update_firmware(
+                    firmware_path, firmware_update_callback, async_update=False
+                )
+                print(
+                    "Firmware update completed successfully! Please reboot the device."
+                )
             except Exception as e:
                 print("\nThe upgrade was interrupted! An error occurred!")
                 print(f"Error message: {str(e)}")
                 input("Press Enter to exit...")
                 break
 
-            if input("Enter 'q' to quit, or any other key to continue: ").lower() == 'q':
+            if (
+                input("Enter 'q' to quit, or any other key to continue: ").lower()
+                == "q"
+            ):
                 break
 
     except Exception as e:

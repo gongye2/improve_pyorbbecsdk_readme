@@ -81,9 +81,12 @@ def _run_ps_script(operation: str) -> int:
     cmd = [
         ps,
         "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-File", _PS_SCRIPT,
-        "-op", operation,
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        _PS_SCRIPT,
+        "-op",
+        operation,
     ]
     print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd)
@@ -140,7 +143,9 @@ def _windows_uninstall() -> int:
         print(_red(f"[ERROR] Script not found: {_PS_SCRIPT}"))
         return 1
     if not _is_admin_windows():
-        print(_red("[ERROR] Administrator privileges required. Re-run as Administrator."))
+        print(
+            _red("[ERROR] Administrator privileges required. Re-run as Administrator.")
+        )
         return 1
     return _run_ps_script("remove_all")
 
@@ -222,11 +227,13 @@ Examples:
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "--check", action="store_true",
+        "--check",
+        action="store_true",
         help="Check current configuration status (no changes made).",
     )
     group.add_argument(
-        "--uninstall", action="store_true",
+        "--uninstall",
+        action="store_true",
         help="Remove previously installed configuration.",
     )
     args = parser.parse_args()

@@ -14,25 +14,31 @@
 #    python examples/beginner/07_imu.py
 # ******************************************************************************
 import cv2
-from pyorbbecsdk import Config, Pipeline, OBSensorType, OBFrameType, OBFrameAggregateOutputMode, OBError  # type: ignore
+
+from pyorbbecsdk import (Config, OBError,  # type: ignore
+                         OBFrameAggregateOutputMode, OBFrameType, OBSensorType,
+                         Pipeline)
 
 ESC_KEY = 27
+
 
 def main():
     config = Config()
     pipeline = Pipeline()
     device = pipeline.get_device()
-    
+
     try:
         device.get_sensor(OBSensorType.ACCEL_SENSOR)
         device.get_sensor(OBSensorType.GYRO_SENSOR)
     except:
         print("Device does not support Accel or Gyro sensor.")
         return
-    
+
     config.enable_accel_stream()
     config.enable_gyro_stream()
-    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+    config.set_frame_aggregate_output_mode(
+        OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
+    )
     try:
         pipeline.start(config)
     except OBError as e:
@@ -52,19 +58,28 @@ def main():
 
             if accel_frame is not None and frame_counter % 50 == 0:
                 print("AccelFrame: ts={}".format(accel_frame.get_timestamp()))
-                print("AccelFrame: x={}, y={}, z={}".format(accel_frame.get_x(), accel_frame.get_y(), accel_frame.get_z()))
+                print(
+                    "AccelFrame: x={}, y={}, z={}".format(
+                        accel_frame.get_x(), accel_frame.get_y(), accel_frame.get_z()
+                    )
+                )
 
             gyro_frame = frames.get_gyro_frame()
 
             if gyro_frame is not None and frame_counter % 50 == 0:
                 print("GyroFrame: ts={}".format(gyro_frame.get_timestamp()))
-                print("GyroFrame: x={}, y={}, z={}".format(gyro_frame.get_x(), gyro_frame.get_y(), gyro_frame.get_z()))
+                print(
+                    "GyroFrame: x={}, y={}, z={}".format(
+                        gyro_frame.get_x(), gyro_frame.get_y(), gyro_frame.get_z()
+                    )
+                )
 
             key = cv2.waitKey(1)
-            if key == ord('q') or key == ESC_KEY:
+            if key == ord("q") or key == ESC_KEY:
                 break
         except KeyboardInterrupt:
             break
+
 
 if __name__ == "__main__":
     main()

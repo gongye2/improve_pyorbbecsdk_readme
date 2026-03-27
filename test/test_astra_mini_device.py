@@ -26,6 +26,7 @@ Tests verify:
 """
 
 import re
+
 import pytest
 
 from pyorbbecsdk import OBSensorType
@@ -41,9 +42,9 @@ class TestAstraMiniDeviceDiscovery:
     def test_device_name_is_astra_mini(self, device_info):
         name = device_info.get_name()
         assert name and len(name) > 0
-        assert "Astra Mini" in name or "Astra mini" in name, (
-            f"Device name '{name}' is not an Astra Mini camera"
-        )
+        assert (
+            "Astra Mini" in name or "Astra mini" in name
+        ), f"Device name '{name}' is not an Astra Mini camera"
 
     def test_vid_is_orbbec(self, device_info):
         vid = device_info.get_vid()
@@ -76,9 +77,9 @@ class TestAstraMiniSensorList:
         sl = astra_mini_device.get_sensor_list()
         types = [sl.get_sensor_by_index(i).get_type() for i in range(sl.get_count())]
         has_ir = (
-            OBSensorType.IR_SENSOR       in types or
-            OBSensorType.LEFT_IR_SENSOR  in types or
-            OBSensorType.RIGHT_IR_SENSOR in types
+            OBSensorType.IR_SENSOR in types
+            or OBSensorType.LEFT_IR_SENSOR in types
+            or OBSensorType.RIGHT_IR_SENSOR in types
         )
         assert has_ir, "No IR sensor found"
 
@@ -93,16 +94,18 @@ class TestAstraMiniSensorList:
         sl = astra_mini_device.get_sensor_list()
         types = [sl.get_sensor_by_index(i).get_type() for i in range(sl.get_count())]
         if OBSensorType.ACCEL_SENSOR in types:
-            pytest.skip("This Astra Mini variant has an IMU — test expectation may differ")
+            pytest.skip(
+                "This Astra Mini variant has an IMU — test expectation may differ"
+            )
 
 
 class TestAstramMiniPhysicalProperties:
 
     def test_firmware_version_format(self, device_info):
         fw = device_info.get_firmware_version()
-        assert fw and re.search(r"v?\d+\.\d+\.[\w\.]+", fw), (
-            f"Firmware version '{fw}' does not match expected format"
-        )
+        assert fw and re.search(
+            r"v?\d+\.\d+\.[\w\.]+", fw
+        ), f"Firmware version '{fw}' does not match expected format"
 
     def test_calibration_params_available(self, astra_mini_device):
         calib = astra_mini_device.get_calibration_camera_param_list()

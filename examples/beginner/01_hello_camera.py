@@ -18,7 +18,8 @@
 #    python examples/beginner/01_hello_camera.py
 # ******************************************************************************
 
-from pyorbbecsdk import Context, Pipeline, OBSensorType, OBLogLevel, OBError  # type: ignore  # compiled extension; stubs in stubs/pyorbbecsdk.pyi
+from pyorbbecsdk import (  # type: ignore  # compiled extension; stubs in stubs/pyorbbecsdk.pyi
+    Context, OBError, OBLogLevel, OBSensorType, Pipeline)
 
 # ---------------------------------------------------------------------------
 # Step 1: Configure SDK logging
@@ -28,7 +29,9 @@ from pyorbbecsdk import Context, Pipeline, OBSensorType, OBLogLevel, OBError  # 
 #     NONE  ERROR  WARNING  INFO  DEBUG
 #   Tip: use DEBUG while diagnosing issues; use WARNING for normal use.
 # ---------------------------------------------------------------------------
-Context.set_logger_to_console(OBLogLevel.WARNING)   # terminal: WARNING+  # type: ignore[name-defined]
+Context.set_logger_to_console(
+    OBLogLevel.WARNING
+)  # terminal: WARNING+  # type: ignore[name-defined]
 
 # Optionally write a full DEBUG log to a file (uncomment if needed):
 # import os
@@ -86,8 +89,8 @@ for i in range(device_list.get_count()):
     pipeline = Pipeline(device)
 
     VIDEO_SENSORS = [
-        (OBSensorType.DEPTH_SENSOR,     "Depth"),
-        (OBSensorType.COLOR_SENSOR,     "Color"),
+        (OBSensorType.DEPTH_SENSOR, "Depth"),
+        (OBSensorType.COLOR_SENSOR, "Color"),
     ]
 
     print("  Default stream configurations:")
@@ -102,7 +105,6 @@ for i in range(device_list.get_count()):
         except OBError:
             pass  # sensor not present on this device
 
-   
     # ------------------------------------------------------------------
     # Step 3b: Depth preset
     #   Presets bundle a named set of depth processing parameters

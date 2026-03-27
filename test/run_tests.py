@@ -57,12 +57,11 @@ Category markers
 """
 
 import argparse
-import os
-import sys
-import subprocess
 import datetime
+import os
 import platform
-
+import subprocess
+import sys
 
 # ---------------------------------------------------------------------------
 # Device family detection
@@ -70,42 +69,49 @@ import platform
 
 #: Maps the canonical marker name to name substrings found in device_info.get_name()
 _DEVICE_NAME_PATTERNS = {
-    "g300_series": ["Gemini 330", "Gemini 335", "Gemini 336",
-                    "Gemini 305", "Gemini 345", "Gemini345", "Gemini305"],
-    "femto":       ["Femto Bolt", "Femto Mega", "FemtoBolt", "FemtoMega"],
-    "astra_mini":  ["Astra Mini", "Astra mini"],
-    "astra2":      ["Astra 2", "Astra2"],
+    "g300_series": [
+        "Gemini 330",
+        "Gemini 335",
+        "Gemini 336",
+        "Gemini 305",
+        "Gemini 345",
+        "Gemini345",
+        "Gemini305",
+    ],
+    "femto": ["Femto Bolt", "Femto Mega", "FemtoBolt", "FemtoMega"],
+    "astra_mini": ["Astra Mini", "Astra mini"],
+    "astra2": ["Astra 2", "Astra2"],
 }
 
 #: User-friendly aliases accepted by --device
 _DEVICE_ALIASES = {
     # G300 series
-    "g300":         "g300_series",
-    "gemini":       "g300_series",
-    "gemini330":    "g300_series",
-    "gemini335":    "g300_series",
-    "gemini336":    "g300_series",
-    "gemini305":    "g300_series",
-    "gemini345":    "g300_series",
-    "g300_series":  "g300_series",
+    "g300": "g300_series",
+    "gemini": "g300_series",
+    "gemini330": "g300_series",
+    "gemini335": "g300_series",
+    "gemini336": "g300_series",
+    "gemini305": "g300_series",
+    "gemini345": "g300_series",
+    "g300_series": "g300_series",
     # Femto
-    "femto":        "femto",
-    "femto_bolt":   "femto",
-    "femto_mega":   "femto",
+    "femto": "femto",
+    "femto_bolt": "femto",
+    "femto_mega": "femto",
     # Astra Mini
-    "astra_mini":   "astra_mini",
+    "astra_mini": "astra_mini",
     "astra_mini_pro": "astra_mini",
     # Astra 2
-    "astra2":       "astra2",
-    "astra_2":      "astra2",
+    "astra2": "astra2",
+    "astra_2": "astra2",
 }
 
 #: Human-readable device family names
 _DEVICE_DISPLAY = {
     "g300_series": "G300 Series (Gemini 330/335/336/305/345)",
-    "femto":       "Femto Bolt / Femto Mega",
-    "astra_mini":  "Astra Mini Pro / S Pro",
-    "astra2":      "Astra 2",
+    "femto": "Femto Bolt / Femto Mega",
+    "astra_mini": "Astra Mini Pro / S Pro",
+    "astra2": "Astra 2",
 }
 
 
@@ -118,6 +124,7 @@ def detect_connected_device():
     """
     try:
         from pyorbbecsdk import Context, OBLogLevel
+
         ctx = Context()
         ctx.set_logger_level(OBLogLevel.NONE)
         device_list = ctx.query_devices()
@@ -126,7 +133,7 @@ def detect_connected_device():
         dev = device_list.get_device_by_index(0)
         di = dev.get_device_info()
         raw_name = di.get_name() or ""
-        serial   = di.get_serial_number() or "N/A"
+        serial = di.get_serial_number() or "N/A"
         firmware = di.get_firmware_version() or "N/A"
 
         for marker, patterns in _DEVICE_NAME_PATTERNS.items():
@@ -142,6 +149,7 @@ def detect_connected_device():
 # ---------------------------------------------------------------------------
 # pytest argument construction
 # ---------------------------------------------------------------------------
+
 
 def build_markers(device_marker, category, no_hardware, quick):
     """
@@ -169,9 +177,18 @@ def build_markers(device_marker, category, no_hardware, quick):
     return parts
 
 
-def build_pytest_cmd(test_dir, report_path, device_marker,
-                     category, no_hardware, quick,
-                     sdk_version, device_name, serial, firmware):
+def build_pytest_cmd(
+    test_dir,
+    report_path,
+    device_marker,
+    category,
+    no_hardware,
+    quick,
+    sdk_version,
+    device_name,
+    serial,
+    firmware,
+):
     """Return the full pytest command as a list of strings."""
     marker_parts = build_markers(device_marker, category, no_hardware, quick)
 
@@ -185,22 +202,35 @@ def build_pytest_cmd(test_dir, report_path, device_marker,
     args += [
         f"--html={report_path}",
         "--self-contained-html",
-        "--metadata", "SDK Version", sdk_version,
-        "--metadata", "Device", device_name,
-        "--metadata", "Serial", serial,
-        "--metadata", "Firmware", firmware,
-        "--metadata", "OS", f"{platform.system()} {platform.release()}",
-        "--metadata", "Python", sys.version.split()[0],
+        "--metadata",
+        "SDK Version",
+        sdk_version,
+        "--metadata",
+        "Device",
+        device_name,
+        "--metadata",
+        "Serial",
+        serial,
+        "--metadata",
+        "Firmware",
+        firmware,
+        "--metadata",
+        "OS",
+        f"{platform.system()} {platform.release()}",
+        "--metadata",
+        "Python",
+        sys.version.split()[0],
     ]
 
     # Add timeout only if pytest-timeout is installed
     if not quick and not no_hardware:
         try:
             import subprocess
+
             result = subprocess.run(
                 [sys.executable, "-m", "pytest", "--version"],
                 capture_output=True,
-                text=True
+                text=True,
             )
             if "timeout" in result.stdout.lower() or "timeout" in result.stderr.lower():
                 args += ["--timeout=120"]
@@ -214,9 +244,11 @@ def build_pytest_cmd(test_dir, report_path, device_marker,
 # SDK version detection
 # ---------------------------------------------------------------------------
 
+
 def get_sdk_version():
     try:
         import importlib.metadata
+
         return importlib.metadata.version("pyorbbecsdk2")
     except Exception:
         pass
@@ -235,6 +267,7 @@ def get_sdk_version():
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="pyorbbecsdk one-click test runner",
@@ -249,7 +282,8 @@ Examples:
 """,
     )
     parser.add_argument(
-        "--device", metavar="NAME",
+        "--device",
+        metavar="NAME",
         help=(
             "Device family to test. Auto-detected if omitted. "
             "Accepted values: g300, gemini, gemini335, femto, femto_bolt, "
@@ -257,40 +291,46 @@ Examples:
         ),
     )
     parser.add_argument(
-        "--category", metavar="CAT",
+        "--category",
+        metavar="CAT",
         choices=["functional", "performance", "stability"],
         help="Run only tests in this category (functional / performance / stability)",
     )
     parser.add_argument(
-        "--quick", action="store_true",
+        "--quick",
+        action="store_true",
         help="Skip performance benchmark tests (marker: not performance)",
     )
     parser.add_argument(
-        "--no-hardware", action="store_true",
+        "--no-hardware",
+        action="store_true",
         help="Skip all hardware-dependent tests (no camera required)",
     )
     parser.add_argument(
-        "--output", metavar="DIR", default="reports",
+        "--output",
+        metavar="DIR",
+        default="reports",
         help="Directory for HTML report output (default: reports/)",
     )
     parser.add_argument(
-        "--sdk-version", metavar="V",
+        "--sdk-version",
+        metavar="V",
         help="Override SDK version string shown in report",
     )
     args = parser.parse_args()
 
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    test_dir  = os.path.dirname(os.path.abspath(__file__))
+    test_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(repo_root, args.output)
     os.makedirs(output_dir, exist_ok=True)
 
     sdk_version = args.sdk_version or get_sdk_version()
 
     # ---- Resolve device marker ----
-    device_marker   = None
-    device_name     = "N/A"
-    serial          = "N/A"
-    firmware        = "N/A"
+    device_marker = None
+    device_name = "N/A"
+    serial = "N/A"
+    firmware = "N/A"
 
     if args.no_hardware:
         device_name = "N/A (--no-hardware)"
@@ -301,7 +341,7 @@ Examples:
             print(f"  Accepted values: {', '.join(sorted(_DEVICE_ALIASES))}")
             return 2
         device_marker = _DEVICE_ALIASES[alias]
-        device_name   = _DEVICE_DISPLAY.get(device_marker, device_marker)
+        device_name = _DEVICE_DISPLAY.get(device_marker, device_marker)
         # Still try to get serial/firmware from connected device
         _, raw_name, serial, firmware = detect_connected_device()
         if raw_name:
@@ -315,12 +355,14 @@ Examples:
             print("  Connect a camera or use --no-hardware to run without one.")
             return 1
         if device_marker is None:
-            print(f"[warn] Device '{device_name}' not recognised — running generic tests only.")
+            print(
+                f"[warn] Device '{device_name}' not recognised — running generic tests only."
+            )
 
     # ---- Build report path ----
-    timestamp   = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     safe_device = (device_marker or "generic").replace("/", "_")
-    safe_cat    = args.category or "all"
+    safe_cat = args.category or "all"
     report_name = f"test_report_{safe_device}_{safe_cat}_{timestamp}.html"
     report_path = os.path.join(output_dir, report_name)
 
@@ -330,7 +372,9 @@ Examples:
     print("  pyorbbecsdk Test Runner")
     print("=" * 60)
     print(f"  Device      : {device_name}")
-    print(f"  Family      : {_DEVICE_DISPLAY.get(device_marker, device_marker or 'generic')}")
+    print(
+        f"  Family      : {_DEVICE_DISPLAY.get(device_marker, device_marker or 'generic')}"
+    )
     print(f"  Serial      : {serial}")
     print(f"  Firmware    : {firmware}")
     print(f"  SDK version : {sdk_version}")
@@ -343,16 +387,16 @@ Examples:
 
     # ---- Build and run pytest ----
     cmd = build_pytest_cmd(
-        test_dir     = test_dir,
-        report_path  = report_path,
-        device_marker= device_marker,
-        category     = args.category,
-        no_hardware  = args.no_hardware,
-        quick        = args.quick,
-        sdk_version  = sdk_version,
-        device_name  = device_name,
-        serial       = serial,
-        firmware     = firmware,
+        test_dir=test_dir,
+        report_path=report_path,
+        device_marker=device_marker,
+        category=args.category,
+        no_hardware=args.no_hardware,
+        quick=args.quick,
+        sdk_version=sdk_version,
+        device_name=device_name,
+        serial=serial,
+        firmware=firmware,
     )
 
     print(f"Running: {' '.join(cmd)}\n")
@@ -366,6 +410,7 @@ Examples:
         latest = os.path.join(output_dir, "test_report_latest.html")
         try:
             import shutil
+
             shutil.copy2(report_path, latest)
             print(f"Latest copy  : {latest}")
         except Exception:

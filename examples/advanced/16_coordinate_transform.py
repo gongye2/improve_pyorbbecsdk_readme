@@ -15,8 +15,9 @@
 #  Run:
 #    python examples/advanced/16_coordinate_transform.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import numpy as np
@@ -53,15 +54,33 @@ def get_frame_data(color_frame, depth_frame):
 
     extrinsic = depth_profile.get_extrinsic_to(color_profile)
 
-    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(depth_height, depth_width)
+    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
+        depth_height, depth_width
+    )
 
-    return (color_intrinsics, color_distortion, depth_intrinsics, depth_distortion,
-            extrinsic, depth_data, depth_width, depth_height)
+    return (
+        color_intrinsics,
+        color_distortion,
+        depth_intrinsics,
+        depth_distortion,
+        extrinsic,
+        depth_data,
+        depth_width,
+        depth_height,
+    )
 
 
 def transform_points(transform_func, color_frame, depth_frame, dimension):
-    (color_intrinsics, color_distortion, depth_intrinsics, depth_distortion,
-     extrinsic, depth_data, depth_width, depth_height) = get_frame_data(color_frame, depth_frame)
+    (
+        color_intrinsics,
+        color_distortion,
+        depth_intrinsics,
+        depth_distortion,
+        extrinsic,
+        depth_data,
+        depth_width,
+        depth_height,
+    ) = get_frame_data(color_frame, depth_frame)
 
     convert_width, convert_height = 3, 3
     for i in range(depth_width // 2, depth_width // 2 + convert_width):
@@ -71,15 +90,31 @@ def transform_points(transform_func, color_frame, depth_frame, dimension):
             original_point = (x, y, depth)
             if depth > 0:
                 if dimension == "2d_to_2d":
-                    res = transform_func(ob.OBPoint2f(x, y), depth, depth_intrinsics, depth_distortion,
-                                         color_intrinsics, color_distortion, extrinsic)
+                    res = transform_func(
+                        ob.OBPoint2f(x, y),
+                        depth,
+                        depth_intrinsics,
+                        depth_distortion,
+                        color_intrinsics,
+                        color_distortion,
+                        extrinsic,
+                    )
                 elif dimension == "2d_to_3d":
-                    res = transform_func(ob.OBPoint2f(x, y), depth, depth_intrinsics, extrinsic)
+                    res = transform_func(
+                        ob.OBPoint2f(x, y), depth, depth_intrinsics, extrinsic
+                    )
                 elif dimension == "3d_to_3d":
                     res = transform_func(ob.OBPoint3f(x, y, depth), extrinsic)
                 elif dimension == "3d_to_2d":
-                    res = transform_func(ob.OBPoint3f(x, y, depth), color_intrinsics, color_distortion, extrinsic)
-                print(f"\n--- {dimension.replace('_', ' to ')} Point Transformation ---")
+                    res = transform_func(
+                        ob.OBPoint3f(x, y, depth),
+                        color_intrinsics,
+                        color_distortion,
+                        extrinsic,
+                    )
+                print(
+                    f"\n--- {dimension.replace('_', ' to ')} Point Transformation ---"
+                )
                 print(f"Original point: {original_point}")
                 print(f"Transformed point: {res}")
                 print(f"--------------------------------------------")
@@ -101,7 +136,7 @@ def on_press(key):
     except AttributeError:
         # Handle special keys like 'ESC'
         if key == keyboard.Key.esc:
-            key_pressed = 'esc'
+            key_pressed = "esc"
 
 
 def main():
@@ -127,10 +162,10 @@ def main():
 
     # Dictionary mapping key input to transformation functions and dimension types
     transform_functions = {
-        '1': (ob.transformation2dto2d, "2d_to_2d"),
-        '2': (ob.transformation2dto3d, "2d_to_3d"),
-        '3': (ob.transformation3dto3d, "3d_to_3d"),
-        '4': (ob.transformation3dto2d, "3d_to_2d")
+        "1": (ob.transformation2dto2d, "2d_to_2d"),
+        "2": (ob.transformation2dto3d, "2d_to_3d"),
+        "3": (ob.transformation3dto3d, "3d_to_3d"),
+        "4": (ob.transformation3dto2d, "3d_to_2d"),
     }
 
     # Start the keyboard listener to capture key presses
@@ -171,10 +206,12 @@ def main():
                 if key in transform_functions:
                     print("Transforming points...")
                     transform_func, dimension = transform_functions[key]
-                    transform_points(transform_func, color_frame, depth_frame, dimension)
-                elif key in ['q', 'esc']:  # Exit if 'q' or 'esc' is pressed
+                    transform_points(
+                        transform_func, color_frame, depth_frame, dimension
+                    )
+                elif key in ["q", "esc"]:  # Exit if 'q' or 'esc' is pressed
                     break
-                elif key == 'h':  # Display help if 'h' is pressed
+                elif key == "h":  # Display help if 'h' is pressed
                     print_help()
 
         except KeyboardInterrupt:

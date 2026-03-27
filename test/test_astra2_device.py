@@ -28,9 +28,10 @@ Tests verify:
 """
 
 import re
+
 import pytest
 
-from pyorbbecsdk import OBSensorType, OBError
+from pyorbbecsdk import OBError, OBSensorType
 
 pytestmark = [pytest.mark.hardware, pytest.mark.astra2, pytest.mark.functional]
 
@@ -42,9 +43,9 @@ class TestAstra2DeviceDiscovery:
 
     def test_device_name_is_astra2(self, device_info):
         name = device_info.get_name()
-        assert name and ("Astra 2" in name or "Astra2" in name), (
-            f"Device name '{name}' is not an Astra 2 camera"
-        )
+        assert name and (
+            "Astra 2" in name or "Astra2" in name
+        ), f"Device name '{name}' is not an Astra 2 camera"
 
     def test_vid_is_orbbec(self, device_info):
         vid = device_info.get_vid()
@@ -70,9 +71,9 @@ class TestAstra2FirmwareInfo:
 
     def test_firmware_version_format(self, device_info):
         fw = device_info.get_firmware_version()
-        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), (
-            f"Firmware version '{fw}' does not match expected format"
-        )
+        assert re.search(
+            r"v?\d+\.\d+\.[\w\.]+", fw
+        ), f"Firmware version '{fw}' does not match expected format"
 
     def test_hardware_version_nonempty(self, device_info):
         hw = device_info.get_hardware_version()
@@ -99,9 +100,9 @@ class TestAstra2SensorList:
         sl = astra2_device.get_sensor_list()
         types = [sl.get_sensor_by_index(i).get_type() for i in range(sl.get_count())]
         has_ir = (
-            OBSensorType.IR_SENSOR       in types or
-            OBSensorType.LEFT_IR_SENSOR  in types or
-            OBSensorType.RIGHT_IR_SENSOR in types
+            OBSensorType.IR_SENSOR in types
+            or OBSensorType.LEFT_IR_SENSOR in types
+            or OBSensorType.RIGHT_IR_SENSOR in types
         )
         assert has_ir, "No IR sensor found"
 

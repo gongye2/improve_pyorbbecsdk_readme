@@ -18,48 +18,49 @@
 #  Run:
 #    python examples/advanced/15_high_performance_pipeline.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-import threading
-import time
 import collections
 import sys
-import numpy as np
-import cv2
+import threading
+import time
 
-from pyorbbecsdk import (
-    Pipeline, Config, FrameSet,
-    OBSensorType, OBLogLevel, Context, OBError,
-)
+import cv2
+import numpy as np
+
+from pyorbbecsdk import (Config, Context, FrameSet, OBError, OBLogLevel,
+                         OBSensorType, Pipeline)
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-MAX_QUEUE_SIZE = 5      # Drop oldest frame if queue exceeds this depth
-FPS_WINDOW     = 60     # Measure FPS over last N frames
-MIN_DEPTH_MM   = 100
-MAX_DEPTH_MM   = 5000
-ESC_KEY        = 27
+MAX_QUEUE_SIZE = 5  # Drop oldest frame if queue exceeds this depth
+FPS_WINDOW = 60  # Measure FPS over last N frames
+MIN_DEPTH_MM = 100
+MAX_DEPTH_MM = 5000
+ESC_KEY = 27
 
 
 # ---------------------------------------------------------------------------
 # Thread-safe frame queue
 # ---------------------------------------------------------------------------
 
+
 class FrameQueue:
     """A bounded queue that drops the oldest item when full."""
 
     def __init__(self, maxsize=MAX_QUEUE_SIZE):
-        self._queue   = collections.deque(maxlen=maxsize)
-        self._lock    = threading.Lock()
+        self._queue = collections.deque(maxlen=maxsize)
+        self._lock = threading.Lock()
         self._dropped = 0
 
     def put(self, item):
         with self._lock:
             if len(self._queue) == self._queue.maxlen:
-                self._queue.popleft()   # discard oldest
+                self._queue.popleft()  # discard oldest
                 self._dropped += 1
             self._queue.append(item)
 
@@ -76,6 +77,7 @@ class FrameQueue:
 # ---------------------------------------------------------------------------
 # FPS counter
 # ---------------------------------------------------------------------------
+
 
 class FPSCounter:
     """Computes FPS from a sliding window of frame timestamps."""
@@ -98,14 +100,15 @@ class FPSCounter:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     ctx = Context()
     ctx.set_logger_level(OBLogLevel.WARNING)
 
-    pipeline   = Pipeline()
-    config     = Config()
-    depth_q    = FrameQueue()
-    color_q    = FrameQueue()
+    pipeline = Pipeline()
+    config = Config()
+    depth_q = FrameQueue()
+    color_q = FrameQueue()
     camera_fps = FPSCounter()
     render_fps = FPSCounter()
     stop_event = threading.Event()
@@ -168,8 +171,7 @@ def main():
                 raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
                 depth_mm = raw.reshape(h, w).astype(np.float32) * scale
                 clipped = np.where(
-                    (depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM),
-                    depth_mm, 0
+                    (depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM), depth_mm, 0
                 ).astype(np.uint16)
                 norm = cv2.normalize(clipped, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
                 panels.append(cv2.applyColorMap(norm, cv2.COLORMAP_JET))
@@ -190,9 +192,21 @@ def main():
                 f"Dropped: {depth_q.dropped}d/{color_q.dropped}c"
             )
             # Black outline (draw text slightly offset in black)
-            cv2.putText(display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
-            cv2.putText(display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
-            cv2.putText(display, stats, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
+            cv2.putText(
+                display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
+            )
+            cv2.putText(
+                display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
+            )
+            cv2.putText(
+                display,
+                stats,
+                (10, 25),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.55,
+                (255, 255, 255),
+                1,
+            )
 
             cv2.imshow("High-Performance Pipeline  |  Press 'q' to quit", display)
             if cv2.waitKey(1) in (ord("q"), ESC_KEY):
@@ -202,7 +216,9 @@ def main():
         stop_event.set()
         pipeline.stop()
         cv2.destroyAllWindows()
-        print(f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}")
+        print(
+            f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}"
+        )
 
 
 if __name__ == "__main__":

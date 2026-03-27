@@ -11,10 +11,13 @@
 #  Run:
 #    python examples/advanced/06_control.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import OBPermissionType, OBPropertyType, Context  # type: ignore
+from pyorbbecsdk import (Context, OBPermissionType,  # type: ignore
+                         OBPropertyType)
+
 
 def permission_type_to_string(permission):
     """Convert permission type to display string (e.g., R/W)"""
@@ -27,18 +30,21 @@ def permission_type_to_string(permission):
     else:
         return "_/_"
 
-# Select a device, the name, pid, vid, uid of the device will be printed here, 
+
+# Select a device, the name, pid, vid, uid of the device will be printed here,
 # and the corresponding device object will be returned after selection
 def select_device(device_list):
     dev_count = device_list.get_count()
     print("Device list: ")
     for i in range(dev_count):
-        print(f"{i}. name: {device_list.get_device_name_by_index(i)}, "
-              f"vid: 0x{device_list.get_device_vid_by_index(i):X}, "
-              f"pid: 0x{device_list.get_device_pid_by_index(i):04X}, "
-              f"uid: 0x{device_list.get_device_uid_by_index(i)}, "
-              f"sn: {device_list.get_device_serial_number_by_index(i)}")
-    
+        print(
+            f"{i}. name: {device_list.get_device_name_by_index(i)}, "
+            f"vid: 0x{device_list.get_device_vid_by_index(i):X}, "
+            f"pid: 0x{device_list.get_device_pid_by_index(i):04X}, "
+            f"uid: 0x{device_list.get_device_uid_by_index(i)}, "
+            f"sn: {device_list.get_device_serial_number_by_index(i)}"
+        )
+
     while True:
         try:
             dev_index = int(input("Select a device index: "))
@@ -48,6 +54,7 @@ def select_device(device_list):
             pass
         print("Your selection is out of range, please reselect.")
 
+
 # Get property list
 def get_property_list(device):
     property_vec = []
@@ -55,12 +62,15 @@ def get_property_list(device):
     for i in range(size):
         item = device.get_supported_property(i)
         # Filter for primary property types
-        if item.type in [OBPropertyType.OB_BOOL_PROPERTY, 
-                         OBPropertyType.OB_INT_PROPERTY, 
-                         OBPropertyType.OB_FLOAT_PROPERTY]:
+        if item.type in [
+            OBPropertyType.OB_BOOL_PROPERTY,
+            OBPropertyType.OB_INT_PROPERTY,
+            OBPropertyType.OB_FLOAT_PROPERTY,
+        ]:
             if item.permission != OBPermissionType.PERMISSION_DENY:
                 property_vec.append(item)
     return property_vec
+
 
 # Print a list of supported properties
 def print_property_list(device, property_list):
@@ -79,20 +89,25 @@ def print_property_list(device, property_list):
                 str_range = f"Int value(min:{r.min}, max:{r.max}, step:{r.step})"
             elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
                 r = device.get_float_property_range(item.id)
-                str_range = f"Float value(min:{r.min:.2f}, max:{r.max:.2f}, step:{r.step:.2f})"
+                str_range = (
+                    f"Float value(min:{r.min:.2f}, max:{r.max:.2f}, step:{r.step:.2f})"
+                )
         except Exception:
             str_range = "get range failed"
 
         permission_str = permission_type_to_string(item.permission)
-        print(f"{i:02d}. {item.name}({int(item.id)}), permission={permission_str}, range={str_range}")
+        print(
+            f"{i:02d}. {item.name}({int(item.id)}), permission={permission_str}, range={str_range}"
+        )
     print("-" * 72)
     print('Input "?" to get all properties, or "exit" to quit.' + "\n")
+
 
 def main():
     try:
         # Create a Context.
         ctx = Context()
-        
+
         # Query the list of connected devices
         device_list = ctx.query_devices()
 
@@ -104,17 +119,19 @@ def main():
                     device = device_list.get_device_by_index(0)
                 else:
                     device = select_device(device_list)
-                
+
                 info = device.get_device_info()
                 print("\n" + "-" * 72)
-                print(f"Current Device: name: {info.get_name()}, vid: 0x{info.get_vid():X}, "
-                      f"pid: 0x{info.get_pid():04X}, uid: 0x{info.get_uid()}")
+                print(
+                    f"Current Device: name: {info.get_name()}, vid: 0x{info.get_vid():X}, "
+                    f"pid: 0x{info.get_pid():04X}, uid: 0x{info.get_uid()}"
+                )
             else:
                 print("Device Not Found")
                 break
 
             print('Input "?" to get all properties, or "exit" to quit.')
-            
+
             # Fetch and sort properties by ID
             property_list = get_property_list(device)
             property_list.sort(key=lambda x: x.id.value)
@@ -123,7 +140,7 @@ def main():
                 choice = input().strip()
                 if not choice:
                     continue
-                
+
                 # exit the program
                 if choice == "exit":
                     return
@@ -136,7 +153,9 @@ def main():
                 # Check if it matches the input format
                 control_vec = choice.split()
                 if len(control_vec) < 2 or control_vec[1] not in ["get", "set"]:
-                    print("Property control usage: [property index] [get] or [property index] [set] [value]")
+                    print(
+                        "Property control usage: [property index] [get] or [property index] [set] [value]"
+                    )
                     continue
 
                 try:
@@ -144,7 +163,7 @@ def main():
                     if select_idx >= len(property_list):
                         print("Your selection is out of range, please reselect.")
                         continue
-                    
+
                     item = property_list[select_idx]
                     is_get = control_vec[1] == "get"
 
@@ -169,13 +188,16 @@ def main():
                             device.set_int_property(item.id, int(str_val))
                         elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
                             device.set_float_property(item.id, float(str_val))
-                        print(f"property name: {item.name}, set value success: {str_val}")
+                        print(
+                            f"property name: {item.name}, set value success: {str_val}"
+                        )
 
                 except Exception as e:
                     print(f"Operation failed: {e}")
 
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     main()

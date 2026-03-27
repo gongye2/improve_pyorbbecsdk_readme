@@ -22,9 +22,10 @@ Tests verify:
 """
 
 import re
+
 import pytest
 
-from pyorbbecsdk import OBSensorType, OBError
+from pyorbbecsdk import OBError, OBSensorType
 
 pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.functional]
 
@@ -39,11 +40,16 @@ class TestG300DeviceDiscovery:
         """Device name must identify it as a Gemini 3xx series camera."""
         name = device_info.get_name()
         assert name is not None and len(name) > 0
-        g300_prefixes = ["Gemini 330", "Gemini 335", "Gemini 336",
-                         "Gemini 305", "Gemini 345"]
-        assert any(p in name for p in g300_prefixes), (
-            f"Device name '{name}' is not a recognized G300 series model"
-        )
+        g300_prefixes = [
+            "Gemini 330",
+            "Gemini 335",
+            "Gemini 336",
+            "Gemini 305",
+            "Gemini 345",
+        ]
+        assert any(
+            p in name for p in g300_prefixes
+        ), f"Device name '{name}' is not a recognized G300 series model"
 
     def test_vid_is_orbbec(self, device_info):
         """Vendor ID must be Orbbec (0x2BC5)."""
@@ -62,9 +68,7 @@ class TestG300DeviceDiscovery:
         """All G300 series cameras connect via USB."""
         conn = device_info.get_connection_type()
         assert conn is not None
-        assert "usb" in str(conn).lower(), (
-            f"Expected USB connection, got: '{conn}'"
-        )
+        assert "usb" in str(conn).lower(), f"Expected USB connection, got: '{conn}'"
 
 
 class TestG300FirmwareInfo:
@@ -76,9 +80,9 @@ class TestG300FirmwareInfo:
     def test_firmware_version_format(self, device_info):
         """Firmware version must follow a numeric dotted pattern (e.g. 1.6.00)."""
         fw = device_info.get_firmware_version()
-        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), (
-            f"Firmware version '{fw}' does not match expected format"
-        )
+        assert re.search(
+            r"v?\d+\.\d+\.[\w\.]+", fw
+        ), f"Firmware version '{fw}' does not match expected format"
 
     def test_hardware_version_nonempty(self, device_info):
         hw = device_info.get_hardware_version()
@@ -133,12 +137,13 @@ class TestG300PhysicalProperties:
         """Operating temperature should be within -10°C to 95°C."""
         temp = g300_series_device.get_temperature()
         import re as _re
+
         values = [float(v) for v in _re.findall(r"[-+]?\d*\.?\d+", str(temp))]
         if values:
             for val in values:
-                assert -10.0 <= val <= 95.0, (
-                    f"Temperature {val}°C is outside expected range"
-                )
+                assert (
+                    -10.0 <= val <= 95.0
+                ), f"Temperature {val}°C is outside expected range"
 
     def test_calibration_params_available(self, g300_series_device):
         calib = g300_series_device.get_calibration_camera_param_list()

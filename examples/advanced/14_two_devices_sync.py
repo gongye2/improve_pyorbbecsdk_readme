@@ -15,15 +15,18 @@
 import json
 import os
 import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from queue import Queue
 from typing import List
 
 import cv2
 import numpy as np
-
-from pyorbbecsdk import OBMultiDeviceSyncMode, FrameSet, OBFormat, Pipeline, Config, Context, OBSensorType, VideoStreamProfile, OBError  # type: ignore
 from utils import frame_to_bgr_image
+
+from pyorbbecsdk import (Config, Context, FrameSet, OBError,  # type: ignore
+                         OBFormat, OBMultiDeviceSyncMode, OBSensorType,
+                         Pipeline, VideoStreamProfile)
 
 MAX_DEVICES = 2
 curr_device_cnt = 0
@@ -99,9 +102,13 @@ def rendering_frames():
 
             # print serial number, color timestamp, depth timestamp, break line
             if color_frame is not None:
-                print(f"device#{i}, color frame timestamp: {color_frame.get_timestamp_us()} us , system timestamp: {color_frame.get_system_timestamp_us()} us")
+                print(
+                    f"device#{i}, color frame timestamp: {color_frame.get_timestamp_us()} us , system timestamp: {color_frame.get_system_timestamp_us()} us"
+                )
             if depth_frame is not None:
-                print(f"device#{i}, depth frame timestamp: {depth_frame.get_timestamp_us()} us , system timestamp: {depth_frame.get_system_timestamp_us()} us")
+                print(
+                    f"device#{i}, depth frame timestamp: {depth_frame.get_timestamp_us()} us , system timestamp: {depth_frame.get_system_timestamp_us()} us"
+                )
             color_image = None
             depth_image = None
             color_width, color_height = 0, 0
@@ -197,9 +204,15 @@ def main():
         sync_config.mode = sync_mode_from_str(sync_config_json["config"]["mode"])
         sync_config.color_delay_us = sync_config_json["config"]["color_delay_us"]
         sync_config.depth_delay_us = sync_config_json["config"]["depth_delay_us"]
-        sync_config.trigger_out_enable = sync_config_json["config"]["trigger_out_enable"]
-        sync_config.trigger_out_delay_us = sync_config_json["config"]["trigger_out_delay_us"]
-        sync_config.frames_per_trigger = sync_config_json["config"]["frames_per_trigger"]
+        sync_config.trigger_out_enable = sync_config_json["config"][
+            "trigger_out_enable"
+        ]
+        sync_config.trigger_out_delay_us = sync_config_json["config"][
+            "trigger_out_delay_us"
+        ]
+        sync_config.frames_per_trigger = sync_config_json["config"][
+            "frames_per_trigger"
+        ]
         print(f"Device {serial_number} sync config: {sync_config}")
         device.set_multi_device_sync_config(sync_config)
         try:

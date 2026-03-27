@@ -11,16 +11,20 @@
 #  Run:
 #    python examples/advanced/03_save_image_to_disk.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import os
 
 import cv2
 import numpy as np
-
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, DepthFrame, ColorFrame, VideoStreamProfile, OBFrameAggregateOutputMode, OBError, Context  # type: ignore
 from utils import frame_to_bgr_image
+
+from pyorbbecsdk import (ColorFrame, Config, Context,  # type: ignore
+                         DepthFrame, OBError, OBFormat,
+                         OBFrameAggregateOutputMode, OBSensorType, Pipeline,
+                         VideoStreamProfile)
 
 
 def save_depth_frame(frame: DepthFrame, index):
@@ -41,10 +45,13 @@ def save_depth_frame(frame: DepthFrame, index):
     save_image_dir = os.path.join(os.getcwd(), "depth_images")
     if not os.path.exists(save_image_dir):
         os.mkdir(save_image_dir)
-    filename = save_image_dir + "/depth_{}x{}_{}_{}.png".format(width, height, index, timestamp)
+    filename = save_image_dir + "/depth_{}x{}_{}_{}.png".format(
+        width, height, index, timestamp
+    )
     params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
     cv2.imwrite(filename, data, params)
     print(f"Depth saved: {filename}")
+
 
 def save_color_frame(frame: ColorFrame, index):
     if frame is None:
@@ -55,13 +62,16 @@ def save_color_frame(frame: ColorFrame, index):
     save_image_dir = os.path.join(os.getcwd(), "color_images")
     if not os.path.exists(save_image_dir):
         os.mkdir(save_image_dir)
-    filename = save_image_dir + "/color_{}x{}_{}_{}.png".format(width, height, index, timestamp)
+    filename = save_image_dir + "/color_{}x{}_{}_{}.png".format(
+        width, height, index, timestamp
+    )
     image = frame_to_bgr_image(frame)
     if image is None:
         print("failed to convert frame to image")
         return
     cv2.imwrite(filename, image)
     print(f"Color saved: {filename}")
+
 
 def main():
     pipeline = Pipeline()
@@ -70,13 +80,17 @@ def main():
     try:
         profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
         if profile_list is not None:
-            color_profile: VideoStreamProfile = profile_list.get_default_video_stream_profile()
+            color_profile: VideoStreamProfile = (
+                profile_list.get_default_video_stream_profile()
+            )
             config.enable_stream(color_profile)
         depth_profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
         if depth_profile_list is not None:
             depth_profile = depth_profile_list.get_default_video_stream_profile()
             config.enable_stream(depth_profile)
-        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+        config.set_frame_aggregate_output_mode(
+            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
+        )
     except OBError as e:
         print(f"Error: {e}")
         print("Please connect an Orbbec camera and try again.")
@@ -88,11 +102,11 @@ def main():
         print(f"Error: {e}")
         print("Please connect an Orbbec camera and try again.")
         return
-    
+
     print("Waiting for sensor to stabilize...")
     for _ in range(15):
         pipeline.wait_for_frames(1000)
-        
+
     frame_index = 0
     try:
         while True:
@@ -103,10 +117,10 @@ def main():
             if frame_index >= 5:
                 print("The demo is over!")
                 break
-            
+
             color_frame = frames.get_color_frame()
             depth_frame = frames.get_depth_frame()
-            
+
             if color_frame:
                 save_color_frame(color_frame, frame_index)
             if depth_frame:
@@ -118,6 +132,7 @@ def main():
     finally:
         pipeline.stop()
         print("Pipeline stopped.")
-        
+
+
 if __name__ == "__main__":
     main()
