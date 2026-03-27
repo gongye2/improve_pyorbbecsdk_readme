@@ -37,8 +37,14 @@ import numpy as np
 from utils import frame_to_bgr_image, is_astra_mini_device
 
 from pyorbbecsdk import OBFormat  # type: ignore
-from pyorbbecsdk import (Config, OBError, OBFrameType, OBSensorType, Pipeline,
-                         RecordDevice)
+from pyorbbecsdk import (
+    Config,
+    OBError,
+    OBFrameType,
+    OBSensorType,
+    Pipeline,
+    RecordDevice,
+)
 
 
 class GlobalState:
@@ -156,9 +162,7 @@ def _process_depth(frame):
     if frame is None:
         return state.cached_frames["depth"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(img, cv2.COLORMAP_JET)
     except ValueError:
@@ -200,9 +204,7 @@ def _process_confidence(frame):
     if frame is None:
         return state.cached_frames["confidence"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     except ValueError:
@@ -349,11 +351,7 @@ def render_frames():
 
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
-            blocks = [
-                state.cached_frames[k]
-                for k in KEYS
-                if state.cached_frames.get(k) is not None
-            ]
+            blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
 
         if not blocks:
             if cv2.waitKey(5) & 0xFF in (ord("q"), 27):
@@ -388,9 +386,7 @@ def main():
     )
     args = parser.parse_args()
 
-    file_path = input(
-        "Enter output filename (.bag) and press Enter to start recording: "
-    )
+    file_path = input("Enter output filename (.bag) and press Enter to start recording: ")
 
     try:
         if args.no_gui:

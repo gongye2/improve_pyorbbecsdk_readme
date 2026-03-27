@@ -28,9 +28,7 @@ def get_rosbag_path():
         print("Please input the path of the Rosbag file (.bag) to playback: ")
         path = input("Path: ").strip()
 
-        if (path.startswith("'") and path.endswith("'")) or (
-            path.startswith('"') and path.endswith('"')
-        ):
+        if (path.startswith("'") and path.endswith("'")) or (path.startswith('"') and path.endswith('"')):
             path = path[1:-1]
 
         if path.lower().endswith(".bag") and os.path.exists(path):
@@ -61,18 +59,14 @@ class PlaybackApp:
         self.play_status = OBPlaybackStatus.STOPPED
 
         # Set playback status change callback, when the playback stops, start the pipeline again with the same config
-        self.playback.set_playback_status_change_callback(
-            self.on_playback_status_change
-        )
+        self.playback.set_playback_status_change_callback(self.on_playback_status_change)
 
         sensor_list = self.playback.get_sensor_list()
         for i in range(sensor_list.get_count()):
             sensor_type = sensor_list.get_sensor_by_index(i).get_type()
             self.config.enable_stream(sensor_type)
 
-        self.config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.ANY_SITUATION
-        )
+        self.config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.ANY_SITUATION)
 
     def on_playback_status_change(self, status):
         with self.replay_condition:
@@ -86,17 +80,13 @@ class PlaybackApp:
                 frame = frame_set.get_frame_by_index(i)
                 if frame:
                     fmt = frame.get_format()
-                    print(
-                        f"frame index: {frame.get_index()}, tsp: {frame.get_timestamp_us()}, format: {fmt}"
-                    )
+                    print(f"frame index: {frame.get_index()}, tsp: {frame.get_timestamp_us()}, format: {fmt}")
         self.frame_count += 1
 
     def monitor_replay(self):
         while not self.exited:
             with self.replay_condition:
-                self.replay_condition.wait_for(
-                    lambda: self.exited or self.play_status == OBPlaybackStatus.STOPPED
-                )
+                self.replay_condition.wait_for(lambda: self.exited or self.play_status == OBPlaybackStatus.STOPPED)
 
                 if self.exited:
                     break

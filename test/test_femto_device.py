@@ -42,9 +42,7 @@ class TestFemtoDeviceDiscovery:
     def test_device_name_is_femto(self, device_info):
         name = device_info.get_name()
         assert name and len(name) > 0
-        assert (
-            "Femto" in name or "femto" in name
-        ), f"Device name '{name}' is not a Femto family camera"
+        assert "Femto" in name or "femto" in name, f"Device name '{name}' is not a Femto family camera"
 
     def test_vid_is_orbbec(self, device_info):
         vid = device_info.get_vid()
@@ -66,9 +64,7 @@ class TestFemtoFirmwareInfo:
 
     def test_firmware_version_format(self, device_info):
         fw = device_info.get_firmware_version()
-        assert re.search(
-            r"v?\d+\.\d+\.[\w\.]+", fw
-        ), f"Firmware version '{fw}' does not match expected format"
+        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), f"Firmware version '{fw}' does not match expected format"
 
     def test_hardware_version_nonempty(self, device_info):
         hw = device_info.get_hardware_version()

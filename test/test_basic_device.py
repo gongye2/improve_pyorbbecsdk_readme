@@ -89,9 +89,7 @@ def test_device_info(ctx, devices):
         return True
 
     try:
-        device = (
-            devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
-        )
+        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
         device_info = device.get_device_info()
 
         # Try to get various device info
@@ -127,9 +125,7 @@ def test_sensor_enumeration(ctx, devices):
         return True
 
     try:
-        device = (
-            devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
-        )
+        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
         sensors = device.get_sensor_list()
         sensor_count = sensors.get_count() if sensors else 0
 

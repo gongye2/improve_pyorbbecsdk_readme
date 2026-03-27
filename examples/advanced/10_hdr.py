@@ -22,9 +22,15 @@ import cv2
 import numpy as np
 
 from pyorbbecsdk import HDRMergeFilter  # type: ignore
-from pyorbbecsdk import (Config, OBFrameAggregateOutputMode, OBHdrConfig,
-                         OBPermissionType, OBPropertyID, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import (
+    Config,
+    OBFrameAggregateOutputMode,
+    OBHdrConfig,
+    OBPermissionType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 ESC_KEY = 27
 PRINT_INTERVAL = 1  # seconds
@@ -94,19 +100,13 @@ def main(argv):
         config.enable_stream(depth_profile)
 
         # Enable IR streams
-        left_profile_list = pipeline.get_stream_profile_list(
-            OBSensorType.LEFT_IR_SENSOR
-        )
-        right_profile_list = pipeline.get_stream_profile_list(
-            OBSensorType.RIGHT_IR_SENSOR
-        )
+        left_profile_list = pipeline.get_stream_profile_list(OBSensorType.LEFT_IR_SENSOR)
+        right_profile_list = pipeline.get_stream_profile_list(OBSensorType.RIGHT_IR_SENSOR)
         left_ir_profile = left_profile_list.get_default_video_stream_profile()
         right_ir_profile = right_profile_list.get_default_video_stream_profile()
         config.enable_stream(left_ir_profile)
         config.enable_stream(right_ir_profile)
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
     except Exception as e:
         print(e)
         return
@@ -126,9 +126,7 @@ def main(argv):
 
     if device.isFrameInterleaveSupported():
         device.loadFrameInterleave("Depth from HDR")
-        device.set_bool_property(
-            OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, True
-        )
+        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, True)
     else:
         config = OBHdrConfig()
         config.enable = True
@@ -186,15 +184,9 @@ def main(argv):
 
             # Add text annotations to images
             ir_left_image = add_text_to_image(ir_left_image, "Left IR (HDR)", (10, 30))
-            ir_right_image = add_text_to_image(
-                ir_right_image, "Right IR (HDR)", (10, 30)
-            )
-            depth_image = add_text_to_image(
-                depth_image, "Original Depth (HDR)", (10, 30)
-            )
-            merged_depth_image = add_text_to_image(
-                merged_depth_image, "HDR Merged Depth", (10, 30)
-            )
+            ir_right_image = add_text_to_image(ir_right_image, "Right IR (HDR)", (10, 30))
+            depth_image = add_text_to_image(depth_image, "Original Depth (HDR)", (10, 30))
+            merged_depth_image = add_text_to_image(merged_depth_image, "HDR Merged Depth", (10, 30))
 
             # Create 2x2 layout
             top_row = np.hstack((ir_left_image, ir_right_image))
@@ -212,9 +204,7 @@ def main(argv):
     cv2.destroyAllWindows()
     pipeline.stop()
     if device.isFrameInterleaveSupported():
-        device.set_bool_property(
-            OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, False
-        )
+        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, False)
     else:
         hdr_config = OBHdrConfig()
         hdr_config.enable = False
@@ -230,14 +220,10 @@ def create_depth_image(depth_frame):
     depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
     depth_data = depth_data.reshape((height, width))
     depth_data = depth_data.astype(np.float32) * scale
-    depth_data = np.where(
-        (depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0
-    )
+    depth_data = np.where((depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0)
     depth_data = depth_data.astype(np.uint16)
 
-    depth_image = cv2.normalize(
-        depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-    )
+    depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
 
 

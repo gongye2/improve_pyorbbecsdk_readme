@@ -30,8 +30,7 @@ import sys
 
 import numpy as np
 
-from pyorbbecsdk import (Config, Context, OBError, OBLogLevel, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import Config, Context, OBError, OBLogLevel, OBSensorType, Pipeline
 
 
 def _print_intrinsic(label: str, intr) -> None:

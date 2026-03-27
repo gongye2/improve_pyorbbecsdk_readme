@@ -31,8 +31,15 @@ import time
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (Config, Context, FrameSet, OBError, OBLogLevel,
-                         OBSensorType, Pipeline)
+from pyorbbecsdk import (
+    Config,
+    Context,
+    FrameSet,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -170,9 +177,9 @@ def main():
                 scale = depth_frame.get_depth_scale()
                 raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
                 depth_mm = raw.reshape(h, w).astype(np.float32) * scale
-                clipped = np.where(
-                    (depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM), depth_mm, 0
-                ).astype(np.uint16)
+                clipped = np.where((depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM), depth_mm, 0).astype(
+                    np.uint16
+                )
                 norm = cv2.normalize(clipped, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
                 panels.append(cv2.applyColorMap(norm, cv2.COLORMAP_JET))
 
@@ -192,12 +199,8 @@ def main():
                 f"Dropped: {depth_q.dropped}d/{color_q.dropped}c"
             )
             # Black outline (draw text slightly offset in black)
-            cv2.putText(
-                display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
-            )
-            cv2.putText(
-                display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
-            )
+            cv2.putText(display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
+            cv2.putText(display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
             cv2.putText(
                 display,
                 stats,
@@ -216,9 +219,7 @@ def main():
         stop_event.set()
         pipeline.stop()
         cv2.destroyAllWindows()
-        print(
-            f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}"
-        )
+        print(f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}")
 
 
 if __name__ == "__main__":

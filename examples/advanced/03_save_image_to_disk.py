@@ -22,9 +22,17 @@ import numpy as np
 from utils import frame_to_bgr_image
 
 from pyorbbecsdk import Context  # type: ignore
-from pyorbbecsdk import (ColorFrame, Config, DepthFrame, OBError, OBFormat,
-                         OBFrameAggregateOutputMode, OBSensorType, Pipeline,
-                         VideoStreamProfile)
+from pyorbbecsdk import (
+    ColorFrame,
+    Config,
+    DepthFrame,
+    OBError,
+    OBFormat,
+    OBFrameAggregateOutputMode,
+    OBSensorType,
+    Pipeline,
+    VideoStreamProfile,
+)
 
 
 def save_depth_frame(frame: DepthFrame, index):
@@ -45,9 +53,7 @@ def save_depth_frame(frame: DepthFrame, index):
     save_image_dir = os.path.join(os.getcwd(), "depth_images")
     if not os.path.exists(save_image_dir):
         os.mkdir(save_image_dir)
-    filename = save_image_dir + "/depth_{}x{}_{}_{}.png".format(
-        width, height, index, timestamp
-    )
+    filename = save_image_dir + "/depth_{}x{}_{}_{}.png".format(width, height, index, timestamp)
     params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
     cv2.imwrite(filename, data, params)
     print(f"Depth saved: {filename}")
@@ -62,9 +68,7 @@ def save_color_frame(frame: ColorFrame, index):
     save_image_dir = os.path.join(os.getcwd(), "color_images")
     if not os.path.exists(save_image_dir):
         os.mkdir(save_image_dir)
-    filename = save_image_dir + "/color_{}x{}_{}_{}.png".format(
-        width, height, index, timestamp
-    )
+    filename = save_image_dir + "/color_{}x{}_{}_{}.png".format(width, height, index, timestamp)
     image = frame_to_bgr_image(frame)
     if image is None:
         print("failed to convert frame to image")
@@ -80,17 +84,13 @@ def main():
     try:
         profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
         if profile_list is not None:
-            color_profile: VideoStreamProfile = (
-                profile_list.get_default_video_stream_profile()
-            )
+            color_profile: VideoStreamProfile = profile_list.get_default_video_stream_profile()
             config.enable_stream(color_profile)
         depth_profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
         if depth_profile_list is not None:
             depth_profile = depth_profile_list.get_default_video_stream_profile()
             config.enable_stream(depth_profile)
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
     except OBError as e:
         print(f"Error: {e}")
         print("Please connect an Orbbec camera and try again.")

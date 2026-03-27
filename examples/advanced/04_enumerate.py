@@ -36,10 +36,7 @@ def get_input_option():
 def print_video_profile(profile, index, sensor_type):
     """Print video stream profile information, including sensor type"""
     # Check if VideoStreamProfile has the required methods
-    if all(
-        hasattr(profile, attr)
-        for attr in ["get_format", "get_width", "get_height", "get_fps"]
-    ):
+    if all(hasattr(profile, attr) for attr in ["get_format", "get_width", "get_height", "get_fps"]):
         format_name = profile.get_format()
         width = profile.get_width()
         height = profile.get_height()

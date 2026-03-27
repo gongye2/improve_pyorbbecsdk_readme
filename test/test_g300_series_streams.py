@@ -49,9 +49,7 @@ DEPTH_MIN_MM = 10.0
 DEPTH_MAX_MM = 15000.0
 
 
-DEPTH_DEBUG_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "reports", "depth_debug"
-)
+DEPTH_DEBUG_DIR = os.path.join(os.path.dirname(__file__), "..", "reports", "depth_debug")
 
 
 def _save_depth_debug(raw_u16, width, height, scale, val_min, val_max):
@@ -183,19 +181,15 @@ class TestDepthStream:
                     valid.max(),
                 )
             assert valid.min() >= DEPTH_MIN_MM, (
-                f"Depth min {valid.min():.2f} mm < {DEPTH_MIN_MM} mm. "
-                f"Debug files saved to {DEPTH_DEBUG_DIR}"
+                f"Depth min {valid.min():.2f} mm < {DEPTH_MIN_MM} mm. " f"Debug files saved to {DEPTH_DEBUG_DIR}"
             )
             assert valid.max() <= DEPTH_MAX_MM, (
-                f"Depth max {valid.max():.2f} mm > {DEPTH_MAX_MM} mm. "
-                f"Debug files saved to {DEPTH_DEBUG_DIR}"
+                f"Depth max {valid.max():.2f} mm > {DEPTH_MAX_MM} mm. " f"Debug files saved to {DEPTH_DEBUG_DIR}"
             )
 
     def test_depth_timestamps_monotonic(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -204,17 +198,13 @@ class TestDepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR, fps=TARGET_FPS)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10, "Insufficient frames to measure FPS"
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
             lo, hi = TARGET_FPS * (1 - FPS_TOLERANCE), TARGET_FPS * (1 + FPS_TOLERANCE)
-            assert (
-                lo <= actual_fps <= hi
-            ), f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
+            assert lo <= actual_fps <= hi, f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
 
 
 # ===========================================================================
@@ -249,9 +239,7 @@ class TestColorStream:
 
     def test_color_timestamps_monotonic(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.COLOR_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -346,9 +334,7 @@ class TestIRStream:
     def test_ir_frame_valid_single_sensor(self, pipeline, g300_series_device):
         """For devices with a single IR sensor, IR_FRAME must be non-trivial."""
         if _has_dual_ir(g300_series_device):
-            pytest.skip(
-                "Device has dual IR — use test_left/right_ir_frame_valid instead"
-            )
+            pytest.skip("Device has dual IR — use test_left/right_ir_frame_valid instead")
         config = Config()
         try:
             pl = pipeline.get_stream_profile_list(OBSensorType.IR_SENSOR)
@@ -374,14 +360,10 @@ class TestMultiStreamSync:
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
@@ -397,23 +379,17 @@ class TestMultiStreamSync:
                 deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas
         median = sorted(deltas)[len(deltas) // 2]
-        assert (
-            median <= SYNC_DELTA_MS
-        ), f"Median color↔depth delta {median}ms exceeds {SYNC_DELTA_MS}ms"
+        assert median <= SYNC_DELTA_MS, f"Median color↔depth delta {median}ms exceeds {SYNC_DELTA_MS}ms"
 
     def test_frame_sync_reduces_delta(self, pipeline, g300_series_device):
         """With frame sync enabled, P95 color↔depth delta should be ≤ 10 ms."""
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
@@ -430,9 +406,7 @@ class TestMultiStreamSync:
                 deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas
         p95 = sorted(deltas)[int(len(deltas) * 0.95)]
-        assert (
-            p95 <= TIGHT_SYNC_DELTA_MS
-        ), f"P95 sync delta {p95}ms exceeds {TIGHT_SYNC_DELTA_MS}ms"
+        assert p95 <= TIGHT_SYNC_DELTA_MS, f"P95 sync delta {p95}ms exceeds {TIGHT_SYNC_DELTA_MS}ms"
 
     @pytest.mark.timeout(60)
     def test_tri_stream_no_dropped_frames(self, pipeline, g300_series_device):
@@ -446,9 +420,7 @@ class TestMultiStreamSync:
         # Depth
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             enabled += 1
         except OBError:
@@ -457,9 +429,7 @@ class TestMultiStreamSync:
         # Color
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
             enabled += 1
         except OBError:
@@ -476,9 +446,7 @@ class TestMultiStreamSync:
         else:
             try:
                 config.enable_stream(
-                    pipeline.get_stream_profile_list(
-                        OBSensorType.IR_SENSOR
-                    ).get_default_video_stream_profile()
+                    pipeline.get_stream_profile_list(OBSensorType.IR_SENSOR).get_default_video_stream_profile()
                 )
                 enabled += 1
             except OBError:
@@ -494,6 +462,5 @@ class TestMultiStreamSync:
                 received += 1
         drop_rate = 1.0 - received / FRAME_COLLECT_COUNT
         assert drop_rate <= 0.05, (
-            f"Drop rate {drop_rate:.1%} exceeds 5% "
-            f"({received}/{FRAME_COLLECT_COUNT} frame sets)"
+            f"Drop rate {drop_rate:.1%} exceeds 5% " f"({received}/{FRAME_COLLECT_COUNT} frame sets)"
         )

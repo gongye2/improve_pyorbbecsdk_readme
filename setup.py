@@ -37,8 +37,7 @@ class CustomBuildExt(build_ext):
     def build_extension(self, ext):
         if not os.path.isdir(ext.lib_dir) or not os.listdir(ext.lib_dir):
             raise FileNotFoundError(
-                f"Directory '{ext.lib_dir}' is empty or does not exist. "
-                "Please compile with CMake first."
+                f"Directory '{ext.lib_dir}' is empty or does not exist. " "Please compile with CMake first."
             )
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))

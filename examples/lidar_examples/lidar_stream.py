@@ -18,8 +18,15 @@ import time
 import numpy as np
 
 from pyorbbecsdk import OBFormat  # type: ignore
-from pyorbbecsdk import (Config, Context, OBFrameAggregateOutputMode,
-                         OBFrameType, OBPropertyID, OBSensorType, Pipeline)
+from pyorbbecsdk import (
+    Config,
+    Context,
+    OBFrameAggregateOutputMode,
+    OBFrameType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
@@ -63,9 +70,7 @@ def select_sensors(device):
             print(f" - {index}.sensor type: {sensor_type}")
 
         print(f" - {count}.all sensors")
-        print(
-            f"Select a sensor to enable (input sensor index, '{count}' to select all sensors): "
-        )
+        print(f"Select a sensor to enable (input sensor index, '{count}' to select all sensors): ")
 
         try:
             sensor_selected = int(input())
@@ -149,9 +154,7 @@ def print_lidar_point_cloud_info(frame):
         y = dist * np.sin(theta_rad) * cos_phi
         z = dist * np.sin(phi_rad)
 
-        mask = (
-            (dist >= min_point_value) & np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
-        )
+        mask = (dist >= min_point_value) & np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
         valid_point_count = np.sum(mask)
 
     # Case: Standard Cartesian coordinates (x, y, z)
@@ -167,19 +170,12 @@ def print_lidar_point_cloud_info(frame):
             ],
         )
         x, y, z = points["x"], points["y"], points["z"]
-        mask = (
-            (np.abs(z) >= min_point_value)
-            & np.isfinite(x)
-            & np.isfinite(y)
-            & np.isfinite(z)
-        )
+        mask = (np.abs(z) >= min_point_value) & np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
         valid_point_count = np.sum(mask)
 
     # Case: 2D Laser Scan (angle, distance)
     elif point_format == OBFormat.LIDAR_SCAN:
-        points = np.frombuffer(
-            data, dtype=[("angle", "f4"), ("distance", "f4"), ("intensity", "u2")]
-        )
+        points = np.frombuffer(data, dtype=[("angle", "f4"), ("distance", "f4"), ("intensity", "u2")])
 
         dist = points["distance"]
         angle_rad = np.radians(points["angle"])
@@ -248,9 +244,7 @@ def select_streams(device, config):
                 break
 
             # Enable the selected stream profile in the config
-            selected_stream_profile = stream_profile_list.get_stream_profile_by_index(
-                stream_profile_selected
-            )
+            selected_stream_profile = stream_profile_list.get_stream_profile_by_index(stream_profile_selected)
             config.enable_stream(selected_stream_profile)
             break
 
@@ -328,9 +322,7 @@ def main():
         select_streams(device, config)
 
         # Ensure that FrameSets output contain all required frame types
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
 
         # Start the pipeline with the selected config and frame callback
         pipe.start(config, on_new_frame_set)

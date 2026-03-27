@@ -44,9 +44,7 @@ def main():
 
             # Select preset to load
             try:
-                input_option = int(
-                    input("\nEnter index of preset to load (or -1 to exit): ")
-                )
+                input_option = int(input("\nEnter index of preset to load (or -1 to exit): "))
                 if input_option == -1:
                     break
                 if input_option < 0 or input_option >= len(preset_list):
@@ -61,9 +59,7 @@ def main():
             device.load_preset(preset_name)
 
             # Print current preset name
-            print(
-                f"\nPreset loaded. Current PresetName: {device.get_current_preset_name()}"
-            )
+            print(f"\nPreset loaded. Current PresetName: {device.get_current_preset_name()}")
 
     except ob.OBError as e:
         print(f"Error: {str(e)}")

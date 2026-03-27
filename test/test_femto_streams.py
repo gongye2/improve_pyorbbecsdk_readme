@@ -98,9 +98,7 @@ class TestFemtoDepthStream:
         assert frames
         frame = frames[-1].as_depth_frame()
         scale = frame.get_depth_scale()
-        data = (
-            np.frombuffer(frame.get_data(), dtype=np.uint16).astype(np.float32) * scale
-        )
+        data = np.frombuffer(frame.get_data(), dtype=np.uint16).astype(np.float32) * scale
         valid = data[data > 0]
         if len(valid) > 0:
             assert (
@@ -119,9 +117,7 @@ class TestFemtoDepthStream:
 
     def test_depth_timestamps_monotonic(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -130,18 +126,14 @@ class TestFemtoDepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
             lo = TARGET_FPS * (1 - FPS_TOLERANCE)
             hi = TARGET_FPS * (1 + FPS_TOLERANCE)
-            assert (
-                lo <= actual_fps <= hi
-            ), f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
+            assert lo <= actual_fps <= hi, f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
 
 
 # ===========================================================================
@@ -168,9 +160,7 @@ class TestFemtoColorStream:
 
     def test_color_timestamps_monotonic(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.COLOR_SENSOR)
-        frames = _collect_frames(
-            pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT
-        )
+        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -279,14 +269,10 @@ class TestFemtoMultiStreamSync:
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                ).get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Dual stream not available: {e}")
@@ -301,6 +287,4 @@ class TestFemtoMultiStreamSync:
                     deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas, "No paired color+depth frames received"
         median = sorted(deltas)[len(deltas) // 2]
-        assert (
-            median <= SYNC_DELTA_MS
-        ), f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"
+        assert median <= SYNC_DELTA_MS, f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"

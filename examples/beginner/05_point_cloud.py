@@ -24,9 +24,16 @@ import os
 import numpy as np
 
 from pyorbbecsdk import OBError  # type: ignore
-from pyorbbecsdk import (AlignFilter, Config, OBFormat, OBSensorType,
-                         OBStreamType, Pipeline, PointCloudFilter,
-                         save_point_cloud_to_ply)
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+    PointCloudFilter,
+    save_point_cloud_to_ply,
+)
 
 # --- Optional Open3D import ---
 try:
@@ -93,9 +100,7 @@ def _depth_colormap(z_values):
 # ---------------------------------------------------------------------------
 
 
-def _create_3d_grid(
-    x_range=(-1500, 1500), y_range=(-1000, 1000), z_range=(-500, 3000), step_mm=500
-):
+def _create_3d_grid(x_range=(-1500, 1500), y_range=(-1000, 1000), z_range=(-500, 3000), step_mm=500):
     """
     Create a corner-style 3-plane grid (like a room corner):
       - Floor    (XZ plane at Y = y_max, i.e. below)
@@ -282,9 +287,7 @@ class PointCloudVisualizer:
             z_range=(-500, 3000),
             step_mm=500,
         )
-        self._ticks = _create_depth_ticks(
-            z_range=(-500, 3000), step_mm=500, x_offset=1550
-        )
+        self._ticks = _create_depth_ticks(z_range=(-500, 3000), step_mm=500, x_offset=1550)
         self._camera = _create_camera_marker()
         self._axes = _create_origin_axes(length_mm=300)
 
@@ -465,9 +468,7 @@ def main():
                     break
                 # Handle save request from 'S' key
                 if viewer.save_requested:
-                    ply_path = os.path.join(
-                        SAVE_DIR, f"point_cloud_{save_index:04d}.ply"
-                    )
+                    ply_path = os.path.join(SAVE_DIR, f"point_cloud_{save_index:04d}.ply")
                     save_point_cloud_to_ply(ply_path, point_cloud_frame)
                     save_index += 1
                     print(f"[Saved] {ply_path}")

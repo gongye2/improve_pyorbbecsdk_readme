@@ -149,18 +149,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__.split("Usage:")[1] if "Usage:" in __doc__ else "",
     )
-    parser.add_argument(
-        "--quick", action="store_true", help="Skip performance benchmark tests"
-    )
-    parser.add_argument(
-        "--no-hardware", action="store_true", help="Skip all hardware-dependent tests"
-    )
-    parser.add_argument(
-        "--module", metavar="NAME", help="Run only a specific test module"
-    )
-    parser.add_argument(
-        "--sdk-version", metavar="V", help="Override SDK version string in report"
-    )
+    parser.add_argument("--quick", action="store_true", help="Skip performance benchmark tests")
+    parser.add_argument("--no-hardware", action="store_true", help="Skip all hardware-dependent tests")
+    parser.add_argument("--module", metavar="NAME", help="Run only a specific test module")
+    parser.add_argument("--sdk-version", metavar="V", help="Override SDK version string in report")
     parser.add_argument(
         "--output",
         metavar="DIR",

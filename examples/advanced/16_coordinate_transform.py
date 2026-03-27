@@ -54,9 +54,7 @@ def get_frame_data(color_frame, depth_frame):
 
     extrinsic = depth_profile.get_extrinsic_to(color_profile)
 
-    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
-        depth_height, depth_width
-    )
+    depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(depth_height, depth_width)
 
     return (
         color_intrinsics,
@@ -100,9 +98,7 @@ def transform_points(transform_func, color_frame, depth_frame, dimension):
                         extrinsic,
                     )
                 elif dimension == "2d_to_3d":
-                    res = transform_func(
-                        ob.OBPoint2f(x, y), depth, depth_intrinsics, extrinsic
-                    )
+                    res = transform_func(ob.OBPoint2f(x, y), depth, depth_intrinsics, extrinsic)
                 elif dimension == "3d_to_3d":
                     res = transform_func(ob.OBPoint3f(x, y, depth), extrinsic)
                 elif dimension == "3d_to_2d":
@@ -112,9 +108,7 @@ def transform_points(transform_func, color_frame, depth_frame, dimension):
                         color_distortion,
                         extrinsic,
                     )
-                print(
-                    f"\n--- {dimension.replace('_', ' to ')} Point Transformation ---"
-                )
+                print(f"\n--- {dimension.replace('_', ' to ')} Point Transformation ---")
                 print(f"Original point: {original_point}")
                 print(f"Transformed point: {res}")
                 print(f"--------------------------------------------")
@@ -206,9 +200,7 @@ def main():
                 if key in transform_functions:
                     print("Transforming points...")
                     transform_func, dimension = transform_functions[key]
-                    transform_points(
-                        transform_func, color_frame, depth_frame, dimension
-                    )
+                    transform_points(transform_func, color_frame, depth_frame, dimension)
                 elif key in ["q", "esc"]:  # Exit if 'q' or 'esc' is pressed
                     break
                 elif key == "h":  # Display help if 'h' is pressed

@@ -14,8 +14,7 @@
 import os
 import sys
 
-from pyorbbecsdk import (Context, OBPermissionType,  # type: ignore
-                         OBPropertyType)
+from pyorbbecsdk import Context, OBPermissionType, OBPropertyType  # type: ignore
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
@@ -71,10 +70,7 @@ def get_property_list(device):
     size = device.get_support_property_count()
     for i in range(size):
         item = device.get_supported_property(i)
-        if (
-            is_primary_type_property(item)
-            and item.permission != OBPermissionType.PERMISSION_DENY
-        ):
+        if is_primary_type_property(item) and item.permission != OBPermissionType.PERMISSION_DENY:
             property_vec.append(item)
     return property_vec
 
@@ -99,7 +95,9 @@ def printf_property_list(device, property_list):
                     str_range = "Int value"
             elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
                 float_range = device.get_float_property_range(item.id)
-                str_range = f"Float value(min:{float_range.min:.2f}, max:{float_range.max:.2f}, step:{float_range.step:.2f})"
+                str_range = (
+                    f"Float value(min:{float_range.min:.2f}, max:{float_range.max:.2f}, step:{float_range.step:.2f})"
+                )
         except Exception:
             str_range = "get range failed"
 
@@ -159,11 +157,7 @@ def main():
 
         # If a single device is plugged in, the first one is selected by default
         # Otherwise, select a device from the list
-        device = (
-            select_device(device_list)
-            if device_list.get_count() > 1
-            else device_list.get_device_by_index(0)
-        )
+        device = select_device(device_list) if device_list.get_count() > 1 else device_list.get_device_by_index(0)
 
         # Check LiDAR device
         if not is_lidar_device(device):
@@ -219,9 +213,7 @@ def main():
                     # set property value
                     set_property_value(device, item, parts[2])
                 else:
-                    print(
-                        "Property control usage: [property index] [set] [property value] or [property index] [get]"
-                    )
+                    print("Property control usage: [property index] [set] [property value] or [property index] [get]")
             except (ValueError, IndexError):
                 print("Invalid input format.")
 

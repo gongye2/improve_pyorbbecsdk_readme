@@ -355,9 +355,7 @@ Examples:
             print("  Connect a camera or use --no-hardware to run without one.")
             return 1
         if device_marker is None:
-            print(
-                f"[warn] Device '{device_name}' not recognised — running generic tests only."
-            )
+            print(f"[warn] Device '{device_name}' not recognised — running generic tests only.")
 
     # ---- Build report path ----
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -372,9 +370,7 @@ Examples:
     print("  pyorbbecsdk Test Runner")
     print("=" * 60)
     print(f"  Device      : {device_name}")
-    print(
-        f"  Family      : {_DEVICE_DISPLAY.get(device_marker, device_marker or 'generic')}"
-    )
+    print(f"  Family      : {_DEVICE_DISPLAY.get(device_marker, device_marker or 'generic')}")
     print(f"  Serial      : {serial}")
     print(f"  Firmware    : {firmware}")
     print(f"  SDK version : {sdk_version}")

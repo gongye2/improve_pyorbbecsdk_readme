@@ -38,3 +38,12 @@ dev = [
     "pyelftools<0.30",
     "pybind11-stubgen",
 ]
+
+[tool.black]
+target-version = ['py38']
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip_gitignore = true

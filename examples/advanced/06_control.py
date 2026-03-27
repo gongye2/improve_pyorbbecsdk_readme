@@ -15,8 +15,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import (Context, OBPermissionType,  # type: ignore
-                         OBPropertyType)
+from pyorbbecsdk import Context, OBPermissionType, OBPropertyType  # type: ignore
 
 
 def permission_type_to_string(permission):
@@ -89,16 +88,12 @@ def print_property_list(device, property_list):
                 str_range = f"Int value(min:{r.min}, max:{r.max}, step:{r.step})"
             elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
                 r = device.get_float_property_range(item.id)
-                str_range = (
-                    f"Float value(min:{r.min:.2f}, max:{r.max:.2f}, step:{r.step:.2f})"
-                )
+                str_range = f"Float value(min:{r.min:.2f}, max:{r.max:.2f}, step:{r.step:.2f})"
         except Exception:
             str_range = "get range failed"
 
         permission_str = permission_type_to_string(item.permission)
-        print(
-            f"{i:02d}. {item.name}({int(item.id)}), permission={permission_str}, range={str_range}"
-        )
+        print(f"{i:02d}. {item.name}({int(item.id)}), permission={permission_str}, range={str_range}")
     print("-" * 72)
     print('Input "?" to get all properties, or "exit" to quit.' + "\n")
 
@@ -153,9 +148,7 @@ def main():
                 # Check if it matches the input format
                 control_vec = choice.split()
                 if len(control_vec) < 2 or control_vec[1] not in ["get", "set"]:
-                    print(
-                        "Property control usage: [property index] [get] or [property index] [set] [value]"
-                    )
+                    print("Property control usage: [property index] [get] or [property index] [set] [value]")
                     continue
 
                 try:
@@ -188,9 +181,7 @@ def main():
                             device.set_int_property(item.id, int(str_val))
                         elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
                             device.set_float_property(item.id, float(str_val))
-                        print(
-                            f"property name: {item.name}, set value success: {str_val}"
-                        )
+                        print(f"property name: {item.name}, set value success: {str_val}")
 
                 except Exception as e:
                     print(f"Operation failed: {e}")

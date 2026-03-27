@@ -73,9 +73,7 @@ class TestStartupLatency:
 
         elapsed = time.perf_counter() - t0
         assert first_frame is not None, f"No depth frame within 5s of pipeline start"
-        assert (
-            elapsed <= 5.0
-        ), f"Time-to-first-frame {elapsed:.2f}s exceeds 5s threshold"
+        assert elapsed <= 5.0, f"Time-to-first-frame {elapsed:.2f}s exceeds 5s threshold"
         print(f"\n  Time-to-first-depth-frame: {elapsed*1000:.0f}ms")
 
     @pytest.mark.timeout(15)
@@ -100,9 +98,7 @@ class TestStartupLatency:
 
         elapsed = time.perf_counter() - t0
         assert first_frame is not None, "No color frame within 5s of pipeline start"
-        assert (
-            elapsed <= 5.0
-        ), f"Time-to-first-color-frame {elapsed:.2f}s exceeds 5s threshold"
+        assert elapsed <= 5.0, f"Time-to-first-color-frame {elapsed:.2f}s exceeds 5s threshold"
         print(f"\n  Time-to-first-color-frame: {elapsed*1000:.0f}ms")
 
 
@@ -144,14 +140,10 @@ class TestFrameRateStability:
                 bucket_count = 0
                 bucket_start = time.perf_counter()
 
-        assert (
-            len(per_second_counts) >= 10
-        ), f"Only collected {len(per_second_counts)} per-second samples"
+        assert len(per_second_counts) >= 10, f"Only collected {len(per_second_counts)} per-second samples"
 
         mean_fps = statistics.mean(per_second_counts)
-        std_fps = (
-            statistics.stdev(per_second_counts) if len(per_second_counts) > 1 else 0
-        )
+        std_fps = statistics.stdev(per_second_counts) if len(per_second_counts) > 1 else 0
 
         print(
             f"\n  Depth FPS: mean={mean_fps:.1f}, std={std_fps:.2f}, "
@@ -159,9 +151,7 @@ class TestFrameRateStability:
         )
 
         assert mean_fps >= 27, f"Mean depth FPS {mean_fps:.1f} below 27fps threshold"
-        assert (
-            std_fps <= 3.0
-        ), f"Depth FPS std-dev {std_fps:.2f} exceeds 3.0 (unstable stream)"
+        assert std_fps <= 3.0, f"Depth FPS std-dev {std_fps:.2f} exceeds 3.0 (unstable stream)"
 
 
 # ---------------------------------------------------------------------------
@@ -199,19 +189,12 @@ class TestPipelineRestart:
 
             elapsed = time.perf_counter() - t0
             restart_times.append(elapsed)
-            assert (
-                first_frame is not None
-            ), f"Restart {i+1}: No frame within 5s after restart"
+            assert first_frame is not None, f"Restart {i+1}: No frame within 5s after restart"
 
         mean_restart = statistics.mean(restart_times)
-        print(
-            f"\n  Restart times: {[f'{t*1000:.0f}ms' for t in restart_times]}, "
-            f"mean={mean_restart*1000:.0f}ms"
-        )
+        print(f"\n  Restart times: {[f'{t*1000:.0f}ms' for t in restart_times]}, " f"mean={mean_restart*1000:.0f}ms")
 
-        assert (
-            mean_restart <= 3.0
-        ), f"Mean restart time {mean_restart:.2f}s exceeds 3s threshold"
+        assert mean_restart <= 3.0, f"Mean restart time {mean_restart:.2f}s exceeds 3s threshold"
 
 
 # ---------------------------------------------------------------------------
@@ -266,10 +249,7 @@ class TestFrameProcessingThroughput:
         mean_ms = statistics.mean(processing_times)
         p95_ms = sorted(processing_times)[int(len(processing_times) * 0.95)]
 
-        print(
-            f"\n  Depth processing: mean={mean_ms:.1f}ms, P95={p95_ms:.1f}ms "
-            f"(budget={FRAME_BUDGET_MS:.1f}ms)"
-        )
+        print(f"\n  Depth processing: mean={mean_ms:.1f}ms, P95={p95_ms:.1f}ms " f"(budget={FRAME_BUDGET_MS:.1f}ms)")
 
         assert (
             mean_ms <= FRAME_BUDGET_MS

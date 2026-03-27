@@ -25,8 +25,7 @@ import cv2
 import pygame
 from utils import frame_to_bgr_image
 
-from pyorbbecsdk import (Config, Context, OBError, OBFormat, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import Config, Context, OBError, OBFormat, OBSensorType, Pipeline
 
 ESC_KEY = 27
 # Gemini 335Le
@@ -74,9 +73,7 @@ class FrameProcessor(threading.Thread):
                     color_image = decode_h26x_frame(self.decoder, self.latest_frame)
                     if color_image is not None:
                         # Resize the image to 1080p
-                        resized_image = cv2.resize(
-                            color_image, (self.display_width, self.display_height)
-                        )
+                        resized_image = cv2.resize(color_image, (self.display_width, self.display_height))
                         rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
                         self.processed_frame = rgb_image
                     self.latest_frame = None
@@ -96,10 +93,7 @@ class FrameProcessor(threading.Thread):
 
 def main():
     ctx = Context()
-    ip = (
-        input("Enter the IP address of the device (default: 192.168.1.10): ")
-        or "192.168.1.10"
-    )
+    ip = input("Enter the IP address of the device (default: 192.168.1.10): ") or "192.168.1.10"
     device = ctx.create_net_device(ip, 8090)
     if device is None:
         print("Failed to create net device")
@@ -114,14 +108,10 @@ def main():
     if device_info.get_pid() in SUPPORTED_PIDS:
         # Set up 1280*800 capture
         print("Current device is GEMINI 435Le or GEMINI 335Le, use OBFormat.MJPG")
-        color_profile = get_stream_profile(
-            pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10
-        )
+        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10)
     else:
         # Set up 4K capture
-        color_profile = get_stream_profile(
-            pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25
-        )
+        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25)
 
     config.enable_stream(color_profile)
     pipeline.start(config)

@@ -48,8 +48,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(_SCRIPT_DIR, "..", "..")))
 from utils import frame_to_bgr_image  # noqa: E402
 
 from pyorbbecsdk import Config  # type: ignore  # noqa: E402
-from pyorbbecsdk import (AlignFilter, OBFormat, OBSensorType, OBStreamType,
-                         Pipeline)
+from pyorbbecsdk import AlignFilter, OBFormat, OBSensorType, OBStreamType, Pipeline
 
 # ---------------------------------------------------------------------------
 # Default Paths (relative to script, not CWD)
@@ -219,9 +218,7 @@ def post_process(img, depth_data, predictions, classes):
         valid = roi[roi > 0]
         filtered = filter_depth_outliers(valid)
 
-        depth_label = (
-            f"depth:{int(np.median(filtered))}mm" if filtered.size > 0 else "depth:N/A"
-        )
+        depth_label = f"depth:{int(np.median(filtered))}mm" if filtered.size > 0 else "depth:N/A"
 
         color = PALETTE[class_ids[i] % len(PALETTE)]
         cv2.rectangle(img, (left, top), (left + bw, top + bh), color, 2)
@@ -273,10 +270,7 @@ def build_config(pipeline, color_w=None, color_h=None, depth_w=None, depth_h=Non
                 print(f"[Config] Color {cw}x{ch} not found, using default")
         if color_profile is None:
             color_profile = color_profiles.get_default_video_stream_profile()
-            print(
-                f"[Config] Color: {color_profile.get_width()}x"
-                f"{color_profile.get_height()} (default)"
-            )
+            print(f"[Config] Color: {color_profile.get_width()}x" f"{color_profile.get_height()} (default)")
         config.enable_stream(color_profile)
 
         # -- Depth stream --
@@ -289,10 +283,7 @@ def build_config(pipeline, color_w=None, color_h=None, depth_w=None, depth_h=Non
                 print(f"[Config] Depth {dw}x{dh} not found, using default")
         if depth_profile is None:
             depth_profile = depth_profiles.get_default_video_stream_profile()
-            print(
-                f"[Config] Depth: {depth_profile.get_width()}x"
-                f"{depth_profile.get_height()} (default)"
-            )
+            print(f"[Config] Depth: {depth_profile.get_width()}x" f"{depth_profile.get_height()} (default)")
         config.enable_stream(depth_profile)
 
     except Exception as e:
@@ -308,9 +299,7 @@ def build_config(pipeline, color_w=None, color_h=None, depth_w=None, depth_h=Non
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="YOLOv5 object detection with Orbbec depth camera"
-    )
+    parser = argparse.ArgumentParser(description="YOLOv5 object detection with Orbbec depth camera")
     parser.add_argument(
         "--model",
         type=str,
@@ -323,26 +312,16 @@ def main():
         default=DEFAULT_LABELS_PATH,
         help="Path to class labels file (coco.names)",
     )
-    parser.add_argument(
-        "--color_width", type=int, default=None, help="Color camera width"
-    )
-    parser.add_argument(
-        "--color_height", type=int, default=None, help="Color camera height"
-    )
-    parser.add_argument(
-        "--depth_width", type=int, default=None, help="Depth camera width"
-    )
-    parser.add_argument(
-        "--depth_height", type=int, default=None, help="Depth camera height"
-    )
+    parser.add_argument("--color_width", type=int, default=None, help="Color camera width")
+    parser.add_argument("--color_height", type=int, default=None, help="Color camera height")
+    parser.add_argument("--depth_width", type=int, default=None, help="Depth camera width")
+    parser.add_argument("--depth_height", type=int, default=None, help="Depth camera height")
     args = parser.parse_args()
 
     # ---- Validate model & labels ----
     if not os.path.isfile(args.model):
         print(f"[Error] Model not found: {args.model}")
-        print(
-            f"  Run  python {os.path.join(_SCRIPT_DIR, 'setup_model.py')}  to download it."
-        )
+        print(f"  Run  python {os.path.join(_SCRIPT_DIR, 'setup_model.py')}  to download it.")
         return 1
     if not os.path.isfile(args.labels):
         print(f"[Error] Labels file not found: {args.labels}")

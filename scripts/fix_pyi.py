@@ -91,10 +91,7 @@ def fix_pyi_content(content: str) -> str:
 
     # 1. Fix typing_extensions.Buffer import issue
     # pybind11_stubgen generates typing_extensions.Buffer but doesn't add the import
-    if (
-        "typing_extensions.Buffer" in content
-        and "import typing_extensions" not in content
-    ):
+    if "typing_extensions.Buffer" in content and "import typing_extensions" not in content:
         # Add typing_extensions import at the beginning of the file
         # Find the position of the last import statement
         import_pattern = r"^(import .+|from .+ import .+)$"
@@ -104,11 +101,7 @@ def fix_pyi_content(content: str) -> str:
 
         if last_import_end > 0:
             # Add typing_extensions import after the last import
-            content = (
-                content[:last_import_end]
-                + "\nimport typing_extensions"
-                + content[last_import_end:]
-            )
+            content = content[:last_import_end] + "\nimport typing_extensions" + content[last_import_end:]
         else:
             # If no import found, add at the beginning of the file (skip possible shebang and docstring)
             lines = content.split("\n")
