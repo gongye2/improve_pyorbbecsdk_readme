@@ -14,8 +14,7 @@
 import os
 import sys
 
-from pyorbbecsdk import (Context, OBPermissionType,  # type: ignore
-                         OBPropertyType)
+from pyorbbecsdk import Context, OBPermissionType, OBPropertyType  # type: ignore
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device

@@ -31,10 +31,18 @@ import sys
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (Config, Context, HoleFillingFilter, OBError,
-                         OBLogLevel, OBSensorType, Pipeline,
-                         SpatialAdvancedFilter, TemporalFilter,
-                         ThresholdFilter)
+from pyorbbecsdk import (
+    Config,
+    Context,
+    HoleFillingFilter,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    Pipeline,
+    SpatialAdvancedFilter,
+    TemporalFilter,
+    ThresholdFilter,
+)
 
 ESC_KEY = 27
 MIN_DEPTH_MM = 100

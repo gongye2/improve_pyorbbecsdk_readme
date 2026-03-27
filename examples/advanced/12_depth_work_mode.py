@@ -16,8 +16,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import (OBPermissionType, OBPropertyID,  # type: ignore
-                         Pipeline)
+from pyorbbecsdk import OBPermissionType, OBPropertyID, Pipeline  # type: ignore
 
 ESC = 27
 

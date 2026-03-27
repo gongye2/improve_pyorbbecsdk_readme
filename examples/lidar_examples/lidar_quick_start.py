@@ -14,8 +14,7 @@
 import os
 import sys
 
-from pyorbbecsdk import (OBError, Pipeline,  # type: ignore
-                         save_lidar_point_cloud_to_ply)
+from pyorbbecsdk import OBError, Pipeline, save_lidar_point_cloud_to_ply  # type: ignore
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
