@@ -81,9 +81,12 @@ def _run_ps_script(operation: str) -> int:
     cmd = [
         ps,
         "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-File", _PS_SCRIPT,
-        "-op", operation,
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        _PS_SCRIPT,
+        "-op",
+        operation,
     ]
     print(f"  Running: {' '.join(cmd)}")
     result = subprocess.run(cmd)
@@ -222,11 +225,13 @@ Examples:
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "--check", action="store_true",
+        "--check",
+        action="store_true",
         help="Check current configuration status (no changes made).",
     )
     group.add_argument(
-        "--uninstall", action="store_true",
+        "--uninstall",
+        action="store_true",
         help="Remove previously installed configuration.",
     )
     args = parser.parse_args()

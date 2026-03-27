@@ -22,13 +22,13 @@ unsupported properties are skipped gracefully.
 """
 
 import pytest
-from pyorbbecsdk import OBPropertyID, OBPermissionType
+
+from pyorbbecsdk import OBPermissionType, OBPropertyID
 
 pytestmark = [pytest.mark.hardware, pytest.mark.femto, pytest.mark.functional]
 
 
-def _skip_if_unsupported(device, prop_id,
-                          perm=OBPermissionType.PERMISSION_READ_WRITE):
+def _skip_if_unsupported(device, prop_id, perm=OBPermissionType.PERMISSION_READ_WRITE):
     if not device.is_property_supported(prop_id, perm):
         pytest.skip(f"Property {prop_id} not supported on this Femto device")
 
@@ -47,8 +47,7 @@ def _clamp(val, lo, hi):
 
 class TestFemtoDepthControls:
 
-    def test_depth_exposure_get_set(self, femto_device,
-                                    disable_depth_auto_exposure):
+    def test_depth_exposure_get_set(self, femto_device, disable_depth_auto_exposure):
         prop = OBPropertyID.OB_PROP_DEPTH_EXPOSURE_INT
         _skip_if_unsupported(femto_device, prop)
         current = femto_device.get_int_property(prop)
@@ -88,8 +87,7 @@ class TestFemtoDepthControls:
 
 class TestFemtoColorControls:
 
-    def test_color_exposure_get_set(self, femto_device,
-                                    disable_color_auto_exposure):
+    def test_color_exposure_get_set(self, femto_device, disable_color_auto_exposure):
         prop = OBPropertyID.OB_PROP_COLOR_EXPOSURE_INT
         _skip_if_unsupported(femto_device, prop)
         current = femto_device.get_int_property(prop)
@@ -102,8 +100,7 @@ class TestFemtoColorControls:
         assert femto_device.get_int_property(prop) == new_val
         femto_device.set_int_property(prop, current)
 
-    def test_color_gain_get_set(self, femto_device,
-                                 disable_color_auto_exposure):
+    def test_color_gain_get_set(self, femto_device, disable_color_auto_exposure):
         prop = OBPropertyID.OB_PROP_COLOR_GAIN_INT
         _skip_if_unsupported(femto_device, prop)
         current = femto_device.get_int_property(prop)

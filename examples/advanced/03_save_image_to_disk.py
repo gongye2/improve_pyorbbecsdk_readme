@@ -11,16 +11,28 @@
 #  Run:
 #    python examples/advanced/03_save_image_to_disk.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import os
 
 import cv2
 import numpy as np
-
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, DepthFrame, ColorFrame, VideoStreamProfile, OBFrameAggregateOutputMode, OBError, Context  # type: ignore
 from utils import frame_to_bgr_image
+
+from pyorbbecsdk import Context  # type: ignore
+from pyorbbecsdk import (
+    ColorFrame,
+    Config,
+    DepthFrame,
+    OBError,
+    OBFormat,
+    OBFrameAggregateOutputMode,
+    OBSensorType,
+    Pipeline,
+    VideoStreamProfile,
+)
 
 
 def save_depth_frame(frame: DepthFrame, index):
@@ -46,6 +58,7 @@ def save_depth_frame(frame: DepthFrame, index):
     cv2.imwrite(filename, data, params)
     print(f"Depth saved: {filename}")
 
+
 def save_color_frame(frame: ColorFrame, index):
     if frame is None:
         return
@@ -62,6 +75,7 @@ def save_color_frame(frame: ColorFrame, index):
         return
     cv2.imwrite(filename, image)
     print(f"Color saved: {filename}")
+
 
 def main():
     pipeline = Pipeline()
@@ -88,11 +102,11 @@ def main():
         print(f"Error: {e}")
         print("Please connect an Orbbec camera and try again.")
         return
-    
+
     print("Waiting for sensor to stabilize...")
     for _ in range(15):
         pipeline.wait_for_frames(1000)
-        
+
     frame_index = 0
     try:
         while True:
@@ -103,10 +117,10 @@ def main():
             if frame_index >= 5:
                 print("The demo is over!")
                 break
-            
+
             color_frame = frames.get_color_frame()
             depth_frame = frames.get_depth_frame()
-            
+
             if color_frame:
                 save_color_frame(color_frame, frame_index)
             if depth_frame:
@@ -118,6 +132,7 @@ def main():
     finally:
         pipeline.stop()
         print("Pipeline stopped.")
-        
+
+
 if __name__ == "__main__":
     main()

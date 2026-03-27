@@ -1,0 +1,171 @@
+# =============================================================================
+# release-candidate.yml - 发版候选测试
+# 触发: workflow_dispatch (手动)
+# 目标: 完整回归、多平台构建、发布包生成
+# =============================================================================
+name: Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v2.1.0)'
+        required: true
+        type: string
+      python_versions:
+        description: 'Python versions to build (min/default/all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - min
+          - default
+          - all
+
+env:
+  UV_LINK_MODE: copy
+
+jobs:
+  # ============================================================
+  # Job 0: 动态生成版本矩阵
+  # ============================================================
+  generate-matrix:
+    name: "Generate Build Matrix"
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix-include: ${{ steps.set-matrix.outputs.matrix-include }}
+    steps:
+      - name: Set version matrix
+        id: set-matrix
+        run: |
+          # 根据输入选择版本，默认 all (发版场景)
+          VERSION_MODE="${{ github.event.inputs.python_versions || 'all' }}"
+          echo "Version mode: $VERSION_MODE"
+
+          case "$VERSION_MODE" in
+            min)
+              LINUX_VERSIONS=("3.10")
+              WINDOWS_VERSIONS=("3.10")
+              MACOS_VERSIONS=("3.10")
+              ;;
+            default)
+              LINUX_VERSIONS=("3.9" "3.10" "3.11" "3.12")
+              WINDOWS_VERSIONS=("3.10" "3.11" "3.12")
+              MACOS_VERSIONS=("3.10" "3.11" "3.12")
+              ;;
+            all|*)
+              LINUX_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              WINDOWS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              MACOS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              ;;
+          esac
+
+          # 构建完整的矩阵 (OS x Python版本)
+          MATRIX="["
+          FIRST=true
+
+          for pyver in "${LINUX_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-Python-'$pyver'"}'
+          done
+
+          for pyver in "${WINDOWS_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-Python-'$pyver'"}'
+          done
+
+          for pyver in "${MACOS_VERSIONS[@]}"; do
+            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+            MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-Python-'$pyver'"}'
+          done
+
+          MATRIX+="]"
+
+          echo "matrix-include=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Matrix: $MATRIX"
+  # ============================================================
+  # Job 1: 多平台 Wheel 构建
+  # ============================================================
+  build-wheels:
+    name: "Build Wheels - ${{ matrix.label }}"
+    runs-on: ${{ matrix.os }}
+    needs: generate-matrix
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build build-essential \
+            libusb-1.0-0-dev libudev-dev
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake libusb
+
+      - name: Build wheel
+        run: |
+          ${{ matrix.build_script }} ${{ matrix.python-version }} --clean
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-wheels-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: wheel/*.whl
+          retention-days: 30
+
+  # ============================================================
+  # Job 2: 完整硬件回归测试
+  # ============================================================
+  hardware-regression:
+    name: "Hardware Regression"
+    runs-on: [self-hosted, linux, orbbec]
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build and run full regression
+        run: |
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --clean
+          pip install wheel/*.whl pytest --quiet
+          pytest test/ -v --timeout=300 \
+            --junit-xml=reports/rc-regression.xml
+        continue-on-error: false
+
+  # ============================================================
+  # Job 3: 创建 Release
+  # ============================================================
+  create-release:
+    name: "Create Release"
+    runs-on: ubuntu-22.04
+    needs: [generate-matrix, build-wheels, hardware-regression]
+    if: success()
+    steps:
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: release-wheels/
+          pattern: release-wheels-*
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: false
+          files: release-wheels/**/*.whl

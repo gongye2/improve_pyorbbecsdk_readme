@@ -27,27 +27,38 @@
 #    python examples/beginner/03_color_and_depth_aligned.py --hw     # hardware D2C
 # ******************************************************************************
 
-import sys
-import os
 import argparse
+import os
+import sys
 import time
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import cv2
 import numpy as np
-
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBAlignMode, OBStreamType, AlignFilter, OBFrameAggregateOutputMode  # type: ignore
 from utils import frame_to_bgr_image
 
+from pyorbbecsdk import OBAlignMode  # type: ignore
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBFrameAggregateOutputMode,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+)
+
 # --- Configuration Constants ---
-ESC_KEY   = 27
-MIN_DEPTH = 20      # Minimum valid depth distance in mm
-MAX_DEPTH = 10000   # Maximum valid depth distance in mm
+ESC_KEY = 27
+MIN_DEPTH = 20  # Minimum valid depth distance in mm
+MAX_DEPTH = 10000  # Maximum valid depth distance in mm
 
 
 # ---------------------------------------------------------------------------
 # Hardware D2C helpers (used only with --hw)
 # ---------------------------------------------------------------------------
+
 
 def get_hw_stream_config(pipeline: Pipeline):
     """
@@ -89,10 +100,14 @@ def switch_hw_d2c(pipeline: Pipeline, config: Config, enable: bool):
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     parser = argparse.ArgumentParser(description="Color + Depth aligned viewer")
-    parser.add_argument("--hw", action="store_true",
-                        help="Use hardware D2C alignment instead of software AlignFilter")
+    parser.add_argument(
+        "--hw",
+        action="store_true",
+        help="Use hardware D2C alignment instead of software AlignFilter",
+    )
     args = parser.parse_args()
 
     window_name = "Color + Depth Aligned  |  Q/ESC = quit"
@@ -100,7 +115,7 @@ def main():
     cv2.resizeWindow(window_name, 1280, 720)
 
     pipeline = Pipeline()
-    config   = None
+    config = None
 
     # ------------------------------------------------------------------
     # Stream setup — differs between SW and HW mode
@@ -118,8 +133,8 @@ def main():
             return
 
         enable_hw_d2c = True
-        alpha         = 0.5
-        alpha_step    = 0.1
+        alpha = 0.5
+        alpha_step = 0.1
 
         print("\n========== Hardware D2C Align ==========")
         print("T       : Enable / Disable HW D2C")
@@ -129,16 +144,16 @@ def main():
 
     else:
         # ---- Software AlignFilter mode ----
-        config     = Config()
-        align_mode = 0          # 0 = D2C, 1 = C2D
+        config = Config()
+        align_mode = 0  # 0 = D2C, 1 = C2D
         enable_sync = False
 
         try:
-            profile_list  = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+            profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
             color_profile = profile_list.get_video_stream_profile(0, 0, OBFormat.RGB, 0)
             config.enable_stream(color_profile)
 
-            profile_list  = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+            profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
             depth_profile = profile_list.get_default_video_stream_profile()
             config.enable_stream(depth_profile)
 
@@ -195,7 +210,8 @@ def main():
             # -- Convert depth frame --
             try:
                 depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
-                    (depth_frame.get_height(), depth_frame.get_width()))
+                    (depth_frame.get_height(), depth_frame.get_width())
+                )
             except ValueError:
                 continue
 
@@ -224,29 +240,36 @@ def main():
             else:
                 mode_str = "D2C (Depth To Color)" if align_mode == 0 else "C2D (Color To Depth)"
                 sync_str = "Sync: ON" if enable_sync else "Sync: OFF"
-                status   = f"{mode_str} | {sync_str}"
+                status = f"{mode_str} | {sync_str}"
 
-            cv2.putText(overlay, status, (20, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+            cv2.putText(
+                overlay,
+                status,
+                (20, 30),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 255, 255),
+                2,
+            )
             cv2.imshow(window_name, overlay)
 
             # -- Keyboard input --
             key = cv2.waitKey(1) & 0xFF
-            if key in (ord('q'), ESC_KEY):
+            if key in (ord("q"), ESC_KEY):
                 break
 
             if args.hw:
-                if key in (ord('t'), ord('T')):
+                if key in (ord("t"), ord("T")):
                     enable_hw_d2c = not enable_hw_d2c
                     switch_hw_d2c(pipeline, config, enable_hw_d2c)
-                elif key in (ord('+'), ord('=')):
+                elif key in (ord("+"), ord("=")):
                     alpha = min(1.0, alpha + alpha_step)
                     print(f"Alpha: {alpha:.2f}")
-                elif key in (ord('-'), ord('_')):
+                elif key in (ord("-"), ord("_")):
                     alpha = max(0.0, alpha - alpha_step)
                     print(f"Alpha: {alpha:.2f}")
             else:
-                if key in (ord('t'), ord('T')):
+                if key in (ord("t"), ord("T")):
                     align_mode = (align_mode + 1) % 2
                     if align_mode == 0:
                         align_filter = AlignFilter(align_to_stream=OBStreamType.COLOR_STREAM)
@@ -254,7 +277,7 @@ def main():
                     else:
                         align_filter = AlignFilter(align_to_stream=OBStreamType.DEPTH_STREAM)
                         print("Mode: Color To Depth")
-                elif key in (ord('f'), ord('F')):
+                elif key in (ord("f"), ord("F")):
                     enable_sync = not enable_sync
                     if enable_sync:
                         pipeline.enable_frame_sync()

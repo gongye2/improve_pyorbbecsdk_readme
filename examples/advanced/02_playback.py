@@ -14,17 +14,29 @@
 #  Run:
 #    python examples/advanced/02_playback.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import threading
+import time
 
 import cv2
 import numpy as np
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBFrameType, PlaybackDevice, OBPlaybackStatus  # type: ignore
-import pyorbbecsdk as ob
 from utils import frame_to_bgr_image
-import time
-import threading
+
+import pyorbbecsdk as ob
+from pyorbbecsdk import OBFrameType  # type: ignore
+from pyorbbecsdk import (
+    Config,
+    OBFormat,
+    OBPlaybackStatus,
+    OBSensorType,
+    Pipeline,
+    PlaybackDevice,
+)
+
 
 # Global state to share data between the processing callback and the UI thread
 class GlobalState:
@@ -37,22 +49,24 @@ class GlobalState:
         self.enabled_sensor_types = []
         # cached frames for better visualization
         self.cached_frames = {
-            'color': None,
-            'depth': None,
-            'left_ir': None,
-            'right_ir': None,
-            'ir': None,
-            'confidence': None,
-            'left_color': None,
-            'right_color': None,
-            'accel': None,
-            'gyro': None
+            "color": None,
+            "depth": None,
+            "left_ir": None,
+            "right_ir": None,
+            "ir": None,
+            "confidence": None,
+            "left_color": None,
+            "right_color": None,
+            "accel": None,
+            "gyro": None,
         }
+
 
 state = GlobalState()
 pipeline = None
 config = None
 playback = None
+
 
 def setup_camera(playback_device):
     """Setup camera and stream configuration"""
@@ -72,7 +86,7 @@ def setup_camera(playback_device):
         OBSensorType.LEFT_COLOR_SENSOR,
         OBSensorType.RIGHT_COLOR_SENSOR,
         OBSensorType.ACCEL_SENSOR,
-        OBSensorType.GYRO_SENSOR
+        OBSensorType.GYRO_SENSOR,
     ]
 
     sensor_list = playback_device.get_sensor_list()
@@ -87,20 +101,20 @@ def setup_camera(playback_device):
 
     # Set frame aggregate output mode if available - reduces latency
     try:
-        config.set_frame_aggregate_output_mode(
-            ob.OBFrameAggregateOutputMode.OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION
-        )
+        config.set_frame_aggregate_output_mode(ob.OBFrameAggregateOutputMode.OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION)
     except AttributeError:
         # OBFrameAggregateOutputMode not available in this SDK version
         pass
 
     return pipeline, config
 
+
 def process_color(frame):
     """Process color image"""
     if frame is None:
         return None
     return frame_to_bgr_image(frame)
+
 
 def process_depth(frame):
     """Process depth image"""
@@ -113,6 +127,7 @@ def process_depth(frame):
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
+
 
 def process_ir(ir_frame):
     """Process IR frame (left, right, or mono) to RGB image"""
@@ -148,6 +163,7 @@ def process_ir(ir_frame):
     ir_data = ir_data.astype(data_type)
     return cv2.cvtColor(ir_data, cv2.COLOR_GRAY2RGB)
 
+
 def process_confidence(frame):
     """Process confidence image"""
     if frame is None:
@@ -159,6 +175,7 @@ def process_confidence(frame):
         return cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
     except ValueError:
         return None
+
 
 def create_single_imu_panel(imu_frame, title, w=480, h=240):
     """Create a panel displaying IMU data - pre-render to reduce UI overhead"""
@@ -177,7 +194,7 @@ def create_single_imu_panel(imu_frame, title, w=480, h=240):
         f" Time: {imu_frame.get_timestamp_us()}us",
         f" X: {imu_frame.get_x():.6f}{unit}",
         f" Y: {imu_frame.get_y():.6f}{unit}",
-        f" Z: {imu_frame.get_z():.6f}{unit}"
+        f" Z: {imu_frame.get_z():.6f}{unit}",
     ]
 
     line_height = 30
@@ -191,6 +208,7 @@ def create_single_imu_panel(imu_frame, title, w=480, h=240):
         cv2.putText(p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA)
     return p
 
+
 def video_frame_callback(frames):
     """Callback function triggered when a new FrameSet arrives - async processing"""
     if frames is None:
@@ -199,33 +217,33 @@ def video_frame_callback(frames):
         # Process color image
         color_frame = frames.get_color_frame()
         if color_frame:
-            state.cached_frames['color'] = process_color(color_frame)
+            state.cached_frames["color"] = process_color(color_frame)
 
         # Process depth image
         depth_frame = frames.get_depth_frame()
         if depth_frame:
-            state.cached_frames['depth'] = process_depth(depth_frame)
+            state.cached_frames["depth"] = process_depth(depth_frame)
 
         # Process left IR
         left_ir = frames.get_left_ir_frame()
         if left_ir:
-            state.cached_frames['left_ir'] = process_ir(left_ir)
+            state.cached_frames["left_ir"] = process_ir(left_ir)
 
         # Process right IR
         right_ir = frames.get_right_ir_frame()
         if right_ir:
-            state.cached_frames['right_ir'] = process_ir(right_ir)
+            state.cached_frames["right_ir"] = process_ir(right_ir)
 
         # Process mono IR
         ir_frame = frames.get_ir_frame()
         if ir_frame:
-            state.cached_frames['ir'] = process_ir(ir_frame)
+            state.cached_frames["ir"] = process_ir(ir_frame)
 
         # Process confidence
         confidence = frames.get_confidence_frame()
         if confidence:
             try:
-                state.cached_frames['confidence'] = process_confidence(confidence)
+                state.cached_frames["confidence"] = process_confidence(confidence)
             except:
                 pass
 
@@ -233,7 +251,7 @@ def video_frame_callback(frames):
         left_color = frames.get_left_color_frame()
         if left_color:
             try:
-                state.cached_frames['left_color'] = process_color(left_color)
+                state.cached_frames["left_color"] = process_color(left_color)
             except:
                 pass
 
@@ -241,24 +259,26 @@ def video_frame_callback(frames):
         right_color = frames.get_right_color_frame()
         if right_color:
             try:
-                state.cached_frames['right_color'] = process_color(right_color)
+                state.cached_frames["right_color"] = process_color(right_color)
             except:
                 pass
 
         # Process IMU data - pre-render as images
         accel = frames.get_accel_frame()
         if accel:
-            state.cached_frames['accel'] = create_single_imu_panel(accel, "ACCEL")
+            state.cached_frames["accel"] = create_single_imu_panel(accel, "ACCEL")
 
         gyro = frames.get_gyro_frame()
         if gyro:
-            state.cached_frames['gyro'] = create_single_imu_panel(gyro, "GYRO")
+            state.cached_frames["gyro"] = create_single_imu_panel(gyro, "GYRO")
+
 
 def on_playback_status_change(status):
     """Callback for playback status changes"""
     with state.status_mutex:
         state.playback_status = status
     print(f"[Callback] Playback status changed: {status}")
+
 
 def replay_monitor():
     """Monitor playback status and auto-replay when stopped"""
@@ -293,17 +313,18 @@ def replay_monitor():
         else:
             time.sleep(0.1)
 
+
 def create_display(width=1280, height=720):
     """Create display window with correct dynamic layout"""
     sensor_type_to_name = {
-        OBSensorType.COLOR_SENSOR: 'color',
-        OBSensorType.DEPTH_SENSOR: 'depth',
-        OBSensorType.LEFT_IR_SENSOR: 'left_ir',
-        OBSensorType.RIGHT_IR_SENSOR: 'right_ir',
-        OBSensorType.IR_SENSOR: 'ir',
-        OBSensorType.CONFIDENCE_SENSOR: 'confidence',
-        OBSensorType.LEFT_COLOR_SENSOR: 'left_color',
-        OBSensorType.RIGHT_COLOR_SENSOR: 'right_color'
+        OBSensorType.COLOR_SENSOR: "color",
+        OBSensorType.DEPTH_SENSOR: "depth",
+        OBSensorType.LEFT_IR_SENSOR: "left_ir",
+        OBSensorType.RIGHT_IR_SENSOR: "right_ir",
+        OBSensorType.IR_SENSOR: "ir",
+        OBSensorType.CONFIDENCE_SENSOR: "confidence",
+        OBSensorType.LEFT_COLOR_SENSOR: "left_color",
+        OBSensorType.RIGHT_COLOR_SENSOR: "right_color",
     }
 
     with state.frame_mutex:
@@ -322,7 +343,7 @@ def create_display(width=1280, height=720):
 
         # Get IMU panels (already pre-rendered)
         imu_frames = {}
-        for key in ['accel', 'gyro']:
+        for key in ["accel", "gyro"]:
             img = state.cached_frames.get(key)
             if img is not None:
                 imu_frames[key] = img
@@ -363,7 +384,7 @@ def create_display(width=1280, height=720):
                 display = resized
             else:
                 resized = cv2.resize(frame, (cell_w, cell_h))
-                display[y_start:y_start + cell_h, x_start:x_start + cell_w] = resized
+                display[y_start : y_start + cell_h, x_start : x_start + cell_w] = resized
 
     # Render IMU panels
     for i, (key, img) in enumerate(imu_frames.items()):
@@ -376,9 +397,10 @@ def create_display(width=1280, height=720):
             display = cv2.resize(img, (width, height))
         else:
             resized = cv2.resize(img, (cell_w, cell_h))
-            display[y_start:y_start + cell_h, x_start:x_start + cell_w] = resized
+            display[y_start : y_start + cell_h, x_start : x_start + cell_w] = resized
 
     return display
+
 
 def render_frames():
     """Main UI loop to display the frames - runs at display refresh rate"""
@@ -396,8 +418,9 @@ def render_frames():
 
         # Check exit key
         key = cv2.waitKey(1) & 0xFF
-        if key in [ord('q'), 27]:  # q or ESC
+        if key in [ord("q"), 27]:  # q or ESC
             break
+
 
 def main():
     global playback, pipeline, config
@@ -446,6 +469,7 @@ def main():
         # Cleanup
         playback = None
         cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()

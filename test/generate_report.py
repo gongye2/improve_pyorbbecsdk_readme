@@ -33,17 +33,18 @@ Options:
 """
 
 import argparse
-import os
-import sys
-import subprocess
 import datetime
+import os
 import platform
+import subprocess
+import sys
 
 
 def get_sdk_version():
     """Try to detect pyorbbecsdk2 version from the installed package."""
     try:
         import importlib.metadata
+
         return importlib.metadata.version("pyorbbecsdk2")
     except Exception:
         pass
@@ -65,6 +66,7 @@ def get_device_info():
     info = {"name": "N/A", "serial": "N/A", "firmware": "N/A"}
     try:
         from pyorbbecsdk import Context, OBLogLevel
+
         ctx = Context()
         ctx.set_logger_level(OBLogLevel.NONE)
         device_list = ctx.query_devices()
@@ -110,13 +112,27 @@ def build_pytest_args(args, report_path, device_info, sdk_version):
         "--self-contained-html",
         "-v",
         "--tb=short",
-        "--metadata", "SDK Version", sdk_version,
-        "--metadata", "Device", device_info['name'],
-        "--metadata", "Serial", device_info['serial'],
-        "--metadata", "Firmware", device_info['firmware'],
-        "--metadata", "OS", f"{platform.system()} {platform.release()}",
-        "--metadata", "Python", sys.version.split()[0],
-        "--metadata", "Machine", platform.machine(),
+        "--metadata",
+        "SDK Version",
+        sdk_version,
+        "--metadata",
+        "Device",
+        device_info["name"],
+        "--metadata",
+        "Serial",
+        device_info["serial"],
+        "--metadata",
+        "Firmware",
+        device_info["firmware"],
+        "--metadata",
+        "OS",
+        f"{platform.system()} {platform.release()}",
+        "--metadata",
+        "Python",
+        sys.version.split()[0],
+        "--metadata",
+        "Machine",
+        platform.machine(),
     ]
 
     if args.quick or args.no_hardware:
@@ -133,16 +149,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__.split("Usage:")[1] if "Usage:" in __doc__ else "",
     )
-    parser.add_argument("--quick", action="store_true",
-                        help="Skip performance benchmark tests")
-    parser.add_argument("--no-hardware", action="store_true",
-                        help="Skip all hardware-dependent tests")
-    parser.add_argument("--module", metavar="NAME",
-                        help="Run only a specific test module")
-    parser.add_argument("--sdk-version", metavar="V",
-                        help="Override SDK version string in report")
-    parser.add_argument("--output", metavar="DIR", default="reports",
-                        help="Output directory for HTML report (default: reports/)")
+    parser.add_argument("--quick", action="store_true", help="Skip performance benchmark tests")
+    parser.add_argument("--no-hardware", action="store_true", help="Skip all hardware-dependent tests")
+    parser.add_argument("--module", metavar="NAME", help="Run only a specific test module")
+    parser.add_argument("--sdk-version", metavar="V", help="Override SDK version string in report")
+    parser.add_argument(
+        "--output",
+        metavar="DIR",
+        default="reports",
+        help="Output directory for HTML report (default: reports/)",
+    )
     args = parser.parse_args()
 
     # Resolve paths relative to repo root
@@ -152,9 +168,11 @@ def main():
 
     # Collect metadata
     sdk_version = args.sdk_version or get_sdk_version()
-    device_info = get_device_info() if not args.no_hardware else {
-        "name": "N/A (--no-hardware)", "serial": "N/A", "firmware": "N/A"
-    }
+    device_info = (
+        get_device_info()
+        if not args.no_hardware
+        else {"name": "N/A (--no-hardware)", "serial": "N/A", "firmware": "N/A"}
+    )
 
     # Build report filename
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -188,6 +206,7 @@ def main():
         latest_path = os.path.join(output_dir, "test_report_latest.html")
         try:
             import shutil
+
             shutil.copy2(report_path, latest_path)
             print(f"Latest report copy : {latest_path}")
         except Exception:

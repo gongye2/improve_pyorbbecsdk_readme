@@ -25,13 +25,13 @@ handled by is_property_supported() skipping unsupported properties.
 """
 
 import pytest
-from pyorbbecsdk import OBPropertyID, OBPermissionType
+
+from pyorbbecsdk import OBPermissionType, OBPropertyID
 
 pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.functional]
 
 
-def _skip_if_unsupported(device, prop_id,
-                          perm=OBPermissionType.PERMISSION_READ_WRITE):
+def _skip_if_unsupported(device, prop_id, perm=OBPermissionType.PERMISSION_READ_WRITE):
     if not device.is_property_supported(prop_id, perm):
         pytest.skip(f"Property {prop_id} not supported on this device")
 
@@ -52,10 +52,10 @@ def _clamp(val, lo, hi):
 # Depth controls
 # ---------------------------------------------------------------------------
 
+
 class TestDepthControls:
 
-    def test_depth_exposure_get_set(self, g300_series_device,
-                                    disable_depth_auto_exposure):
+    def test_depth_exposure_get_set(self, g300_series_device, disable_depth_auto_exposure):
         prop = OBPropertyID.OB_PROP_DEPTH_EXPOSURE_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -68,8 +68,7 @@ class TestDepthControls:
         assert g300_series_device.get_int_property(prop) == new_val
         g300_series_device.set_int_property(prop, current)
 
-    def test_depth_gain_get_set(self, g300_series_device,
-                                 disable_depth_auto_exposure):
+    def test_depth_gain_get_set(self, g300_series_device, disable_depth_auto_exposure):
         prop = OBPropertyID.OB_PROP_DEPTH_GAIN_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -120,10 +119,10 @@ class TestDepthControls:
 # Color controls
 # ---------------------------------------------------------------------------
 
+
 class TestColorControls:
 
-    def test_color_exposure_get_set(self, g300_series_device,
-                                    disable_color_auto_exposure):
+    def test_color_exposure_get_set(self, g300_series_device, disable_color_auto_exposure):
         prop = OBPropertyID.OB_PROP_COLOR_EXPOSURE_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -136,8 +135,7 @@ class TestColorControls:
         assert g300_series_device.get_int_property(prop) == new_val
         g300_series_device.set_int_property(prop, current)
 
-    def test_color_gain_get_set(self, g300_series_device,
-                                 disable_color_auto_exposure):
+    def test_color_gain_get_set(self, g300_series_device, disable_color_auto_exposure):
         prop = OBPropertyID.OB_PROP_COLOR_GAIN_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -239,10 +237,10 @@ class TestColorControls:
 # IR controls
 # ---------------------------------------------------------------------------
 
+
 class TestIRControls:
 
-    def test_ir_exposure_get_set(self, g300_series_device,
-                                  disable_ir_auto_exposure):
+    def test_ir_exposure_get_set(self, g300_series_device, disable_ir_auto_exposure):
         prop = OBPropertyID.OB_PROP_IR_EXPOSURE_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -255,8 +253,7 @@ class TestIRControls:
         assert g300_series_device.get_int_property(prop) == new_val
         g300_series_device.set_int_property(prop, current)
 
-    def test_ir_gain_get_set(self, g300_series_device,
-                              disable_ir_auto_exposure):
+    def test_ir_gain_get_set(self, g300_series_device, disable_ir_auto_exposure):
         prop = OBPropertyID.OB_PROP_IR_GAIN_INT
         _skip_if_unsupported(g300_series_device, prop)
         current = g300_series_device.get_int_property(prop)
@@ -298,6 +295,7 @@ class TestIRControls:
 # Laser / illuminator controls
 # ---------------------------------------------------------------------------
 
+
 class TestLaserControls:
 
     def test_laser_enable_toggle(self, g300_series_device):
@@ -322,6 +320,7 @@ class TestLaserControls:
 # ---------------------------------------------------------------------------
 # G300-series-specific: HDR controls (Gemini 330 / 335 / 336)
 # ---------------------------------------------------------------------------
+
 
 class TestHDRControls:
 

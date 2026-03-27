@@ -11,13 +11,14 @@
 #  Run:
 #    python examples/advanced/04_enumerate.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from pyorbbecsdk import Context  # type: ignore
 
-ESC_KEY = 'q'
+ESC_KEY = "q"
 
 
 def get_input_option():
@@ -41,7 +42,8 @@ def print_video_profile(profile, index, sensor_type):
         height = profile.get_height()
         fps = profile.get_fps()
         print(
-            f"Sensor type: {sensor_type} | {index}. format: {format_name}, width: {width}, height: {height}, fps: {fps}")
+            f"Sensor type: {sensor_type} | {index}. format: {format_name}, width: {width}, height: {height}, fps: {fps}"
+        )
     else:
         print(f"{index}. VideoStreamProfile is missing expected methods")
 
@@ -102,7 +104,8 @@ def main():
         device = device_list[index]
         device_info = device.get_device_info()
         print(
-            f" - {index}. Device name: {device_info.get_name()}, PID: {device_info.get_pid()}, Serial Number: {device_info.get_serial_number()}, Connection Type: {device_info.get_connection_type()}")
+            f" - {index}. Device name: {device_info.get_name()}, PID: {device_info.get_pid()}, Serial Number: {device_info.get_serial_number()}, Connection Type: {device_info.get_connection_type()}"
+        )
 
     # Default to selecting the first device
     print(f"Please select a device, show between 0 and {device_list.get_count() - 1}")

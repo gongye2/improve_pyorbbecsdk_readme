@@ -25,18 +25,24 @@ Tests verify:
 """
 
 import time
-import pytest
+
 import numpy as np
+import pytest
 
-from pyorbbecsdk import Config, OBSensorType, OBFrameType, OBError
+from pyorbbecsdk import Config, OBError, OBFrameType, OBSensorType
 
-pytestmark = [pytest.mark.hardware, pytest.mark.femto, pytest.mark.functional, pytest.mark.stability]
+pytestmark = [
+    pytest.mark.hardware,
+    pytest.mark.femto,
+    pytest.mark.functional,
+    pytest.mark.stability,
+]
 
 FRAME_COLLECT_COUNT = 30
-FRAME_TIMEOUT_MS    = 2000
-TARGET_FPS          = 30
-FPS_TOLERANCE       = 0.10
-SYNC_DELTA_MS       = 33
+FRAME_TIMEOUT_MS = 2000
+TARGET_FPS = 30
+FPS_TOLERANCE = 0.10
+SYNC_DELTA_MS = 33
 
 # Femto ToF depth operating range
 FEMTO_DEPTH_MIN_MM = 200.0
@@ -65,6 +71,7 @@ def _collect_frames(pipeline, frame_type, count, timeout_ms=FRAME_TIMEOUT_MS):
 # Depth stream (ToF)
 # ===========================================================================
 
+
 class TestFemtoDepthStream:
 
     def test_depth_stream_starts(self, pipeline, femto_device):
@@ -80,9 +87,9 @@ class TestFemtoDepthStream:
         frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=5)
         assert frames
         data = np.frombuffer(frames[-1].as_depth_frame().get_data(), dtype=np.uint16)
-        assert np.count_nonzero(data) / data.size > 0.10, (
-            "Too many zero-depth pixels — ensure an object is in front of the camera"
-        )
+        assert (
+            np.count_nonzero(data) / data.size > 0.10
+        ), "Too many zero-depth pixels — ensure an object is in front of the camera"
 
     def test_depth_values_within_tof_range(self, pipeline, femto_device):
         """Femto ToF depth values must be within 200–8500 mm."""
@@ -94,12 +101,12 @@ class TestFemtoDepthStream:
         data = np.frombuffer(frame.get_data(), dtype=np.uint16).astype(np.float32) * scale
         valid = data[data > 0]
         if len(valid) > 0:
-            assert valid.min() >= FEMTO_DEPTH_MIN_MM, (
-                f"Min depth {valid.min():.1f}mm below ToF minimum {FEMTO_DEPTH_MIN_MM}mm"
-            )
-            assert valid.max() <= FEMTO_DEPTH_MAX_MM, (
-                f"Max depth {valid.max():.1f}mm above ToF maximum {FEMTO_DEPTH_MAX_MM}mm"
-            )
+            assert (
+                valid.min() >= FEMTO_DEPTH_MIN_MM
+            ), f"Min depth {valid.min():.1f}mm below ToF minimum {FEMTO_DEPTH_MIN_MM}mm"
+            assert (
+                valid.max() <= FEMTO_DEPTH_MAX_MM
+            ), f"Max depth {valid.max():.1f}mm above ToF maximum {FEMTO_DEPTH_MAX_MM}mm"
 
     def test_depth_scale_factor(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
@@ -110,8 +117,7 @@ class TestFemtoDepthStream:
 
     def test_depth_timestamps_monotonic(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -120,22 +126,20 @@ class TestFemtoDepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
             lo = TARGET_FPS * (1 - FPS_TOLERANCE)
             hi = TARGET_FPS * (1 + FPS_TOLERANCE)
-            assert lo <= actual_fps <= hi, (
-                f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
-            )
+            assert lo <= actual_fps <= hi, f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
 
 
 # ===========================================================================
 # Color stream
 # ===========================================================================
+
 
 class TestFemtoColorStream:
 
@@ -156,8 +160,7 @@ class TestFemtoColorStream:
 
     def test_color_timestamps_monotonic(self, pipeline, femto_device):
         _start_single_stream(pipeline, OBSensorType.COLOR_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -167,6 +170,7 @@ class TestFemtoColorStream:
 # ===========================================================================
 # IR stream (ToF active illumination)
 # ===========================================================================
+
 
 class TestFemtoIRStream:
 
@@ -186,8 +190,10 @@ class TestFemtoIRStream:
     def test_ir_frame_data_valid(self, pipeline, femto_device):
         config = Config()
         frame_type = None
-        for st, ft in [(OBSensorType.LEFT_IR_SENSOR, OBFrameType.IR_FRAME),
-                       (OBSensorType.IR_SENSOR,       OBFrameType.IR_FRAME)]:
+        for st, ft in [
+            (OBSensorType.LEFT_IR_SENSOR, OBFrameType.IR_FRAME),
+            (OBSensorType.IR_SENSOR, OBFrameType.IR_FRAME),
+        ]:
             try:
                 pl = pipeline.get_stream_profile_list(st)
                 config.enable_stream(pl.get_default_video_stream_profile())
@@ -206,6 +212,7 @@ class TestFemtoIRStream:
 # ===========================================================================
 # IMU streams (unique to Femto family)
 # ===========================================================================
+
 
 class TestFemtoIMUStreams:
     """Femto cameras have an onboard IMU (accelerometer + gyroscope)."""
@@ -255,18 +262,17 @@ class TestFemtoIMUStreams:
 # Color-depth synchronization
 # ===========================================================================
 
+
 class TestFemtoMultiStreamSync:
 
     def test_color_depth_sync_timestamps(self, pipeline, femto_device):
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Dual stream not available: {e}")
@@ -281,6 +287,4 @@ class TestFemtoMultiStreamSync:
                     deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas, "No paired color+depth frames received"
         median = sorted(deltas)[len(deltas) // 2]
-        assert median <= SYNC_DELTA_MS, (
-            f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"
-        )
+        assert median <= SYNC_DELTA_MS, f"Median sync delta {median}ms exceeds {SYNC_DELTA_MS}ms"

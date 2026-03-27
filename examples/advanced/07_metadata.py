@@ -11,13 +11,15 @@
 #  Run:
 #    python examples/advanced/07_metadata.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from pyorbbecsdk import Pipeline, OBFrameMetadataType, OBError  # type: ignore
+from pyorbbecsdk import OBError, OBFrameMetadataType, Pipeline  # type: ignore
 
 ESC_KEY = 27
+
 
 def main():
     # Initialize Pipeline
@@ -32,7 +34,7 @@ def main():
         return
 
     frame_counter = 0  # Add frame counter
-    
+
     while True:
         try:
             # Get frameSet from Pipeline
@@ -41,7 +43,7 @@ def main():
                 continue
 
             frame_counter += 1  # Increment counter
-            
+
             # Only print metadata every 30 frames
             if frame_counter % 30 == 0:
                 for i in range(len(frame_set)):
@@ -49,9 +51,13 @@ def main():
 
                     # Print frame metadata
                     print(f"Frame type: {frame.get_type()}")
-                    metadata_types = [getattr(OBFrameMetadataType, attr) for attr in dir(OBFrameMetadataType) 
-                                    if not attr.startswith('__') and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)]
-                    
+                    metadata_types = [
+                        getattr(OBFrameMetadataType, attr)
+                        for attr in dir(OBFrameMetadataType)
+                        if not attr.startswith("__")
+                        and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
+                    ]
+
                     for metadata_type in metadata_types:
                         if frame.has_metadata(metadata_type):
                             metadata_value = frame.get_metadata_value(metadata_type)
@@ -65,6 +71,7 @@ def main():
 
     pipeline.stop()
     print("Pipeline stopped.")
+
 
 if __name__ == "__main__":
     main()

@@ -12,13 +12,25 @@
 #  Run:
 #    python examples/advanced/10_hdr.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import sys
+
 import cv2
 import numpy as np
-from pyorbbecsdk import Pipeline, OBPropertyID, Config, OBSensorType, OBPermissionType, OBFrameAggregateOutputMode, OBHdrConfig, HDRMergeFilter  # type: ignore
+
+from pyorbbecsdk import HDRMergeFilter  # type: ignore
+from pyorbbecsdk import (
+    Config,
+    OBFrameAggregateOutputMode,
+    OBHdrConfig,
+    OBPermissionType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 ESC_KEY = 27
 PRINT_INTERVAL = 1  # seconds
@@ -43,11 +55,13 @@ def add_text_to_image(image, text, position):
 
     # Add black background for better visibility
     (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, thickness)
-    cv2.rectangle(image,
-                  (position[0], position[1] - text_height - 5),
-                  (position[0] + text_width, position[1] + 5),
-                  (0, 0, 0),
-                  -1)
+    cv2.rectangle(
+        image,
+        (position[0], position[1] - text_height - 5),
+        (position[0] + text_width, position[1] + 5),
+        (0, 0, 0),
+        -1,
+    )
 
     return cv2.putText(image, text, position, font, font_scale, color, thickness)
 
@@ -71,7 +85,9 @@ def enhance_contrast(image, clip_limit=3.0, tile_grid_size=(8, 8)):
 def main(argv):
     pipeline = Pipeline()
     device = pipeline.get_device()
-    is_support_hdr = device.is_property_supported(OBPropertyID.OB_STRUCT_DEPTH_HDR_CONFIG,OBPermissionType.PERMISSION_READ_WRITE)
+    is_support_hdr = device.is_property_supported(
+        OBPropertyID.OB_STRUCT_DEPTH_HDR_CONFIG, OBPermissionType.PERMISSION_READ_WRITE
+    )
     if is_support_hdr == False:
         print("Current default device does not support HDR merge")
         return
@@ -107,10 +123,10 @@ def main(argv):
         return
 
     device = pipeline.get_device()
-    
+
     if device.isFrameInterleaveSupported():
         device.loadFrameInterleave("Depth from HDR")
-        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL,True)
+        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, True)
     else:
         config = OBHdrConfig()
         config.enable = True
@@ -119,7 +135,7 @@ def main(argv):
         config.exposure_2 = 100
         config.gain_2 = 16
         device.set_hdr_config(config)
-    
+
     hdr_filter = HDRMergeFilter()
 
     # Create window for visualization
@@ -179,7 +195,7 @@ def main(argv):
 
             cv2.imshow("HDR Merge Viewer", display_image)
             key = cv2.waitKey(1)
-            if key == ord('q') or key == ESC_KEY:
+            if key == ord("q") or key == ESC_KEY:
                 break
 
         except KeyboardInterrupt:

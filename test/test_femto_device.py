@@ -26,6 +26,7 @@ Tests verify:
 """
 
 import re
+
 import pytest
 
 from pyorbbecsdk import OBSensorType
@@ -41,9 +42,7 @@ class TestFemtoDeviceDiscovery:
     def test_device_name_is_femto(self, device_info):
         name = device_info.get_name()
         assert name and len(name) > 0
-        assert "Femto" in name or "femto" in name, (
-            f"Device name '{name}' is not a Femto family camera"
-        )
+        assert "Femto" in name or "femto" in name, f"Device name '{name}' is not a Femto family camera"
 
     def test_vid_is_orbbec(self, device_info):
         vid = device_info.get_vid()
@@ -65,9 +64,7 @@ class TestFemtoFirmwareInfo:
 
     def test_firmware_version_format(self, device_info):
         fw = device_info.get_firmware_version()
-        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), (
-            f"Firmware version '{fw}' does not match expected format"
-        )
+        assert re.search(r"v?\d+\.\d+\.[\w\.]+", fw), f"Firmware version '{fw}' does not match expected format"
 
     def test_hardware_version_nonempty(self, device_info):
         hw = device_info.get_hardware_version()
@@ -96,9 +93,9 @@ class TestFemtoSensorList:
         sl = femto_device.get_sensor_list()
         types = [sl.get_sensor_by_index(i).get_type() for i in range(sl.get_count())]
         has_ir = (
-            OBSensorType.IR_SENSOR       in types or
-            OBSensorType.LEFT_IR_SENSOR  in types or
-            OBSensorType.RIGHT_IR_SENSOR in types
+            OBSensorType.IR_SENSOR in types
+            or OBSensorType.LEFT_IR_SENSOR in types
+            or OBSensorType.RIGHT_IR_SENSOR in types
         )
         assert has_ir, "No IR sensor found on Femto device"
 
@@ -107,9 +104,9 @@ class TestFemtoSensorList:
         sl = femto_device.get_sensor_list()
         types = [sl.get_sensor_by_index(i).get_type() for i in range(sl.get_count())]
         has_accel = OBSensorType.ACCEL_SENSOR in types
-        has_gyro  = OBSensorType.GYRO_SENSOR  in types
+        has_gyro = OBSensorType.GYRO_SENSOR in types
         assert has_accel, "Accelerometer sensor not found on Femto device"
-        assert has_gyro,  "Gyroscope sensor not found on Femto device"
+        assert has_gyro, "Gyroscope sensor not found on Femto device"
 
 
 class TestFemtoPhysicalProperties:
@@ -120,6 +117,7 @@ class TestFemtoPhysicalProperties:
 
     def test_temperature_in_range(self, femto_device):
         import re as _re
+
         temp = femto_device.get_temperature()
         values = [float(v) for v in _re.findall(r"[-+]?\d*\.?\d+", str(temp))]
         if values:

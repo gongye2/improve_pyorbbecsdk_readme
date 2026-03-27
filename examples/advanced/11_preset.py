@@ -12,11 +12,13 @@
 #  Run:
 #    python examples/advanced/11_preset.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import pyorbbecsdk as ob
+
 
 def main():
     # Create a pipeline with default device
@@ -64,6 +66,7 @@ def main():
     finally:
         # Stop Pipeline
         pipe.stop()
+
 
 if __name__ == "__main__":
     main()

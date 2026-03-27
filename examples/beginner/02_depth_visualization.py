@@ -24,17 +24,16 @@
 # ******************************************************************************
 
 import sys
-import numpy as np
-import cv2
 
-from pyorbbecsdk import (
-    Pipeline, Config, OBSensorType, OBLogLevel, Context, OBError
-)
+import cv2
+import numpy as np
+
+from pyorbbecsdk import Config, Context, OBError, OBLogLevel, OBSensorType, Pipeline
 
 # ---------------------------------------------------------------------------
 # Configuration — adjust these for your scene
 # ---------------------------------------------------------------------------
-MIN_DEPTH_MM = 100    # Clip depth closer than this (mm)
+MIN_DEPTH_MM = 100  # Clip depth closer than this (mm)
 MAX_DEPTH_MM = 5000  # Clip depth farther than this (mm)
 WINDOW_TITLE = "Depth Viewer  |  M = 2D/3D  |  C = colormap  |  Q/ESC = quit"
 ESC_KEY = 27
@@ -42,24 +41,23 @@ ESC_KEY = 27
 # Press 'C' to cycle through these colormaps.
 # Each entry: (cv2 colormap constant, display name)
 COLORMAPS = [
-    (cv2.COLORMAP_JET,     "JET"),      # classic rainbow, familiar look (default)
-    (cv2.COLORMAP_TURBO,   "TURBO"),    # warm→cool, high perceptual separation
+    (cv2.COLORMAP_JET, "JET"),  # classic rainbow, familiar look (default)
+    (cv2.COLORMAP_TURBO, "TURBO"),  # warm→cool, high perceptual separation
     (cv2.COLORMAP_VIRIDIS, "VIRIDIS"),  # perceptually uniform, colorblind-friendly
-    (cv2.COLORMAP_MAGMA,   "MAGMA"),    # dark→light, great for low-light scenes
+    (cv2.COLORMAP_MAGMA, "MAGMA"),  # dark→light, great for low-light scenes
     (cv2.COLORMAP_INFERNO, "INFERNO"),  # warm tones, high contrast
-    (cv2.COLORMAP_BONE,    "BONE"),     # grayscale-like with blue tint
-    (cv2.COLORMAP_OCEAN,   "OCEAN"),    # blue gradient
-    (-1,                   "GRAY"),     # pure grayscale (special case)
-
+    (cv2.COLORMAP_BONE, "BONE"),  # grayscale-like with blue tint
+    (cv2.COLORMAP_OCEAN, "OCEAN"),  # blue gradient
+    (-1, "GRAY"),  # pure grayscale (special case)
 ]
-_cmap_index = 0   # current selection (JET)
+_cmap_index = 0  # current selection (JET)
 _use_3d_mode = True  # True = 3D relief lighting, False = 2D simple
 
 
 def _render_depth_2d(depth_mm: np.ndarray) -> np.ndarray:
     """
     Simple 2D depth rendering: normalize + colormap.
-    
+
     Steps:
       1. Clip to [MIN_DEPTH_MM, MAX_DEPTH_MM]
       2. Normalize to [0, 255]
@@ -67,37 +65,42 @@ def _render_depth_2d(depth_mm: np.ndarray) -> np.ndarray:
     """
     depth_clipped = np.clip(depth_mm, MIN_DEPTH_MM, MAX_DEPTH_MM)
     depth_clipped = np.where(depth_clipped > MIN_DEPTH_MM, depth_clipped, 0)
-    
-    depth_norm = cv2.normalize(depth_clipped, None, 0, 255,
-                               cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    
+
+    depth_norm = cv2.normalize(depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
     # Apply selected colormap
     colormap, cmap_name = COLORMAPS[_cmap_index]
     if colormap == -1:  # GRAY (special case)
         depth_colored = cv2.cvtColor(depth_norm, cv2.COLOR_GRAY2BGR)
     else:
         depth_colored = cv2.applyColorMap(depth_norm, colormap)
-    
+
     # Corner frame markers
     h, w = depth_colored.shape[:2]
     clen = 20
     ccol = (200, 200, 200)
-    cv2.line(depth_colored, (5, 5),         (5 + clen, 5),     ccol, 1)
-    cv2.line(depth_colored, (5, 5),         (5, 5 + clen),     ccol, 1)
-    cv2.line(depth_colored, (w-6, 5),       (w-6-clen, 5),     ccol, 1)
-    cv2.line(depth_colored, (w-6, 5),       (w-6, 5+clen),     ccol, 1)
-    cv2.line(depth_colored, (5, h-6),       (5+clen, h-6),     ccol, 1)
-    cv2.line(depth_colored, (5, h-6),       (5, h-6-clen),     ccol, 1)
-    cv2.line(depth_colored, (w-6, h-6),     (w-6-clen, h-6),   ccol, 1)
-    cv2.line(depth_colored, (w-6, h-6),     (w-6, h-6-clen),   ccol, 1)
-    
+    cv2.line(depth_colored, (5, 5), (5 + clen, 5), ccol, 1)
+    cv2.line(depth_colored, (5, 5), (5, 5 + clen), ccol, 1)
+    cv2.line(depth_colored, (w - 6, 5), (w - 6 - clen, 5), ccol, 1)
+    cv2.line(depth_colored, (w - 6, 5), (w - 6, 5 + clen), ccol, 1)
+    cv2.line(depth_colored, (5, h - 6), (5 + clen, h - 6), ccol, 1)
+    cv2.line(depth_colored, (5, h - 6), (5, h - 6 - clen), ccol, 1)
+    cv2.line(depth_colored, (w - 6, h - 6), (w - 6 - clen, h - 6), ccol, 1)
+    cv2.line(depth_colored, (w - 6, h - 6), (w - 6, h - 6 - clen), ccol, 1)
+
     # Mode + colormap label (top-right)
     label = f"2D - {cmap_name}"
     label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-    cv2.putText(depth_colored, label,
-                (w - label_size[0] - 8, 25),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-    
+    cv2.putText(
+        depth_colored,
+        label,
+        (w - label_size[0] - 8, 25),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (255, 255, 255),
+        1,
+    )
+
     return depth_colored
 
 
@@ -119,7 +122,7 @@ def _render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
 
     # --- 2. Normalize [0, 1] then apply gamma ---
     depth_norm = (depth_clipped - MIN_DEPTH_MM) / (MAX_DEPTH_MM - MIN_DEPTH_MM)
-    depth_gamma = np.power(depth_norm, 0.8)          # γ < 1 → brighten near-field
+    depth_gamma = np.power(depth_norm, 0.8)  # γ < 1 → brighten near-field
 
     # --- 3. Map to uint8 ---
     depth_8bit = (depth_gamma * 255).astype(np.uint8)
@@ -131,12 +134,12 @@ def _render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
     #   Diffuse term: dot(normal, light) ≈ -(grad_x + grad_y) / magnitude
     grad_x = cv2.Scharr(depth_8bit, cv2.CV_32F, 1, 0)
     grad_y = cv2.Scharr(depth_8bit, cv2.CV_32F, 0, 1)
-    mag    = cv2.magnitude(grad_x, grad_y) + 1.0      # +1 avoids divide-by-zero
+    mag = cv2.magnitude(grad_x, grad_y) + 1.0  # +1 avoids divide-by-zero
 
     # Diffuse coefficient: 0.15 (subtle); ambient: 0.85 (keeps dark areas visible)
     lighting = -0.707 * (grad_x + grad_y) / mag
     lighting = lighting * 0.15 + 0.85
-    np.clip(lighting, 0.7, 1.0, out=lighting)         # floor at 70% brightness
+    np.clip(lighting, 0.7, 1.0, out=lighting)  # floor at 70% brightness
 
     # --- 5. Apply colormap (current selection from COLORMAPS list) ---
     colormap, cmap_name = COLORMAPS[_cmap_index]
@@ -149,24 +152,30 @@ def _render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
     depth_colored = (depth_colored * lighting[..., np.newaxis]).astype(np.uint8)
 
     # --- 7. Corner frame markers (subtle 3D-frame feel) ---
-    h, w    = depth_colored.shape[:2]
-    clen    = 20
-    ccol    = (200, 200, 200)
-    cv2.line(depth_colored, (5, 5),         (5 + clen, 5),     ccol, 1)
-    cv2.line(depth_colored, (5, 5),         (5, 5 + clen),     ccol, 1)
-    cv2.line(depth_colored, (w-6, 5),       (w-6-clen, 5),     ccol, 1)
-    cv2.line(depth_colored, (w-6, 5),       (w-6, 5+clen),     ccol, 1)
-    cv2.line(depth_colored, (5, h-6),       (5+clen, h-6),     ccol, 1)
-    cv2.line(depth_colored, (5, h-6),       (5, h-6-clen),     ccol, 1)
-    cv2.line(depth_colored, (w-6, h-6),     (w-6-clen, h-6),   ccol, 1)
-    cv2.line(depth_colored, (w-6, h-6),     (w-6, h-6-clen),   ccol, 1)
+    h, w = depth_colored.shape[:2]
+    clen = 20
+    ccol = (200, 200, 200)
+    cv2.line(depth_colored, (5, 5), (5 + clen, 5), ccol, 1)
+    cv2.line(depth_colored, (5, 5), (5, 5 + clen), ccol, 1)
+    cv2.line(depth_colored, (w - 6, 5), (w - 6 - clen, 5), ccol, 1)
+    cv2.line(depth_colored, (w - 6, 5), (w - 6, 5 + clen), ccol, 1)
+    cv2.line(depth_colored, (5, h - 6), (5 + clen, h - 6), ccol, 1)
+    cv2.line(depth_colored, (5, h - 6), (5, h - 6 - clen), ccol, 1)
+    cv2.line(depth_colored, (w - 6, h - 6), (w - 6 - clen, h - 6), ccol, 1)
+    cv2.line(depth_colored, (w - 6, h - 6), (w - 6, h - 6 - clen), ccol, 1)
 
     # --- 8. Mode + colormap name (top-right, press C to cycle) ---
     label = f"3D - {cmap_name}"
     label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-    cv2.putText(depth_colored, label,
-                (w - label_size[0] - 8, 25),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+    cv2.putText(
+        depth_colored,
+        label,
+        (w - label_size[0] - 8, 25),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (255, 255, 255),
+        1,
+    )
 
     return depth_colored
 
@@ -181,7 +190,7 @@ def main():
 
     config = Config()
     try:
-        profile_list  = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+        profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
         depth_profile = profile_list.get_default_video_stream_profile()
         print(f"Depth profile: {depth_profile}")
         config.enable_stream(depth_profile)
@@ -205,11 +214,11 @@ def main():
                 continue
 
             # --- Step 3: Convert raw uint16 to float32 millimeters ---
-            width  = depth_frame.get_width()
+            width = depth_frame.get_width()
             height = depth_frame.get_height()
-            scale  = depth_frame.get_depth_scale()   # e.g. 0.1 → 1 unit = 0.1 mm
+            scale = depth_frame.get_depth_scale()  # e.g. 0.1 → 1 unit = 0.1 mm
 
-            raw      = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+            raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
             depth_mm = raw.reshape(height, width).astype(np.float32) * scale
 
             # --- Step 4: Render depth (2D or 3D mode, toggle with 'M') ---
@@ -220,20 +229,32 @@ def main():
                 display = _render_depth_2d(depth_mm)
 
             # --- Step 5: Overlay center-point distance ---
-            cy, cx       = height // 2, width // 2
-            center_dist  = depth_mm[cy, cx]
-            in_range     = MIN_DEPTH_MM <= center_dist <= MAX_DEPTH_MM
-            dist_label   = f"{center_dist:.0f} mm" if in_range else "out of range"
+            cy, cx = height // 2, width // 2
+            center_dist = depth_mm[cy, cx]
+            in_range = MIN_DEPTH_MM <= center_dist <= MAX_DEPTH_MM
+            dist_label = f"{center_dist:.0f} mm" if in_range else "out of range"
 
             cv2.circle(display, (cx, cy), 5, (255, 255, 255), -1)
-            cv2.putText(display, dist_label,
-                        (cx + 8, cy + 6),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            cv2.putText(
+                display,
+                dist_label,
+                (cx + 8, cy + 6),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (255, 255, 255),
+                2,
+            )
 
             # --- Step 6: Depth range legend (top-left) ---
-            cv2.putText(display, f"{MIN_DEPTH_MM}-{MAX_DEPTH_MM} mm",
-                        (10, 25),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(
+                display,
+                f"{MIN_DEPTH_MM}-{MAX_DEPTH_MM} mm",
+                (10, 25),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (255, 255, 255),
+                1,
+            )
 
             cv2.imshow(WINDOW_TITLE, display)
             key = cv2.waitKey(1)

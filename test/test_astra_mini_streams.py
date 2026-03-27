@@ -18,18 +18,24 @@ Astra Mini depth characteristics:
 """
 
 import time
-import pytest
+
 import numpy as np
+import pytest
 
-from pyorbbecsdk import Config, OBSensorType, OBFrameType, OBError
+from pyorbbecsdk import Config, OBError, OBFrameType, OBSensorType
 
-pytestmark = [pytest.mark.hardware, pytest.mark.astra_mini, pytest.mark.functional, pytest.mark.stability]
+pytestmark = [
+    pytest.mark.hardware,
+    pytest.mark.astra_mini,
+    pytest.mark.functional,
+    pytest.mark.stability,
+]
 
 FRAME_COLLECT_COUNT = 30
-FRAME_TIMEOUT_MS    = 2000
-TARGET_FPS          = 30
-FPS_TOLERANCE       = 0.15      # slightly relaxed for compact camera
-SYNC_DELTA_MS       = 50        # relaxed for USB 2.0 devices
+FRAME_TIMEOUT_MS = 2000
+TARGET_FPS = 30
+FPS_TOLERANCE = 0.15  # slightly relaxed for compact camera
+SYNC_DELTA_MS = 50  # relaxed for USB 2.0 devices
 
 ASTRA_MINI_DEPTH_MIN_MM = 200.0
 ASTRA_MINI_DEPTH_MAX_MM = 8500.0
@@ -68,9 +74,7 @@ class TestAstraMiniDepthStream:
         frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=5)
         assert frames
         data = np.frombuffer(frames[-1].as_depth_frame().get_data(), dtype=np.uint16)
-        assert np.count_nonzero(data) / data.size > 0.10, (
-            "Too many zero-depth pixels"
-        )
+        assert np.count_nonzero(data) / data.size > 0.10, "Too many zero-depth pixels"
 
     def test_depth_values_within_range(self, pipeline, astra_mini_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
@@ -86,8 +90,7 @@ class TestAstraMiniDepthStream:
 
     def test_depth_timestamps_monotonic(self, pipeline, astra_mini_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -96,17 +99,14 @@ class TestAstraMiniDepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, astra_mini_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
             lo = TARGET_FPS * (1 - FPS_TOLERANCE)
             hi = TARGET_FPS * (1 + FPS_TOLERANCE)
-            assert lo <= actual_fps <= hi, (
-                f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
-            )
+            assert lo <= actual_fps <= hi, f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
 
 
 class TestAstraMiniColorStream:
@@ -153,12 +153,12 @@ class TestAstraMiniIRStream:
     def test_ir_frame_data_valid(self, pipeline, astra_mini_device):
         config = Config()
         frame_type = None
-        for st, ft in [(OBSensorType.IR_SENSOR,      OBFrameType.IR_FRAME),
-                       (OBSensorType.LEFT_IR_SENSOR, OBFrameType.IR_FRAME)]:
+        for st, ft in [
+            (OBSensorType.IR_SENSOR, OBFrameType.IR_FRAME),
+            (OBSensorType.LEFT_IR_SENSOR, OBFrameType.IR_FRAME),
+        ]:
             try:
-                config.enable_stream(
-                    pipeline.get_stream_profile_list(st).get_default_video_stream_profile()
-                )
+                config.enable_stream(pipeline.get_stream_profile_list(st).get_default_video_stream_profile())
                 frame_type = ft
                 break
             except OBError:
@@ -175,7 +175,8 @@ class TestAstraMiniControls:
     """Basic sensor controls applicable to Astra Mini."""
 
     def test_depth_mirror_toggle(self, astra_mini_device):
-        from pyorbbecsdk import OBPropertyID, OBPermissionType
+        from pyorbbecsdk import OBPermissionType, OBPropertyID
+
         prop = OBPropertyID.OB_PROP_DEPTH_MIRROR_BOOL
         if not astra_mini_device.is_property_supported(prop, OBPermissionType.PERMISSION_READ_WRITE):
             pytest.skip("Mirror property not supported")
@@ -185,7 +186,8 @@ class TestAstraMiniControls:
         astra_mini_device.set_bool_property(prop, original)
 
     def test_color_auto_exposure_toggle(self, astra_mini_device):
-        from pyorbbecsdk import OBPropertyID, OBPermissionType
+        from pyorbbecsdk import OBPermissionType, OBPropertyID
+
         prop = OBPropertyID.OB_PROP_COLOR_AUTO_EXPOSURE_BOOL
         if not astra_mini_device.is_property_supported(prop, OBPermissionType.PERMISSION_READ_WRITE):
             pytest.skip("Color auto-exposure not supported")

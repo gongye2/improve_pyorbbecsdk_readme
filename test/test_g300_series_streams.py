@@ -24,18 +24,24 @@ Tests verify:
 
 import os
 import time
-import pytest
+
 import numpy as np
+import pytest
 
-from pyorbbecsdk import Config, OBSensorType, OBFormat, OBError, OBFrameType
+from pyorbbecsdk import Config, OBError, OBFormat, OBFrameType, OBSensorType
 
-pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.functional, pytest.mark.stability]
+pytestmark = [
+    pytest.mark.hardware,
+    pytest.mark.g300_series,
+    pytest.mark.functional,
+    pytest.mark.stability,
+]
 
 FRAME_COLLECT_COUNT = 30
-FRAME_TIMEOUT_MS    = 2000
-TARGET_FPS          = 30
-FPS_TOLERANCE       = 0.10
-SYNC_DELTA_MS       = 33
+FRAME_TIMEOUT_MS = 2000
+TARGET_FPS = 30
+FPS_TOLERANCE = 0.10
+SYNC_DELTA_MS = 33
 TIGHT_SYNC_DELTA_MS = 10
 
 # G300 series depth operating range (structured light, ~20 mm – 10 000 mm)
@@ -59,6 +65,7 @@ def _save_depth_debug(raw_u16, width, height, scale, val_min, val_max):
     # Save normalised 8-bit PNG for quick visual analysis
     try:
         import cv2
+
         norm = depth_2d.copy().astype(np.float32)
         norm[norm > 0] = np.clip(norm[norm > 0], 1, 65535)
         norm = (norm / norm.max() * 255).astype(np.uint8)
@@ -117,6 +124,7 @@ def _collect_frames(pipeline, frame_type, count, timeout_ms=FRAME_TIMEOUT_MS):
 # Depth stream
 # ===========================================================================
 
+
 class TestDepthStream:
 
     def test_depth_stream_starts(self, pipeline, g300_series_device):
@@ -141,9 +149,9 @@ class TestDepthStream:
         frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=5)
         assert frames
         data = np.frombuffer(frames[-1].as_depth_frame().get_data(), dtype=np.uint16)
-        assert np.count_nonzero(data) / data.size > 0.10, (
-            "Too many zero-depth pixels — ensure an object is in front of the camera"
-        )
+        assert (
+            np.count_nonzero(data) / data.size > 0.10
+        ), "Too many zero-depth pixels — ensure an object is in front of the camera"
 
     def test_depth_scale_factor(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
@@ -164,21 +172,24 @@ class TestDepthStream:
         if len(valid) > 0:
             ok = valid.min() >= DEPTH_MIN_MM and valid.max() <= DEPTH_MAX_MM
             if not ok:
-                _save_depth_debug(raw, width, height, frame.get_depth_scale(),
-                                  valid.min(), valid.max())
+                _save_depth_debug(
+                    raw,
+                    width,
+                    height,
+                    frame.get_depth_scale(),
+                    valid.min(),
+                    valid.max(),
+                )
             assert valid.min() >= DEPTH_MIN_MM, (
-                f"Depth min {valid.min():.2f} mm < {DEPTH_MIN_MM} mm. "
-                f"Debug files saved to {DEPTH_DEBUG_DIR}"
+                f"Depth min {valid.min():.2f} mm < {DEPTH_MIN_MM} mm. " f"Debug files saved to {DEPTH_DEBUG_DIR}"
             )
             assert valid.max() <= DEPTH_MAX_MM, (
-                f"Depth max {valid.max():.2f} mm > {DEPTH_MAX_MM} mm. "
-                f"Debug files saved to {DEPTH_DEBUG_DIR}"
+                f"Depth max {valid.max():.2f} mm > {DEPTH_MAX_MM} mm. " f"Debug files saved to {DEPTH_DEBUG_DIR}"
             )
 
     def test_depth_timestamps_monotonic(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -187,21 +198,19 @@ class TestDepthStream:
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR, fps=TARGET_FPS)
-        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10, "Insufficient frames to measure FPS"
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
         if elapsed > 0:
             actual_fps = (len(frames) - 1) / elapsed
             lo, hi = TARGET_FPS * (1 - FPS_TOLERANCE), TARGET_FPS * (1 + FPS_TOLERANCE)
-            assert lo <= actual_fps <= hi, (
-                f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
-            )
+            assert lo <= actual_fps <= hi, f"Depth FPS {actual_fps:.1f} outside [{lo:.1f}, {hi:.1f}]"
 
 
 # ===========================================================================
 # Color stream
 # ===========================================================================
+
 
 class TestColorStream:
 
@@ -230,8 +239,7 @@ class TestColorStream:
 
     def test_color_timestamps_monotonic(self, pipeline, g300_series_device):
         _start_single_stream(pipeline, OBSensorType.COLOR_SENSOR)
-        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME,
-                                  count=FRAME_COLLECT_COUNT)
+        frames = _collect_frames(pipeline, OBFrameType.COLOR_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 5
         ts = [f.get_timestamp() for f in frames]
         for i in range(1, len(ts)):
@@ -254,6 +262,7 @@ class TestColorStream:
 # ===========================================================================
 # IR stream
 # ===========================================================================
+
 
 def _has_dual_ir(device):
     """
@@ -343,6 +352,7 @@ class TestIRStream:
 # Multi-stream synchronization
 # ===========================================================================
 
+
 class TestMultiStreamSync:
 
     def test_color_depth_sync_timestamps(self, pipeline, g300_series_device):
@@ -350,12 +360,10 @@ class TestMultiStreamSync:
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
@@ -371,21 +379,17 @@ class TestMultiStreamSync:
                 deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas
         median = sorted(deltas)[len(deltas) // 2]
-        assert median <= SYNC_DELTA_MS, (
-            f"Median color↔depth delta {median}ms exceeds {SYNC_DELTA_MS}ms"
-        )
+        assert median <= SYNC_DELTA_MS, f"Median color↔depth delta {median}ms exceeds {SYNC_DELTA_MS}ms"
 
     def test_frame_sync_reduces_delta(self, pipeline, g300_series_device):
         """With frame sync enabled, P95 color↔depth delta should be ≤ 10 ms."""
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
@@ -402,9 +406,7 @@ class TestMultiStreamSync:
                 deltas.append(abs(c.get_timestamp() - d.get_timestamp()))
         assert deltas
         p95 = sorted(deltas)[int(len(deltas) * 0.95)]
-        assert p95 <= TIGHT_SYNC_DELTA_MS, (
-            f"P95 sync delta {p95}ms exceeds {TIGHT_SYNC_DELTA_MS}ms"
-        )
+        assert p95 <= TIGHT_SYNC_DELTA_MS, f"P95 sync delta {p95}ms exceeds {TIGHT_SYNC_DELTA_MS}ms"
 
     @pytest.mark.timeout(60)
     def test_tri_stream_no_dropped_frames(self, pipeline, g300_series_device):
@@ -418,8 +420,7 @@ class TestMultiStreamSync:
         # Depth
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
             )
             enabled += 1
         except OBError:
@@ -428,8 +429,7 @@ class TestMultiStreamSync:
         # Color
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
             )
             enabled += 1
         except OBError:
@@ -446,8 +446,7 @@ class TestMultiStreamSync:
         else:
             try:
                 config.enable_stream(
-                    pipeline.get_stream_profile_list(OBSensorType.IR_SENSOR)
-                            .get_default_video_stream_profile()
+                    pipeline.get_stream_profile_list(OBSensorType.IR_SENSOR).get_default_video_stream_profile()
                 )
                 enabled += 1
             except OBError:
@@ -463,6 +462,5 @@ class TestMultiStreamSync:
                 received += 1
         drop_rate = 1.0 - received / FRAME_COLLECT_COUNT
         assert drop_rate <= 0.05, (
-            f"Drop rate {drop_rate:.1%} exceeds 5% "
-            f"({received}/{FRAME_COLLECT_COUNT} frame sets)"
+            f"Drop rate {drop_rate:.1%} exceeds 5% " f"({received}/{FRAME_COLLECT_COUNT} frame sets)"
         )

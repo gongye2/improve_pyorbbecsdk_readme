@@ -12,10 +12,11 @@
 #  Run:
 #    python examples/advanced/12_depth_work_mode.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import Pipeline, OBPropertyID, OBPermissionType  # type: ignore
+from pyorbbecsdk import OBPermissionType, OBPropertyID, Pipeline  # type: ignore
 
 ESC = 27
 
@@ -25,8 +26,10 @@ def main():
     assert pipeline is not None
     device = pipeline.get_device()
     assert device is not None
-    if not device.is_property_supported(OBPropertyID.OB_STRUCT_CURRENT_DEPTH_ALG_MODE,
-                                        OBPermissionType.PERMISSION_READ_WRITE):
+    if not device.is_property_supported(
+        OBPropertyID.OB_STRUCT_CURRENT_DEPTH_ALG_MODE,
+        OBPermissionType.PERMISSION_READ_WRITE,
+    ):
         print("Current device not support depth work mode!")
         return
     current_depth_work_mode = device.get_depth_work_mode()
@@ -57,5 +60,5 @@ def main():
             print("Invalid input: index is out of range!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

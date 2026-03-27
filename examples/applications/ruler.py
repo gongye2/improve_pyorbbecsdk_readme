@@ -26,36 +26,43 @@
 #    python examples/applications/ruler.py
 # ******************************************************************************
 
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-import numpy as np
 import cv2
+import numpy as np
+from utils import frame_to_bgr_image
 
 from pyorbbecsdk import (
-    Pipeline, Config, AlignFilter,
-    OBSensorType, OBStreamType, OBLogLevel, Context, OBError,
+    AlignFilter,
+    Config,
+    Context,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
 )
-from utils import frame_to_bgr_image
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-MIN_DEPTH_MM = 100    # ignore depth values below this (mm)
-MAX_DEPTH_MM = 8000   # ignore depth values above this (mm)
-ESC_KEY      = 27
+MIN_DEPTH_MM = 100  # ignore depth values below this (mm)
+MAX_DEPTH_MM = 8000  # ignore depth values above this (mm)
+ESC_KEY = 27
 WINDOW_TITLE = "Depth Ruler  |  Drag to measure  |  C = clear  |  Q/ESC = quit"
 
 # ---------------------------------------------------------------------------
 # Global mouse state
 # ---------------------------------------------------------------------------
-_drawing    = False          # True while left button is held
-_pt_start   = None           # (x, y) where drag started
-_pt_end     = None           # (x, y) current drag position (updated on move)
-_segments   = []             # finished segments: list of (pt_start, pt_end, dist_mm)
-_depth_mm   = None           # latest aligned depth array (float32, shape H×W)
-_cam_param  = None           # OBCameraParam (filled after pipeline starts)
+_drawing = False  # True while left button is held
+_pt_start = None  # (x, y) where drag started
+_pt_end = None  # (x, y) current drag position (updated on move)
+_segments = []  # finished segments: list of (pt_start, pt_end, dist_mm)
+_depth_mm = None  # latest aligned depth array (float32, shape H×W)
+_cam_param = None  # OBCameraParam (filled after pipeline starts)
 
 
 def _pixel_to_3d(u: int, v: int, depth_arr: np.ndarray, intr) -> np.ndarray | None:
@@ -87,22 +94,22 @@ def _mouse_callback(event, x, y, flags, param):
     global _drawing, _pt_start, _pt_end, _segments, _depth_mm, _cam_param
 
     if event == cv2.EVENT_LBUTTONDOWN:
-        _drawing  = True
+        _drawing = True
         _pt_start = (x, y)
-        _pt_end   = (x, y)
+        _pt_end = (x, y)
 
     elif event == cv2.EVENT_MOUSEMOVE and _drawing:
         _pt_end = (x, y)
 
     elif event == cv2.EVENT_LBUTTONUP and _drawing:
         _drawing = False
-        _pt_end  = (x, y)
+        _pt_end = (x, y)
 
         # Compute 3D distance if depth data is available
         if _depth_mm is not None and _cam_param is not None:
-            intr = _cam_param.rgb_intrinsic      # color intrinsics (aligned frame)
+            intr = _cam_param.rgb_intrinsic  # color intrinsics (aligned frame)
             p1 = _pixel_to_3d(_pt_start[0], _pt_start[1], _depth_mm, intr)
-            p2 = _pixel_to_3d(_pt_end[0],   _pt_end[1],   _depth_mm, intr)
+            p2 = _pixel_to_3d(_pt_end[0], _pt_end[1], _depth_mm, intr)
 
             if p1 is not None and p2 is not None:
                 dist_mm = float(np.linalg.norm(p2 - p1))
@@ -114,7 +121,7 @@ def _mouse_callback(event, x, y, flags, param):
             _segments.append((_pt_start, _pt_end, None))
 
         _pt_start = None
-        _pt_end   = None
+        _pt_end = None
 
 
 def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
@@ -126,23 +133,29 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
 
     # --- Finished segments ---
     for seg_start, seg_end, dist in _segments:
-        color = (0, 220, 0)    # green for valid distance
+        color = (0, 220, 0)  # green for valid distance
         if dist is None:
-            color = (0, 80, 220)   # orange-ish for invalid depth
+            color = (0, 80, 220)  # orange-ish for invalid depth
 
         cv2.line(out, seg_start, seg_end, color, 2)
         cv2.circle(out, seg_start, 5, color, -1)
-        cv2.circle(out, seg_end,   5, color, -1)
+        cv2.circle(out, seg_end, 5, color, -1)
 
         # Label at midpoint
         mx = (seg_start[0] + seg_end[0]) // 2
         my = (seg_start[1] + seg_end[1]) // 2
         label = f"{dist:.1f} mm" if dist is not None else "no depth"
         # Black outline for readability
-        cv2.putText(out, label, (mx + 4, my - 4),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
-        cv2.putText(out, label, (mx + 4, my - 4),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+        cv2.putText(out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
+        cv2.putText(
+            out,
+            label,
+            (mx + 4, my - 4),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255, 255, 255),
+            1,
+        )
 
     # --- In-progress drag line ---
     if _drawing and _pt_start and _pt_end:
@@ -152,10 +165,8 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
     # --- Help text (bottom) ---
     h = out.shape[0]
     hint = "Drag to measure | C = clear | Q/ESC = quit"
-    cv2.putText(out, hint, (8, h - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2)
-    cv2.putText(out, hint, (8, h - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
+    cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2)
+    cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
 
     return out
 
@@ -169,12 +180,12 @@ def main():
 
     # --- Step 1: Start pipeline with color + depth ---
     pipeline = Pipeline()
-    config   = Config()
+    config = Config()
 
     for sensor_type in (OBSensorType.DEPTH_SENSOR, OBSensorType.COLOR_SENSOR):
         try:
             profile_list = pipeline.get_stream_profile_list(sensor_type)
-            profile      = profile_list.get_default_video_stream_profile()
+            profile = profile_list.get_default_video_stream_profile()
             config.enable_stream(profile)
         except OBError as e:
             print(f"ERROR: Cannot configure {sensor_type.name}: {e}")
@@ -190,10 +201,12 @@ def main():
         fs = pipeline.wait_for_frames(1000)
         if fs is not None:
             _cam_param = pipeline.get_camera_param()
-            print(f"Color intrinsics: fx={_cam_param.rgb_intrinsic.fx:.2f}  "
-                  f"fy={_cam_param.rgb_intrinsic.fy:.2f}  "
-                  f"cx={_cam_param.rgb_intrinsic.cx:.2f}  "
-                  f"cy={_cam_param.rgb_intrinsic.cy:.2f}")
+            print(
+                f"Color intrinsics: fx={_cam_param.rgb_intrinsic.fx:.2f}  "
+                f"fy={_cam_param.rgb_intrinsic.fy:.2f}  "
+                f"cx={_cam_param.rgb_intrinsic.cx:.2f}  "
+                f"cy={_cam_param.rgb_intrinsic.cy:.2f}"
+            )
             break
 
     if _cam_param is None:
@@ -238,10 +251,10 @@ def main():
             if depth_frame is None:
                 continue
 
-            w     = depth_frame.get_width()
-            h     = depth_frame.get_height()
+            w = depth_frame.get_width()
+            h = depth_frame.get_height()
             scale = depth_frame.get_depth_scale()
-            raw   = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+            raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
             _depth_mm = raw.reshape(h, w).astype(np.float32) * scale  # mm
 
             # --- Draw overlay and show ---

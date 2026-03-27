@@ -28,10 +28,10 @@ Usage:
     python object_detection.py --model models/yolov5s.onnx
 """
 
-import sys
-import os
-import time
 import argparse
+import os
+import sys
+import time
 
 import cv2
 import numpy as np
@@ -43,23 +43,25 @@ import onnxruntime as ort
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # examples/utils.py is two levels up: applications/object_detection -> examples
-sys.path.insert(0, os.path.abspath(os.path.join(_SCRIPT_DIR, '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(_SCRIPT_DIR, "..", "..")))
 
-from pyorbbecsdk import Config, OBSensorType, OBFormat, Pipeline, AlignFilter, OBStreamType  # type: ignore  # noqa: E402
 from utils import frame_to_bgr_image  # noqa: E402
+
+from pyorbbecsdk import Config  # type: ignore  # noqa: E402
+from pyorbbecsdk import AlignFilter, OBFormat, OBSensorType, OBStreamType, Pipeline
 
 # ---------------------------------------------------------------------------
 # Default Paths (relative to script, not CWD)
 # ---------------------------------------------------------------------------
-DEFAULT_MODEL_PATH = os.path.join(_SCRIPT_DIR, 'models', 'yolov5s.onnx')
-DEFAULT_LABELS_PATH = os.path.join(_SCRIPT_DIR, 'coco.names')
+DEFAULT_MODEL_PATH = os.path.join(_SCRIPT_DIR, "models", "yolov5s.onnx")
+DEFAULT_LABELS_PATH = os.path.join(_SCRIPT_DIR, "coco.names")
 
 # ---------------------------------------------------------------------------
 # Camera Resolution (None = use device default)
 # ---------------------------------------------------------------------------
-COLOR_CAMERA_WIDTH = None   # e.g. 640
+COLOR_CAMERA_WIDTH = None  # e.g. 640
 COLOR_CAMERA_HEIGHT = None  # e.g. 480
-DEPTH_CAMERA_WIDTH = None   # e.g. 640
+DEPTH_CAMERA_WIDTH = None  # e.g. 640
 DEPTH_CAMERA_HEIGHT = None  # e.g. 480
 
 # ---------------------------------------------------------------------------
@@ -74,8 +76,8 @@ MAX_DISPLAY_BOXES = 5
 # ---------------------------------------------------------------------------
 # Depth Parameters (mm)
 # ---------------------------------------------------------------------------
-MIN_DEPTH_MM = 20       # ignore depth < 20 mm
-MAX_DEPTH_MM = 10000    # ignore depth > 10 000 mm
+MIN_DEPTH_MM = 20  # ignore depth < 20 mm
+MAX_DEPTH_MM = 10000  # ignore depth > 10 000 mm
 DEPTH_OUTLIER_RATIO = 0.2  # +/-20 % around median
 
 # ---------------------------------------------------------------------------
@@ -89,15 +91,23 @@ BLACK = (0, 0, 0)
 RED = (0, 0, 255)
 
 PALETTE = [
-    (255, 255, 255), (0, 255, 0), (0, 0, 255), (255, 255, 0),
-    (255, 0, 255), (0, 255, 255), (128, 128, 0),
-    (128, 0, 128), (0, 128, 128), (128, 128, 128),
+    (255, 255, 255),
+    (0, 255, 0),
+    (0, 0, 255),
+    (255, 255, 0),
+    (255, 0, 255),
+    (0, 255, 255),
+    (128, 128, 0),
+    (128, 0, 128),
+    (0, 128, 128),
+    (128, 128, 128),
 ]
 
 
 # ===========================================================================
 # Helper Functions
 # ===========================================================================
+
 
 def draw_label(img, label, x, y, color, extra_line=None):
     """Draw one or two lines of text with a filled background rectangle."""
@@ -107,18 +117,31 @@ def draw_label(img, label, x, y, color, extra_line=None):
         (tw, th), baseline = cv2.getTextSize(text, FONT_FACE, FONT_SCALE, THICKNESS)
         if y + y_offset + th + baseline > img.shape[0]:
             break
-        cv2.rectangle(img, (x, y + y_offset),
-                      (x + tw, y + y_offset + th + baseline), BLACK, cv2.FILLED)
-        cv2.putText(img, text, (x, y + y_offset + th),
-                    FONT_FACE, FONT_SCALE, color, THICKNESS, cv2.LINE_AA)
+        cv2.rectangle(
+            img,
+            (x, y + y_offset),
+            (x + tw, y + y_offset + th + baseline),
+            BLACK,
+            cv2.FILLED,
+        )
+        cv2.putText(
+            img,
+            text,
+            (x, y + y_offset + th),
+            FONT_FACE,
+            FONT_SCALE,
+            color,
+            THICKNESS,
+            cv2.LINE_AA,
+        )
         y_offset += th + baseline
 
 
 # Map ONNX element type strings to numpy dtypes
 _ONNX_DTYPE_MAP = {
-    'tensor(float)': np.float32,
-    'tensor(float16)': np.float16,
-    'tensor(double)': np.float64,
+    "tensor(float)": np.float32,
+    "tensor(float16)": np.float16,
+    "tensor(double)": np.float64,
 }
 
 
@@ -146,7 +169,8 @@ def extract_depth_map(depth_frame):
     """Extract a uint16 depth map (mm) from an Orbbec depth frame."""
     try:
         data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
-            depth_frame.get_height(), depth_frame.get_width())
+            depth_frame.get_height(), depth_frame.get_width()
+        )
     except ValueError:
         print("[Warn] Failed to reshape depth data")
         return None
@@ -194,8 +218,7 @@ def post_process(img, depth_data, predictions, classes):
         valid = roi[roi > 0]
         filtered = filter_depth_outliers(valid)
 
-        depth_label = (f"depth:{int(np.median(filtered))}mm"
-                       if filtered.size > 0 else "depth:N/A")
+        depth_label = f"depth:{int(np.median(filtered))}mm" if filtered.size > 0 else "depth:N/A"
 
         color = PALETTE[class_ids[i] % len(PALETTE)]
         cv2.rectangle(img, (left, top), (left + bw, top + bh), color, 2)
@@ -212,6 +235,7 @@ def post_process(img, depth_data, predictions, classes):
 # Camera Configuration
 # ===========================================================================
 
+
 def _find_profile(profiles, width, height, fmt=None):
     """Return the first matching stream profile, or None."""
     for p in profiles:
@@ -221,9 +245,7 @@ def _find_profile(profiles, width, height, fmt=None):
     return None
 
 
-def build_config(pipeline,
-                 color_w=None, color_h=None,
-                 depth_w=None, depth_h=None):
+def build_config(pipeline, color_w=None, color_h=None, depth_w=None, depth_h=None):
     """Build a Pipeline Config with optional resolution overrides.
 
     Resolution priority: CLI args > global constants > device default.
@@ -248,8 +270,7 @@ def build_config(pipeline,
                 print(f"[Config] Color {cw}x{ch} not found, using default")
         if color_profile is None:
             color_profile = color_profiles.get_default_video_stream_profile()
-            print(f"[Config] Color: {color_profile.get_width()}x"
-                  f"{color_profile.get_height()} (default)")
+            print(f"[Config] Color: {color_profile.get_width()}x" f"{color_profile.get_height()} (default)")
         config.enable_stream(color_profile)
 
         # -- Depth stream --
@@ -262,8 +283,7 @@ def build_config(pipeline,
                 print(f"[Config] Depth {dw}x{dh} not found, using default")
         if depth_profile is None:
             depth_profile = depth_profiles.get_default_video_stream_profile()
-            print(f"[Config] Depth: {depth_profile.get_width()}x"
-                  f"{depth_profile.get_height()} (default)")
+            print(f"[Config] Depth: {depth_profile.get_width()}x" f"{depth_profile.get_height()} (default)")
         config.enable_stream(depth_profile)
 
     except Exception as e:
@@ -277,21 +297,25 @@ def build_config(pipeline,
 # Main
 # ===========================================================================
 
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="YOLOv5 object detection with Orbbec depth camera")
-    parser.add_argument('--model', type=str, default=DEFAULT_MODEL_PATH,
-                        help='Path to YOLOv5s ONNX model')
-    parser.add_argument('--labels', type=str, default=DEFAULT_LABELS_PATH,
-                        help='Path to class labels file (coco.names)')
-    parser.add_argument('--color_width', type=int, default=None,
-                        help='Color camera width')
-    parser.add_argument('--color_height', type=int, default=None,
-                        help='Color camera height')
-    parser.add_argument('--depth_width', type=int, default=None,
-                        help='Depth camera width')
-    parser.add_argument('--depth_height', type=int, default=None,
-                        help='Depth camera height')
+    parser = argparse.ArgumentParser(description="YOLOv5 object detection with Orbbec depth camera")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=DEFAULT_MODEL_PATH,
+        help="Path to YOLOv5s ONNX model",
+    )
+    parser.add_argument(
+        "--labels",
+        type=str,
+        default=DEFAULT_LABELS_PATH,
+        help="Path to class labels file (coco.names)",
+    )
+    parser.add_argument("--color_width", type=int, default=None, help="Color camera width")
+    parser.add_argument("--color_height", type=int, default=None, help="Color camera height")
+    parser.add_argument("--depth_width", type=int, default=None, help="Depth camera width")
+    parser.add_argument("--depth_height", type=int, default=None, help="Depth camera height")
     args = parser.parse_args()
 
     # ---- Validate model & labels ----
@@ -303,8 +327,8 @@ def main():
         print(f"[Error] Labels file not found: {args.labels}")
         return 1
 
-    with open(args.labels, 'r') as f:
-        classes = f.read().strip().split('\n')
+    with open(args.labels, "r") as f:
+        classes = f.read().strip().split("\n")
     print(f"[Model] {os.path.basename(args.model)}  ({len(classes)} classes)")
 
     # ---- ONNX Runtime session ----
@@ -314,13 +338,17 @@ def main():
     input_meta = session.get_inputs()[0]
     input_name = input_meta.name
     input_dtype = _ONNX_DTYPE_MAP.get(input_meta.type, np.float32)
-    print(f'[ONNX]  Input: {input_name}  dtype={input_meta.type}')
+    print(f"[ONNX]  Input: {input_name}  dtype={input_meta.type}")
 
     # ---- Camera pipeline ----
     pipeline = Pipeline()
-    config = build_config(pipeline,
-                          args.color_width, args.color_height,
-                          args.depth_width, args.depth_height)
+    config = build_config(
+        pipeline,
+        args.color_width,
+        args.color_height,
+        args.depth_width,
+        args.depth_height,
+    )
     if config is None:
         print("[Error] Could not configure camera streams.")
         return 1
@@ -365,13 +393,19 @@ def main():
             now = time.time()
             fps = 1.0 / max(now - prev_time, 1e-6)
             prev_time = now
-            cv2.putText(result,
-                        f"Infer: {infer_ms:.1f}ms | FPS: {fps:.1f}",
-                        (10, 20), FONT_FACE, FONT_SCALE, RED, THICKNESS,
-                        cv2.LINE_AA)
+            cv2.putText(
+                result,
+                f"Infer: {infer_ms:.1f}ms | FPS: {fps:.1f}",
+                (10, 20),
+                FONT_FACE,
+                FONT_SCALE,
+                RED,
+                THICKNESS,
+                cv2.LINE_AA,
+            )
 
-            cv2.imshow('YOLOv5 + Orbbec Depth', result)
-            if cv2.waitKey(1) in (ESC_KEY, ord('q'), ord('Q')):
+            cv2.imshow("YOLOv5 + Orbbec Depth", result)
+            if cv2.waitKey(1) in (ESC_KEY, ord("q"), ord("Q")):
                 break
 
     except KeyboardInterrupt:
@@ -383,5 +417,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

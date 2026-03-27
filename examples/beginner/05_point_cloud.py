@@ -20,13 +20,25 @@
 # ******************************************************************************
 
 import os
+
 import numpy as np
 
-from pyorbbecsdk import Pipeline, Config, OBSensorType, OBFormat, OBStreamType, AlignFilter, PointCloudFilter, OBError, save_point_cloud_to_ply  # type: ignore
+from pyorbbecsdk import OBError  # type: ignore
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+    PointCloudFilter,
+    save_point_cloud_to_ply,
+)
 
 # --- Optional Open3D import ---
 try:
     import open3d as o3d
+
     HAS_OPEN3D = True
 except ImportError:
     HAS_OPEN3D = False
@@ -40,6 +52,7 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 # ---------------------------------------------------------------------------
 # Point cloud data extraction helpers
 # ---------------------------------------------------------------------------
+
 
 def _extract_xyz(points_frame):
     """Extract Nx3 float32 positions from a POINT-format PointsFrame."""
@@ -55,7 +68,7 @@ def _extract_xyz_rgb(points_frame):
     n = data.size // 6
     data = data.reshape(n, 6)
     xyz = data[:, 0:3]
-    rgb = data[:, 3:6] / 255.0          # SDK stores 0-255 as float → normalise
+    rgb = data[:, 3:6] / 255.0  # SDK stores 0-255 as float → normalise
     rgb = np.clip(rgb, 0.0, 1.0)
     return xyz, rgb
 
@@ -86,8 +99,8 @@ def _depth_colormap(z_values):
 # Scene helper: grid floor + camera frustum + axis
 # ---------------------------------------------------------------------------
 
-def _create_3d_grid(x_range=(-1500, 1500), y_range=(-1000, 1000),
-                    z_range=(-500, 3000), step_mm=500):
+
+def _create_3d_grid(x_range=(-1500, 1500), y_range=(-1000, 1000), z_range=(-500, 3000), step_mm=500):
     """
     Create a corner-style 3-plane grid (like a room corner):
       - Floor    (XZ plane at Y = y_max, i.e. below)
@@ -110,43 +123,45 @@ def _create_3d_grid(x_range=(-1500, 1500), y_range=(-1000, 1000),
     y0, y1 = y_range
     z0, z1 = z_range
 
-    c_floor = [0.25, 0.25, 0.30]   # slightly blue-ish
-    c_back  = [0.25, 0.30, 0.25]   # slightly green-ish
-    c_right = [0.30, 0.25, 0.25]   # slightly red-ish
-    c_edge  = [0.45, 0.45, 0.45]   # brighter for the 3 shared edges
+    c_floor = [0.25, 0.25, 0.30]  # slightly blue-ish
+    c_back = [0.25, 0.30, 0.25]  # slightly green-ish
+    c_right = [0.30, 0.25, 0.25]  # slightly red-ish
+    c_edge = [0.45, 0.45, 0.45]  # brighter for the 3 shared edges
 
     def _add(p0, p1, c):
         nonlocal idx
-        points.append(p0); points.append(p1)
-        lines.append([idx, idx + 1]); idx += 2
+        points.append(p0)
+        points.append(p1)
+        lines.append([idx, idx + 1])
+        idx += 2
         colors.append(c)
 
     # ── Floor (XZ plane, Y = y1) ──
-    for x in xs:                                    # lines ∥ Z
+    for x in xs:  # lines ∥ Z
         _add([x, y1, z0], [x, y1, z1], c_floor)
-    for z in zs:                                    # lines ∥ X
+    for z in zs:  # lines ∥ X
         _add([x0, y1, z], [x1, y1, z], c_floor)
 
     # ── Back wall (XY plane, Z = z1) ──
-    for x in xs:                                    # lines ∥ Y
+    for x in xs:  # lines ∥ Y
         _add([x, y0, z1], [x, y1, z1], c_back)
-    for y in ys:                                    # lines ∥ X
+    for y in ys:  # lines ∥ X
         _add([x0, y, z1], [x1, y, z1], c_back)
 
     # ── Right wall (YZ plane, X = x1) ──
-    for y in ys:                                    # lines ∥ Z
+    for y in ys:  # lines ∥ Z
         _add([x1, y, z0], [x1, y, z1], c_right)
-    for z in zs:                                    # lines ∥ Y
+    for z in zs:  # lines ∥ Y
         _add([x1, y0, z], [x1, y1, z], c_right)
 
     # ── Highlight the 3 shared corner edges ──
-    _add([x1, y1, z0], [x1, y1, z1], c_edge)   # floor ∩ right (∥ Z)
-    _add([x1, y0, z1], [x1, y1, z1], c_edge)   # right ∩ back  (∥ Y)
-    _add([x0, y1, z1], [x1, y1, z1], c_edge)   # floor ∩ back  (∥ X)
+    _add([x1, y1, z0], [x1, y1, z1], c_edge)  # floor ∩ right (∥ Z)
+    _add([x1, y0, z1], [x1, y1, z1], c_edge)  # right ∩ back  (∥ Y)
+    _add([x0, y1, z1], [x1, y1, z1], c_edge)  # floor ∩ back  (∥ X)
 
     ls = o3d.geometry.LineSet()
     ls.points = o3d.utility.Vector3dVector(np.array(points))
-    ls.lines  = o3d.utility.Vector2iVector(np.array(lines))
+    ls.lines = o3d.utility.Vector2iVector(np.array(lines))
     ls.colors = o3d.utility.Vector3dVector(np.array(colors))
     return ls
 
@@ -164,14 +179,16 @@ def _create_depth_ticks(z_range=(0, 3000), step_mm=500, x_offset=1050):
         # Horizontal tick on the right edge
         points.append([x_offset - tick_half, 0, z])
         points.append([x_offset + tick_half, 0, z])
-        lines.append([idx, idx + 1]); idx += 2
+        lines.append([idx, idx + 1])
+        idx += 2
         # Vertical tick
         points.append([x_offset, -tick_half, z])
-        points.append([x_offset,  tick_half, z])
-        lines.append([idx, idx + 1]); idx += 2
+        points.append([x_offset, tick_half, z])
+        lines.append([idx, idx + 1])
+        idx += 2
     ls = o3d.geometry.LineSet()
     ls.points = o3d.utility.Vector3dVector(np.array(points))
-    ls.lines  = o3d.utility.Vector2iVector(np.array(lines))
+    ls.lines = o3d.utility.Vector2iVector(np.array(lines))
     ls.paint_uniform_color([0.55, 0.55, 0.3])  # yellowish
     return ls
 
@@ -183,35 +200,46 @@ def _create_camera_marker():
     All units in mm.
     """
     # Camera body as a simple pyramid frustum
-    fw, fh, fd = 60, 40, 80   # frustum half-width, half-height, depth (mm)
+    fw, fh, fd = 60, 40, 80  # frustum half-width, half-height, depth (mm)
     pts = [
-        [0, 0, 0],             # 0  camera centre (origin)
-        [-fw, -fh, fd],        # 1  top-left  (far plane)
-        [ fw, -fh, fd],        # 2  top-right
-        [ fw,  fh, fd],        # 3  bottom-right
-        [-fw,  fh, fd],        # 4  bottom-left
+        [0, 0, 0],  # 0  camera centre (origin)
+        [-fw, -fh, fd],  # 1  top-left  (far plane)
+        [fw, -fh, fd],  # 2  top-right
+        [fw, fh, fd],  # 3  bottom-right
+        [-fw, fh, fd],  # 4  bottom-left
     ]
     edges = [
-        [0, 1], [0, 2], [0, 3], [0, 4],   # rays from origin → corners
-        [1, 2], [2, 3], [3, 4], [4, 1],   # far-plane rectangle
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [0, 4],  # rays from origin → corners
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 1],  # far-plane rectangle
     ]
     ls = o3d.geometry.LineSet()
     ls.points = o3d.utility.Vector3dVector(np.array(pts, dtype=np.float64))
-    ls.lines  = o3d.utility.Vector2iVector(np.array(edges))
+    ls.lines = o3d.utility.Vector2iVector(np.array(edges))
     ls.paint_uniform_color([0.0, 1.0, 0.0])  # green
     return ls
 
 
 def _create_origin_axes(length_mm=300):
     """Create XYZ axis lines at the camera origin (R=X, G=Y, B=Z) in mm."""
-    pts = [[0, 0, 0], [length_mm, 0, 0],
-           [0, 0, 0], [0, length_mm, 0],
-           [0, 0, 0], [0, 0, length_mm]]
+    pts = [
+        [0, 0, 0],
+        [length_mm, 0, 0],
+        [0, 0, 0],
+        [0, length_mm, 0],
+        [0, 0, 0],
+        [0, 0, length_mm],
+    ]
     edges = [[0, 1], [2, 3], [4, 5]]
     colors = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     ls = o3d.geometry.LineSet()
     ls.points = o3d.utility.Vector3dVector(np.array(pts, dtype=np.float64))
-    ls.lines  = o3d.utility.Vector2iVector(np.array(edges))
+    ls.lines = o3d.utility.Vector2iVector(np.array(edges))
     ls.colors = o3d.utility.Vector3dVector(np.array(colors, dtype=np.float64))
     return ls
 
@@ -220,11 +248,12 @@ def _create_origin_axes(length_mm=300):
 # Open3D real-time visualiser
 # ---------------------------------------------------------------------------
 
+
 class PointCloudVisualizer:
     """Non-blocking Open3D point cloud viewer refreshed every frame."""
 
     # Colour modes
-    MODE_RGB   = 0
+    MODE_RGB = 0
     MODE_DEPTH = 1
     MODE_NAMES = {MODE_RGB: "RGB Colour", MODE_DEPTH: "Depth Colourmap"}
 
@@ -233,8 +262,8 @@ class PointCloudVisualizer:
         self.vis.create_window(window_name=window_name, width=width, height=height)
 
         # Register key callbacks
-        self.vis.register_key_callback(ord('C'), self._on_toggle_color)
-        self.vis.register_key_callback(ord('S'), self._on_save)
+        self.vis.register_key_callback(ord("C"), self._on_toggle_color)
+        self.vis.register_key_callback(ord("S"), self._on_save)
 
         # Render options
         opt = self.vis.get_render_option()
@@ -253,11 +282,12 @@ class PointCloudVisualizer:
 
         # Create scene reference geometry (3D grid, depth ticks, camera marker, axes)
         self._grid = _create_3d_grid(
-            x_range=(-1500, 1500), y_range=(-1000, 1000),
-            z_range=(-500, 3000), step_mm=500,
+            x_range=(-1500, 1500),
+            y_range=(-1000, 1000),
+            z_range=(-500, 3000),
+            step_mm=500,
         )
-        self._ticks = _create_depth_ticks(z_range=(-500, 3000), step_mm=500,
-                                           x_offset=1550)
+        self._ticks = _create_depth_ticks(z_range=(-500, 3000), step_mm=500, x_offset=1550)
         self._camera = _create_camera_marker()
         self._axes = _create_origin_axes(length_mm=300)
 
@@ -344,6 +374,7 @@ class PointCloudVisualizer:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main():
     pipeline = Pipeline()

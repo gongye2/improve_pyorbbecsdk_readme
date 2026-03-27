@@ -27,11 +27,10 @@
 # ******************************************************************************
 
 import sys
+
 import numpy as np
 
-from pyorbbecsdk import (
-    Pipeline, Config, OBSensorType, OBLogLevel, Context, OBError
-)
+from pyorbbecsdk import Config, Context, OBError, OBLogLevel, OBSensorType, Pipeline
 
 
 def _print_intrinsic(label: str, intr) -> None:
@@ -56,7 +55,7 @@ def _print_extrinsic(label: str, ext) -> None:
     OBExtrinsic.transform — shape (3,) float32, translation in millimeters.
     """
     R = np.array(ext.rot, dtype=np.float64).reshape(3, 3)
-    t = np.array(ext.transform, dtype=np.float64)      # mm
+    t = np.array(ext.transform, dtype=np.float64)  # mm
     print(f"  {label}:")
     print(f"    Rotation (row-major 3×3):")
     for row in R:
@@ -92,7 +91,7 @@ def main():
     #   We only need one frame set to obtain calibration data; the pipeline
     #   is stopped immediately afterwards.
     frame_set = None
-    for _ in range(30):                              # up to ~30 s
+    for _ in range(30):  # up to ~30 s
         frame_set = pipeline.wait_for_frames(1000)
         if frame_set is not None:
             break
@@ -115,7 +114,7 @@ def main():
     print("=" * 60)
     print("Depth Camera")
     print("=" * 60)
-    _print_intrinsic("Intrinsic",  cam_param.depth_intrinsic)
+    _print_intrinsic("Intrinsic", cam_param.depth_intrinsic)
     print()
     _print_distortion("Distortion", cam_param.depth_distortion)
 
@@ -124,7 +123,7 @@ def main():
     print("=" * 60)
     print("Color Camera")
     print("=" * 60)
-    _print_intrinsic("Intrinsic",  cam_param.rgb_intrinsic)
+    _print_intrinsic("Intrinsic", cam_param.rgb_intrinsic)
     print()
     _print_distortion("Distortion", cam_param.rgb_distortion)
 
@@ -142,18 +141,24 @@ def main():
     #   This is the standard format expected by OpenCV functions such as
     #   cv2.projectPoints(), cv2.undistort(), and cv2.stereoRectify().
     d = cam_param.depth_intrinsic
-    K_depth = np.array([
-        [d.fx,    0, d.cx],
-        [   0, d.fy, d.cy],
-        [   0,    0,    1],
-    ], dtype=np.float64)
+    K_depth = np.array(
+        [
+            [d.fx, 0, d.cx],
+            [0, d.fy, d.cy],
+            [0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
 
     c = cam_param.rgb_intrinsic
-    K_color = np.array([
-        [c.fx,    0, c.cx],
-        [   0, c.fy, c.cy],
-        [   0,    0,    1],
-    ], dtype=np.float64)
+    K_color = np.array(
+        [
+            [c.fx, 0, c.cx],
+            [0, c.fy, c.cy],
+            [0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
 
     print()
     print("=" * 60)
