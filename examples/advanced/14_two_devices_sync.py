@@ -25,16 +25,9 @@ import numpy as np
 from utils import frame_to_bgr_image
 
 from pyorbbecsdk import OBError  # type: ignore
-from pyorbbecsdk import (
-    Config,
-    Context,
-    FrameSet,
-    OBFormat,
-    OBMultiDeviceSyncMode,
-    OBSensorType,
-    Pipeline,
-    VideoStreamProfile,
-)
+from pyorbbecsdk import (Config, Context, FrameSet, OBFormat,
+                         OBMultiDeviceSyncMode, OBSensorType, Pipeline,
+                         VideoStreamProfile)
 
 MAX_DEVICES = 2
 curr_device_cnt = 0

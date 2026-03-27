@@ -51,6 +51,41 @@ def print_black_install_hint():
     print("=" * 60 + "\n")
 
 
+def check_isort_installed() -> bool:
+    """Check if isort is installed and available in PATH"""
+    return shutil.which("isort") is not None
+
+
+def format_with_isort(file_path: Path) -> bool:
+    """Format the file with isort, return True if successful"""
+    result = subprocess.run(
+        ["isort", str(file_path)],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0
+
+
+def print_isort_install_hint():
+    """Print instructions for installing isort"""
+    print("\n" + "=" * 60)
+    print("⚠️  isort is not installed")
+    print("=" * 60)
+    print("To install isort, use one of the following methods:")
+    print("")
+    print("  # Using uv (recommended):")
+    print("  uv tool install isort")
+    print("")
+    print("  # Using pip:")
+    print("  pip install isort")
+    print("  # or")
+    print("  pip install --user isort")
+    print("")
+    print("Note: The pyi file has been fixed but not sorted.")
+    print("      Run 'isort <file>' manually or install isort and re-run this script.")
+    print("=" * 60 + "\n")
+
+
 def fix_pyi_content(content: str) -> str:
     """Fix return type issues in pyi file content"""
 
@@ -222,11 +257,22 @@ def fix_pyi_file(input_path: Path, output_path: Path = None) -> None:
     if check_black_installed():
         print("Running black formatter...")
         if format_with_black(output_path):
-            print(f"Formatted: {output_path}")
+            print(f"Formatted with black: {output_path}")
         else:
             print(f"⚠️  Black formatting failed for: {output_path}")
     else:
         print_black_install_hint()
+
+    # Format with isort if available
+    print("Checking isort...")
+    if check_isort_installed():
+        print("Running isort...")
+        if format_with_isort(output_path):
+            print(f"Sorted imports with isort: {output_path}")
+        else:
+            print(f"⚠️  isort failed for: {output_path}")
+    else:
+        print_isort_install_hint()
 
 
 def main():

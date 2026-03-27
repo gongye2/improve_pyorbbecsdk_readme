@@ -18,14 +18,8 @@ from typing import Any, Optional, Union
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (
-    Device,
-    FormatConvertFilter,
-    OBConvertFormat,
-    OBFormat,
-    OBSensorType,
-    VideoFrame,
-)
+from pyorbbecsdk import (Device, FormatConvertFilter, OBConvertFormat,
+                         OBFormat, OBSensorType, VideoFrame)
 
 
 def is_astra_mini_device(vid: int, pid: int) -> bool:

@@ -26,21 +26,11 @@ Tests verify:
 import numpy as np
 import pytest
 
-from pyorbbecsdk import (
-    AlignFilter,
-    Config,
-    DecimationFilter,
-    HoleFillingFilter,
-    NoiseRemovalFilter,
-    OBError,
-    OBFrameType,
-    OBSensorType,
-    OBStreamType,
-    PointCloudFilter,
-    SpatialAdvancedFilter,
-    TemporalFilter,
-    ThresholdFilter,
-)
+from pyorbbecsdk import (AlignFilter, Config, DecimationFilter,
+                         HoleFillingFilter, NoiseRemovalFilter, OBError,
+                         OBFrameType, OBSensorType, OBStreamType,
+                         PointCloudFilter, SpatialAdvancedFilter,
+                         TemporalFilter, ThresholdFilter)
 
 pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.functional]
 

@@ -31,15 +31,8 @@ import time
 import cv2
 import numpy as np
 
-from pyorbbecsdk import (
-    Config,
-    Context,
-    FrameSet,
-    OBError,
-    OBLogLevel,
-    OBSensorType,
-    Pipeline,
-)
+from pyorbbecsdk import (Config, Context, FrameSet, OBError, OBLogLevel,
+                         OBSensorType, Pipeline)
 
 # ---------------------------------------------------------------------------
 # Configuration
