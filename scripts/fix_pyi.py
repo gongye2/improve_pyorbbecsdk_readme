@@ -9,8 +9,46 @@ If output_pyi_file is not specified, the input file will be modified directly.
 """
 
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
+
+
+def check_black_installed() -> bool:
+    """Check if black is installed and available in PATH"""
+    return shutil.which("black") is not None
+
+
+def format_with_black(file_path: Path) -> bool:
+    """Format the file with black, return True if successful"""
+    result = subprocess.run(
+        ["black", str(file_path), "--target-version", "py38"],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0
+
+
+def print_black_install_hint():
+    """Print instructions for installing black"""
+    print("\n" + "=" * 60)
+    print("⚠️  black is not installed")
+    print("=" * 60)
+    print("To install black, use one of the following methods:")
+    print("")
+    print("  # Using uv (recommended):")
+    print("  uv tool install black")
+    print("")
+    print("  # Using pip:")
+    print("  pip install black")
+    print("  # or")
+    print("  pip install --user black")
+    print("")
+    print("Note: The pyi file has been fixed but not formatted.")
+    print("      Run 'black <file> --target-version py38' manually")
+    print("      or install black and re-run this script.")
+    print("=" * 60 + "\n")
 
 
 def fix_pyi_content(content: str) -> str:
@@ -178,6 +216,17 @@ def fix_pyi_file(input_path: Path, output_path: Path = None) -> None:
     else:
         output_path.write_text(fixed_content, encoding="utf-8")
         print(f"Fixed: {output_path}")
+
+    # Format with black if available
+    print("Checking black formatter...")
+    if check_black_installed():
+        print("Running black formatter...")
+        if format_with_black(output_path):
+            print(f"Formatted: {output_path}")
+        else:
+            print(f"⚠️  Black formatting failed for: {output_path}")
+    else:
+        print_black_install_hint()
 
 
 def main():

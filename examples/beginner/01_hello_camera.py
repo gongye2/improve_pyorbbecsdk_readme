@@ -19,7 +19,12 @@
 # ******************************************************************************
 
 from pyorbbecsdk import (  # type: ignore  # compiled extension; stubs in stubs/pyorbbecsdk.pyi
-    Context, OBError, OBLogLevel, OBSensorType, Pipeline)
+    Context,
+    OBError,
+    OBLogLevel,
+    OBSensorType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Step 1: Configure SDK logging

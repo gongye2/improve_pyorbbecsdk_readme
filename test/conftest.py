@@ -33,8 +33,15 @@ import time
 
 import pytest
 
-from pyorbbecsdk import (Config, Context, OBLogLevel, OBPermissionType,
-                         OBPropertyID, OBSensorType, Pipeline)
+from pyorbbecsdk import (
+    Config,
+    Context,
+    OBLogLevel,
+    OBPermissionType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 # ---------------------------------------------------------------------------
 # Device name sets used for fixture matching

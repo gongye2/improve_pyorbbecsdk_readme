@@ -15,8 +15,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import (Context, OBPermissionType,  # type: ignore
-                         OBPropertyType)
+from pyorbbecsdk import Context, OBPermissionType, OBPropertyType  # type: ignore
 
 
 def permission_type_to_string(permission):

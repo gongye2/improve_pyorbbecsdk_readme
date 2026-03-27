@@ -22,9 +22,15 @@ import cv2
 import numpy as np
 
 from pyorbbecsdk import HDRMergeFilter  # type: ignore
-from pyorbbecsdk import (Config, OBFrameAggregateOutputMode, OBHdrConfig,
-                         OBPermissionType, OBPropertyID, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import (
+    Config,
+    OBFrameAggregateOutputMode,
+    OBHdrConfig,
+    OBPermissionType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+)
 
 ESC_KEY = 27
 PRINT_INTERVAL = 1  # seconds

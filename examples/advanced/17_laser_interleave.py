@@ -23,9 +23,16 @@ import cv2
 import numpy as np
 
 from pyorbbecsdk import OBFormat  # type: ignore
-from pyorbbecsdk import (Config, OBError, OBFrameAggregateOutputMode,
-                         OBFrameType, OBPropertyID, OBSensorType, Pipeline,
-                         SequenceIdFilter)
+from pyorbbecsdk import (
+    Config,
+    OBError,
+    OBFrameAggregateOutputMode,
+    OBFrameType,
+    OBPropertyID,
+    OBSensorType,
+    Pipeline,
+    SequenceIdFilter,
+)
 
 cached_frames = {"depth": None, "left_ir": None, "right_ir": None, "ir": None}
 

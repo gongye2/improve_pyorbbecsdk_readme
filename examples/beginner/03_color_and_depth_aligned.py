@@ -39,9 +39,15 @@ import numpy as np
 from utils import frame_to_bgr_image
 
 from pyorbbecsdk import OBAlignMode  # type: ignore
-from pyorbbecsdk import (AlignFilter, Config, OBFormat,
-                         OBFrameAggregateOutputMode, OBSensorType,
-                         OBStreamType, Pipeline)
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBFrameAggregateOutputMode,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+)
 
 # --- Configuration Constants ---
 ESC_KEY = 27

@@ -24,9 +24,16 @@ import os
 import numpy as np
 
 from pyorbbecsdk import OBError  # type: ignore
-from pyorbbecsdk import (AlignFilter, Config, OBFormat, OBSensorType,
-                         OBStreamType, Pipeline, PointCloudFilter,
-                         save_point_cloud_to_ply)
+from pyorbbecsdk import (
+    AlignFilter,
+    Config,
+    OBFormat,
+    OBSensorType,
+    OBStreamType,
+    Pipeline,
+    PointCloudFilter,
+    save_point_cloud_to_ply,
+)
 
 # --- Optional Open3D import ---
 try:

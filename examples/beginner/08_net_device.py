@@ -25,8 +25,7 @@ import cv2
 import pygame
 from utils import frame_to_bgr_image
 
-from pyorbbecsdk import (Config, Context, OBError, OBFormat, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import Config, Context, OBError, OBFormat, OBSensorType, Pipeline
 
 ESC_KEY = 27
 # Gemini 335Le
