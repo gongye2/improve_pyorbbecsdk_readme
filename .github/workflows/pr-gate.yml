@@ -35,7 +35,7 @@ jobs:
   # ============================================================
   generate-matrix:
     name: "Generate Build Matrix"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     outputs:
       linux-versions: ${{ steps.set-matrix.outputs.linux-versions }}
     steps:
@@ -53,7 +53,7 @@ jobs:
   # ============================================================
   lint-python:
     name: "L1 | Python Lint"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
   # ============================================================
   build-linux:
     name: "L1/L2 | Build Linux"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: generate-matrix
     timeout-minutes: 30
     strategy:
@@ -132,7 +132,7 @@ jobs:
   # ============================================================
   verify-import:
     name: "L2 | Import Check"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: [generate-matrix, build-linux]
     strategy:
       matrix:
@@ -162,7 +162,7 @@ jobs:
   # ============================================================
   gate-summary:
     name: "Gate Summary"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs:
       - generate-matrix
       - lint-python
