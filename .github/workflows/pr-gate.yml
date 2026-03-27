@@ -128,7 +128,8 @@ jobs:
 
       - name: Run flake8
         run: |
-          flake8 src/ --max-line-length=120 --ignore=E203,W503
+          flake8 src/ --max-line-length=120 --ignore=E203,W503 \
+            --per-file-ignores="src/pyorbbecsdk/__init__.py:F403,F401"
 
   # ============================================================
   # Job 2: Linux Wheel 构建测试
@@ -283,7 +284,7 @@ jobs:
 
       - name: Install wheel and test deps
         run: |
-          pip install wheel/*.whl pytest pytest-timeout --quiet
+          pip install wheel/*manylinux*.whl pytest pytest-timeout --quiet
 
       - name: Run Python no-hardware tests
         run: |
@@ -335,7 +336,7 @@ jobs:
 
       - name: Install and verify import
         run: |
-          pip install wheel/*.whl
+          pip install wheel/*manylinux*.whl
           python -c "import pyorbbecsdk; print('Version:', pyorbbecsdk.__version__)"
           python -c "from pyorbbecsdk import Context, Pipeline, Config"
 
@@ -355,7 +356,7 @@ jobs:
       - verify-import
     if: always()
     steps:
-      - name: Check gate result
+      - name: Generate summary table
         run: |
           echo "## PR Gate Summary" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
@@ -367,10 +368,14 @@ jobs:
           echo "| test-python-no-hw  | ${{ needs.test-python-no-hw.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| verify-import      | ${{ needs.verify-import.result }} |" >> $GITHUB_STEP_SUMMARY
 
-          if [[ "${{ needs.lint-python.result }}" != "success" || \
-                "${{ needs.build-linux.result }}" != "success" || \
-                "${{ needs.build-windows.result }}" != "success" || \
-                "${{ needs.build-macos.result }}" != "success" ]]; then
+      - name: Check gate result
+        run: |
+          LINT="${{ needs.lint-python.result }}"
+          LINUX="${{ needs.build-linux.result }}"
+          WIN="${{ needs.build-windows.result }}"
+          MAC="${{ needs.build-macos.result }}"
+
+          if [[ "$LINT" != "success" || "$LINUX" != "success" || "$WIN" != "success" || "$MAC" != "success" ]]; then
             echo "[FAIL] Critical jobs failed."
             exit 1
           fi
