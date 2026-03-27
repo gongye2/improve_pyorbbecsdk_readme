@@ -17,9 +17,9 @@ import time
 
 import numpy as np
 
-from pyorbbecsdk import (Config, Context, OBFormat,  # type: ignore
-                         OBFrameAggregateOutputMode, OBFrameType, OBPropertyID,
-                         OBSensorType, Pipeline)
+from pyorbbecsdk import OBFormat  # type: ignore
+from pyorbbecsdk import (Config, Context, OBFrameAggregateOutputMode,
+                         OBFrameType, OBPropertyID, OBSensorType, Pipeline)
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device

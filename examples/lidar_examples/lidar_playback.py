@@ -15,8 +15,8 @@ import os
 import sys
 import threading
 
-from pyorbbecsdk import (Config, OBFrameAggregateOutputMode,  # type: ignore
-                         OBPlaybackStatus, Pipeline, PlaybackDevice)
+from pyorbbecsdk import OBFrameAggregateOutputMode  # type: ignore
+from pyorbbecsdk import Config, OBPlaybackStatus, Pipeline, PlaybackDevice
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
