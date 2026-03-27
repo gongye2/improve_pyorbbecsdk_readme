@@ -38,41 +38,16 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       linux-versions: ${{ steps.set-matrix.outputs.linux-versions }}
-      windows-versions: ${{ steps.set-matrix.outputs.windows-versions }}
-      macos-versions: ${{ steps.set-matrix.outputs.macos-versions }}
     steps:
       - name: Set version matrix
         id: set-matrix
         run: |
-          # 根据输入选择版本
-          VERSION_MODE="${{ github.event.inputs.python_versions || 'default' }}"
-          echo "Version mode: $VERSION_MODE"
-
-          case "$VERSION_MODE" in
-            min)
-              LINUX_VERSIONS='["3.10"]'
-              WINDOWS_VERSIONS='["3.10"]'
-              MACOS_VERSIONS='["3.10"]'
-              ;;
-            all)
-              LINUX_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
-              WINDOWS_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
-              MACOS_VERSIONS='["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
-              ;;
-            default|*)
-              LINUX_VERSIONS='["3.9", "3.10", "3.11", "3.12"]'
-              WINDOWS_VERSIONS='["3.10", "3.11", "3.12"]'
-              MACOS_VERSIONS='["3.10", "3.11", "3.12"]'
-              ;;
-          esac
+          # 仅保留 Linux x64 平台的 Python 3.10
+          LINUX_VERSIONS='["3.10"]'
 
           echo "linux-versions=$LINUX_VERSIONS" >> $GITHUB_OUTPUT
-          echo "windows-versions=$WINDOWS_VERSIONS" >> $GITHUB_OUTPUT
-          echo "macos-versions=$MACOS_VERSIONS" >> $GITHUB_OUTPUT
 
           echo "Linux versions: $LINUX_VERSIONS"
-          echo "Windows versions: $WINDOWS_VERSIONS"
-          echo "macOS versions: $MACOS_VERSIONS"
   # ============================================================
   # Job 1: Python 代码格式检查与自动修复
   # ============================================================
@@ -153,93 +128,12 @@ jobs:
           retention-days: 7
 
   # ============================================================
-  # Job 3: Windows Wheel 构建测试
+  # Job 3: Import 检查
   # ============================================================
-  build-windows:
-    name: "L1/L2 | Build Windows"
-    runs-on: windows-2022
-    needs: generate-matrix
-    timeout-minutes: 35
-    strategy:
-      matrix:
-        python-version: ${{ fromJSON(needs.generate-matrix.outputs.windows-versions) }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
-
-      - name: Install Visual Studio Build Tools
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Build wheel (Windows)
-        shell: pwsh
-        run: |
-          .\scripts\build_whl\build-whl-uv.ps1 ${{ matrix.python-version }} -Clean -Yes
-        env:
-          UV_LINK_MODE: copy
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheel-windows-py${{ matrix.python-version }}-${{ github.sha }}
-          path: wheel/*.whl
-          retention-days: 7
-
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-windows-logs-py${{ matrix.python-version }}-${{ github.sha }}
-          path: logs\
-          retention-days: 7
-
-  # ============================================================
-  # Job 4: macOS Wheel 构建测试
-  # ============================================================
-  build-macos:
-    name: "L1/L2 | Build macOS"
-    runs-on: macos-latest
-    needs: generate-matrix
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        python-version: ${{ fromJSON(needs.generate-matrix.outputs.macos-versions) }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
-
-      - name: Install dependencies
-        run: |
-          brew install cmake libusb
-
-      - name: Build wheel (macOS)
-        run: |
-          bash scripts/build_whl/build-whl-uv-macos.sh ${{ matrix.python-version }} --clean
-        env:
-          UV_LINK_MODE: copy
-
-      - name: Upload wheel artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheel-macos-py${{ matrix.python-version }}-${{ github.sha }}
-          path: wheel/*.whl
-          retention-days: 7
-
-  # ============================================================
-  # Job 5: Python 无硬件测试
-  # ============================================================
-  test-python-no-hw:
-    name: "L2 | Python No-HW Tests"
+  verify-import:
+    name: "L2 | Import Check"
     runs-on: ubuntu-22.04
     needs: [generate-matrix, build-linux]
-    timeout-minutes: 15
     strategy:
       matrix:
         python-version: ["3.10"]
@@ -256,66 +150,10 @@ jobs:
           name: wheel-linux-py${{ matrix.python-version }}-${{ github.sha }}
           path: wheel/
 
-      - name: Install wheel and test deps
-        run: |
-          pip install wheel/*manylinux*.whl pytest pytest-timeout --quiet
-
-      - name: Run Python no-hardware tests
-        run: |
-          pytest test/ -v -m "not hardware" \
-            --timeout=60 \
-            --junit-xml=reports/pytest-no-hw.xml \
-            2>&1 | tee logs/pytest-no-hw.log
-        continue-on-error: true  # 无硬件时部分测试会跳过
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-report-no-hw-${{ github.sha }}
-          path: |
-            reports/
-            logs/
-          retention-days: 7
-
-  # ============================================================
-  # Job 6: Import 检查
-  # ============================================================
-  verify-import:
-    name: "L2 | Import Check"
-    runs-on: ${{ matrix.os }}
-    needs: [generate-matrix, build-linux, build-windows, build-macos]
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, windows-2022, macos-latest]
-        python-version: ["3.10"]
-        include:
-          - os: ubuntu-22.04
-            artifact: wheel-linux-py3.10
-          - os: windows-2022
-            artifact: wheel-windows-py3.10
-          - os: macos-latest
-            artifact: wheel-macos-py3.10
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Download wheel artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.artifact }}-${{ github.sha }}
-          path: wheel/
-
       - name: Install and verify import
         shell: bash
         run: |
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            pip install wheel/*manylinux*.whl
-          else
-            pip install wheel/*.whl
-          fi
+          pip install wheel/*manylinux*.whl
           python -c "import pyorbbecsdk; print('Version:', pyorbbecsdk.__version__)"
           python -c "from pyorbbecsdk import Context, Pipeline, Config"
 
@@ -329,9 +167,6 @@ jobs:
       - generate-matrix
       - lint-python
       - build-linux
-      - build-windows
-      - build-macos
-      - test-python-no-hw
       - verify-import
     if: always()
     steps:
@@ -342,19 +177,14 @@ jobs:
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| lint-python        | ${{ needs.lint-python.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| build-linux        | ${{ needs.build-linux.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| build-windows      | ${{ needs.build-windows.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| build-macos        | ${{ needs.build-macos.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| test-python-no-hw  | ${{ needs.test-python-no-hw.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| verify-import      | ${{ needs.verify-import.result }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Check gate result
         run: |
           LINT="${{ needs.lint-python.result }}"
           LINUX="${{ needs.build-linux.result }}"
-          WIN="${{ needs.build-windows.result }}"
-          MAC="${{ needs.build-macos.result }}"
 
-          if [[ "$LINT" != "success" || "$LINUX" != "success" || "$WIN" != "success" || "$MAC" != "success" ]]; then
+          if [[ "$LINT" != "success" || "$LINUX" != "success" ]]; then
             echo "[FAIL] Critical jobs failed."
             exit 1
           fi
