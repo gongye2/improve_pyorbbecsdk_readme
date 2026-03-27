@@ -12,10 +12,12 @@
 #  Run:
 #    python examples/advanced/18_forceip.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from pyorbbecsdk import OBDeviceIpAddrConfig, Context  # type: ignore
+from pyorbbecsdk import Context, OBDeviceIpAddrConfig  # type: ignore
+
 
 def get_ip_config():
     """Get the new IP configuration from user input"""
@@ -53,6 +55,7 @@ def get_ip_config():
 
     return cfg
 
+
 def select_device(device_list):
     """Select a device to operate, specifically filtering for Ethernet devices"""
     device_count = device_list.get_count()
@@ -70,12 +73,14 @@ def select_device(device_list):
         if conn_type != "Ethernet":
             continue
 
-        print(f"{ethernet_dev_num}. Name: {device_list.get_device_name_by_index(i)}, "
-              f"Mac: 0x{device_list.get_device_uid_by_index(i)}, "
-              f"Serial Number: {device_list.get_device_serial_number_by_index(i)}, "
-              f"IP: {device_list.get_device_ip_address_by_index(i)}, "
-              f"Subnet Mask: {device_list.get_device_subnet_mask_by_index(i)}, "
-              f"Gateway: {device_list.get_device_gateway_by_index(i)}")
+        print(
+            f"{ethernet_dev_num}. Name: {device_list.get_device_name_by_index(i)}, "
+            f"Mac: 0x{device_list.get_device_uid_by_index(i)}, "
+            f"Serial Number: {device_list.get_device_serial_number_by_index(i)}, "
+            f"IP: {device_list.get_device_ip_address_by_index(i)}, "
+            f"Subnet Mask: {device_list.get_device_subnet_mask_by_index(i)}, "
+            f"Gateway: {device_list.get_device_gateway_by_index(i)}"
+        )
         index_list.append(i)
         ethernet_dev_num += 1
 
@@ -95,32 +100,36 @@ def select_device(device_list):
             print("Invalid input, please enter a number.")
     return -1
 
+
 def main():
     try:
         # Create a Context object to interact with Orbbec devices
         context = Context()
         # Query the list of connected devices
         device_list = context.query_devices()
-        
+
         # Select a device to operate
         device_number = select_device(device_list)
-        
+
         if device_number != -1:
             # Get the new IP configuration from user input
             config = get_ip_config()
-            
+
             # Change device IP configuration (Force IP)
             # This is typically used when the device is on a different subnet
             device_uid = device_list.get_device_uid_by_index(device_number)
             device_status = context.ob_force_ip_config(device_uid, config)
-            
+
             if device_status is not True:
                 print("Failed to apply the new IP configuration.")
             else:
-                print("The new IP configuration has been successfully applied to the device.")
-                
+                print(
+                    "The new IP configuration has been successfully applied to the device."
+                )
+
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     main()

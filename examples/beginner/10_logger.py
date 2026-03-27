@@ -2,18 +2,19 @@
 # Licensed under the Apache License, Version 2.0
 
 import os
-from pyorbbecsdk import Context, OBLogLevel, Config, Pipeline, OBSensorType
 import time
+
+from pyorbbecsdk import Config, Context, OBLogLevel, OBSensorType, Pipeline
 
 
 def main():
     """
-Logger Configuration Example
+    Logger Configuration Example
 
-This example demonstrates how to configure SDK logging.
+    This example demonstrates how to configure SDK logging.
 
-See LOG_CONFIGURATION.md for detailed documentation on log levels and configuration options.
-"""
+    See LOG_CONFIGURATION.md for detailed documentation on log levels and configuration options.
+    """
     # Set console logger (INFO level)
     # To disable console logging, use OBLogLevel.NONE
     Context.set_logger_to_console(OBLogLevel.INFO)

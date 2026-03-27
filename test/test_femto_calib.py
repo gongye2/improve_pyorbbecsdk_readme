@@ -20,10 +20,11 @@ adapted for Femto's different sensor geometry.
 """
 
 import time
-import pytest
-import numpy as np
 
-from pyorbbecsdk import Config, OBSensorType, OBError
+import numpy as np
+import pytest
+
+from pyorbbecsdk import Config, OBError, OBSensorType
 
 pytestmark = [pytest.mark.hardware, pytest.mark.femto, pytest.mark.functional]
 
@@ -33,12 +34,14 @@ TIMEOUT_MS = 2000
 def _get_pipeline_camera_param(pipeline):
     config = Config()
     config.enable_stream(
-        pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                .get_default_video_stream_profile()
+        pipeline.get_stream_profile_list(
+            OBSensorType.DEPTH_SENSOR
+        ).get_default_video_stream_profile()
     )
     config.enable_stream(
-        pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                .get_default_video_stream_profile()
+        pipeline.get_stream_profile_list(
+            OBSensorType.COLOR_SENSOR
+        ).get_default_video_stream_profile()
     )
     pipeline.start(config)
     deadline = time.time() + 5
@@ -53,10 +56,10 @@ def _assert_intrinsic_valid(intrinsic, name):
     assert intrinsic.fy > 0
     assert intrinsic.cx > 0
     assert intrinsic.cy > 0
-    assert intrinsic.width  > 0
+    assert intrinsic.width > 0
     assert intrinsic.height > 0
-    assert 50 <= intrinsic.fx <= 5000,  f"{name}: fx={intrinsic.fx} out of range"
-    assert 50 <= intrinsic.fy <= 5000,  f"{name}: fy={intrinsic.fy} out of range"
+    assert 50 <= intrinsic.fx <= 5000, f"{name}: fx={intrinsic.fx} out of range"
+    assert 50 <= intrinsic.fy <= 5000, f"{name}: fy={intrinsic.fy} out of range"
     assert 0 < intrinsic.cx < intrinsic.width
     assert 0 < intrinsic.cy < intrinsic.height
 
@@ -102,5 +105,6 @@ class TestFemtoCalibrationList:
     def test_calib_entries_valid(self, femto_device):
         calib = femto_device.get_calibration_camera_param_list()
         for i in range(calib.get_count()):
-            _assert_intrinsic_valid(calib.get_camera_param(i).depth_intrinsic,
-                                    f"femto_calib[{i}].depth")
+            _assert_intrinsic_valid(
+                calib.get_camera_param(i).depth_intrinsic, f"femto_calib[{i}].depth"
+            )

@@ -1,5 +1,6 @@
 import unittest
-from pyorbbecsdk import DeviceList, Context, OBLogLevel
+
+from pyorbbecsdk import Context, DeviceList, OBLogLevel
 
 
 def on_device_connected_callback(_: DeviceList):
@@ -49,6 +50,8 @@ class ContextTest(unittest.TestCase):
         self.context.set_logger_to_file(OBLogLevel.DEBUG, "test.log")
 
 
-if __name__ == '__main__':
-    print("Start test Context interface, Please make sure you have connected a device to your computer.")
+if __name__ == "__main__":
+    print(
+        "Start test Context interface, Please make sure you have connected a device to your computer."
+    )
     unittest.main()

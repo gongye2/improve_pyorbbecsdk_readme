@@ -21,40 +21,40 @@
 #  Run:
 #    python examples/advanced/08_custom_filter_chain.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import sys
-import numpy as np
-import cv2
 
-from pyorbbecsdk import (
-    Pipeline, Config,
-    TemporalFilter, SpatialAdvancedFilter, HoleFillingFilter, ThresholdFilter,
-    OBSensorType, OBLogLevel, Context, OBError,
-)
+import cv2
+import numpy as np
+
+from pyorbbecsdk import (Config, Context, HoleFillingFilter, OBError,
+                         OBLogLevel, OBSensorType, Pipeline,
+                         SpatialAdvancedFilter, TemporalFilter,
+                         ThresholdFilter)
 
 ESC_KEY = 27
-MIN_DEPTH_MM   = 100
-MAX_DEPTH_MM   = 4000  # adjustable with +/-
+MIN_DEPTH_MM = 100
+MAX_DEPTH_MM = 4000  # adjustable with +/-
 
 
 def depth_to_colormap(depth_frame, min_mm, max_mm):
     """Convert a raw depth frame to a color-mapped BGR image."""
-    w     = depth_frame.get_width()
-    h     = depth_frame.get_height()
+    w = depth_frame.get_width()
+    h = depth_frame.get_height()
     scale = depth_frame.get_depth_scale()
-    raw   = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
-    mm    = raw.reshape(h, w).astype(np.float32) * scale
+    raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+    mm = raw.reshape(h, w).astype(np.float32) * scale
     valid = np.where((mm >= min_mm) & (mm <= max_mm), mm, 0).astype(np.uint16)
-    norm  = cv2.normalize(valid, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+    norm = cv2.normalize(valid, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
     return cv2.applyColorMap(norm, cv2.COLORMAP_JET)
 
 
 def add_label(img, text, color=(0, 255, 0)):
-    cv2.putText(img, text, (8, 22),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.65, color, 2)
+    cv2.putText(img, text, (8, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.65, color, 2)
     return img
 
 
@@ -65,7 +65,7 @@ def main():
     ctx.set_logger_level(OBLogLevel.WARNING)
 
     pipeline = Pipeline()
-    config   = Config()
+    config = Config()
 
     try:
         profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
@@ -77,15 +77,15 @@ def main():
     pipeline.start(config)
 
     # ----- Filter objects -----
-    temporal  = TemporalFilter()
-    spatial   = SpatialAdvancedFilter()
+    temporal = TemporalFilter()
+    spatial = SpatialAdvancedFilter()
     hole_fill = HoleFillingFilter()
     threshold = ThresholdFilter()
     threshold.set_value_range(MIN_DEPTH_MM, MAX_DEPTH_MM)
 
     # ----- Filter enable flags -----
-    use_temporal  = True
-    use_spatial   = True
+    use_temporal = True
+    use_spatial = True
     use_hole_fill = True
 
     print("Filter Chain Demo")
@@ -135,9 +135,12 @@ def main():
 
             # Active filter labels
             active = []
-            if use_temporal:  active.append("Temporal")
-            if use_spatial:   active.append("Spatial")
-            if use_hole_fill: active.append("HoleFill")
+            if use_temporal:
+                active.append("Temporal")
+            if use_spatial:
+                active.append("Spatial")
+            if use_hole_fill:
+                active.append("HoleFill")
             active.append(f"Threshold(<{MAX_DEPTH_MM}mm)")
             filter_str = "+".join(active) if active else "None"
 

@@ -18,49 +18,83 @@ def fix_pyi_content(content: str) -> str:
 
     # 1. Fix typing_extensions.Buffer import issue
     # pybind11_stubgen generates typing_extensions.Buffer but doesn't add the import
-    if 'typing_extensions.Buffer' in content and 'import typing_extensions' not in content:
+    if (
+        "typing_extensions.Buffer" in content
+        and "import typing_extensions" not in content
+    ):
         # Add typing_extensions import at the beginning of the file
         # Find the position of the last import statement
-        import_pattern = r'^(import .+|from .+ import .+)$'
+        import_pattern = r"^(import .+|from .+ import .+)$"
         last_import_end = 0
         for match in re.finditer(import_pattern, content, re.MULTILINE):
             last_import_end = match.end()
 
         if last_import_end > 0:
             # Add typing_extensions import after the last import
-            content = content[:last_import_end] + '\nimport typing_extensions' + content[last_import_end:]
+            content = (
+                content[:last_import_end]
+                + "\nimport typing_extensions"
+                + content[last_import_end:]
+            )
         else:
             # If no import found, add at the beginning of the file (skip possible shebang and docstring)
-            lines = content.split('\n')
+            lines = content.split("\n")
             insert_pos = 0
             for i, line in enumerate(lines):
-                if line.startswith('#') or line.strip() == '':
+                if line.startswith("#") or line.strip() == "":
                     insert_pos = i + 1
                 else:
                     break
-            lines.insert(insert_pos, 'import typing_extensions')
-            content = '\n'.join(lines)
+            lines.insert(insert_pos, "import typing_extensions")
+            content = "\n".join(lines)
 
     # 2. Fix enum type default parameter values
     # pybind11_stubgen cannot parse C++ enum default values, generates ... as placeholder
     # Use line-level replacement to match the entire function signature line
     ENUM_DEFAULTS = [
         # Config class methods - enable_accel_stream (two parameters need to be fixed)
-        (r'(def enable_accel_stream\(self, full_scale_range: OBAccelFullScaleRange) = \.\.\., (sample_rate: OBGyroSampleRate) = \.\.\.', r'\1 = OBAccelFullScaleRange.ACCEL_FS_UNKNOWN, \2 = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN'),
+        (
+            r"(def enable_accel_stream\(self, full_scale_range: OBAccelFullScaleRange) = \.\.\., (sample_rate: OBGyroSampleRate) = \.\.\.",
+            r"\1 = OBAccelFullScaleRange.ACCEL_FS_UNKNOWN, \2 = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN",
+        ),
         # Config class methods - enable_gyro_stream
-        (r'(def enable_gyro_stream\(self, full_scale_range: OBGyroFullScaleRange) = \.\.\., (sample_rate: OBGyroSampleRate) = \.\.\.', r'\1 = OBGyroFullScaleRange.FS_UNKNOWN, \2 = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN'),
+        (
+            r"(def enable_gyro_stream\(self, full_scale_range: OBGyroFullScaleRange) = \.\.\., (sample_rate: OBGyroSampleRate) = \.\.\.",
+            r"\1 = OBGyroFullScaleRange.FS_UNKNOWN, \2 = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN",
+        ),
         # Config class methods - enable_lidar_stream
-        (r'(def enable_lidar_stream\(self, scan_rate: OBLiDARScanRate) = \.\.\., (format: OBFormat) = \.\.\.', r'\1 = OBLiDARScanRate.LIDAR_SCAN_UNKNOWN, \2 = OBFormat.UNKNOWN_FORMAT'),
+        (
+            r"(def enable_lidar_stream\(self, scan_rate: OBLiDARScanRate) = \.\.\., (format: OBFormat) = \.\.\.",
+            r"\1 = OBLiDARScanRate.LIDAR_SCAN_UNKNOWN, \2 = OBFormat.UNKNOWN_FORMAT",
+        ),
         # Config class methods - enable_video_stream
-        (r'(def enable_video_stream\(.*format: OBFormat) = \.\.\.', r'\1 = OBFormat.UNKNOWN_FORMAT'),
+        (
+            r"(def enable_video_stream\(.*format: OBFormat) = \.\.\.",
+            r"\1 = OBFormat.UNKNOWN_FORMAT",
+        ),
         # Context class methods
-        (r'(def create_net_device\(.*access_mode: OBDeviceAccessMode) = \.\.\.', r'\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS'),
+        (
+            r"(def create_net_device\(.*access_mode: OBDeviceAccessMode) = \.\.\.",
+            r"\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS",
+        ),
         # DeviceList class methods
-        (r'(def get_device_by_index\(.*access_mode: OBDeviceAccessMode) = \.\.\.', r'\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS'),
-        (r'(def get_device_by_serial_number\(.*access_mode: OBDeviceAccessMode) = \.\.\.', r'\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS'),
-        (r'(def get_device_by_uid\(.*access_mode: OBDeviceAccessMode) = \.\.\.', r'\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS'),
+        (
+            r"(def get_device_by_index\(.*access_mode: OBDeviceAccessMode) = \.\.\.",
+            r"\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS",
+        ),
+        (
+            r"(def get_device_by_serial_number\(.*access_mode: OBDeviceAccessMode) = \.\.\.",
+            r"\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS",
+        ),
+        (
+            r"(def get_device_by_uid\(.*access_mode: OBDeviceAccessMode) = \.\.\.",
+            r"\1 = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS",
+        ),
         # StreamProfileList class methods
-        (r'(def get_video_stream_profile\(.*format: OBFormat) = \.\.\.', r'\1 = OBFormat.UNKNOWN_FORMAT'),
+        (
+            r"(def get_video_stream_profile\(.*format: OBFormat) = \.\.\.",
+            r"\1 = OBFormat.UNKNOWN_FORMAT",
+        ),
     ]
 
     for pattern, replacement in ENUM_DEFAULTS:
@@ -106,17 +140,17 @@ def fix_pyi_content(content: str) -> str:
         for method_name, return_type in methods.items():
             # Match method definitions in the class
             # Format: def method_name(self) -> ...:
-            pattern = rf'(class {class_name}[^{{]*?\n)(.*?)(def {method_name}\(self\) -> \.\.\.:)'
-            replacement = rf'\1\2def {method_name}(self) -> {return_type}:'
+            pattern = rf"(class {class_name}[^{{]*?\n)(.*?)(def {method_name}\(self\) -> \.\.\.:)"
+            replacement = rf"\1\2def {method_name}(self) -> {return_type}:"
             content = re.sub(pattern, replacement, content, flags=re.DOTALL)
 
     # Fix special return types (generics with type parameters)
     # Sensor.get_recommended_filters() -> list[...] should be list[Filter]
     content = re.sub(
-        r'(class Sensor[^{]*?\n)(.*?)(def get_recommended_filters\(self\) -> list\[\.\.\.\]:)',
-        r'\1\2def get_recommended_filters(self) -> list[Filter]:',
+        r"(class Sensor[^{]*?\n)(.*?)(def get_recommended_filters\(self\) -> list\[\.\.\.\]:)",
+        r"\1\2def get_recommended_filters(self) -> list[Filter]:",
         content,
-        flags=re.DOTALL
+        flags=re.DOTALL,
     )
 
     return content
@@ -135,14 +169,14 @@ def fix_pyi_file(input_path: Path, output_path: Path = None) -> None:
         sys.exit(1)
 
     print(f"Reading: {input_path}")
-    content = input_path.read_text(encoding='utf-8')
+    content = input_path.read_text(encoding="utf-8")
 
     fixed_content = fix_pyi_content(content)
 
     if content == fixed_content:
         print("No changes needed.")
     else:
-        output_path.write_text(fixed_content, encoding='utf-8')
+        output_path.write_text(fixed_content, encoding="utf-8")
         print(f"Fixed: {output_path}")
 
 

@@ -13,8 +13,9 @@
 #  Run:
 #    python examples/advanced/05_hot_plug.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import threading
@@ -28,6 +29,7 @@ device: Optional[Device] = None
 pipeline: Optional[Pipeline] = None
 device_lock = threading.Lock()
 
+
 def print_device_list(prompt: str, device_list: DeviceList):
     count = len(device_list)
     if count == 0:
@@ -39,7 +41,7 @@ def print_device_list(prompt: str, device_list: DeviceList):
             uid = device_list.get_device_uid_by_index(i)
             vid = device_list.get_device_vid_by_index(i)
             pid = device_list.get_device_pid_by_index(i)
-            sn  = device_list.get_device_serial_number_by_index(i)
+            sn = device_list.get_device_serial_number_by_index(i)
             conn = device_list.get_device_connection_type_by_index(i)
 
             print(

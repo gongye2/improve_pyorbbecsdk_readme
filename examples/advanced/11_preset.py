@@ -12,11 +12,13 @@
 #  Run:
 #    python examples/advanced/11_preset.py
 # ******************************************************************************
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import pyorbbecsdk as ob
+
 
 def main():
     # Create a pipeline with default device
@@ -42,7 +44,9 @@ def main():
 
             # Select preset to load
             try:
-                input_option = int(input("\nEnter index of preset to load (or -1 to exit): "))
+                input_option = int(
+                    input("\nEnter index of preset to load (or -1 to exit): ")
+                )
                 if input_option == -1:
                     break
                 if input_option < 0 or input_option >= len(preset_list):
@@ -57,13 +61,16 @@ def main():
             device.load_preset(preset_name)
 
             # Print current preset name
-            print(f"\nPreset loaded. Current PresetName: {device.get_current_preset_name()}")
+            print(
+                f"\nPreset loaded. Current PresetName: {device.get_current_preset_name()}"
+            )
 
     except ob.OBError as e:
         print(f"Error: {str(e)}")
     finally:
         # Stop Pipeline
         pipe.stop()
+
 
 if __name__ == "__main__":
     main()

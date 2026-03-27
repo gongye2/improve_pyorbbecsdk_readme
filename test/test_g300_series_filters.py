@@ -23,34 +23,25 @@ Tests verify:
 - PointCloud filter generates points with sane coordinates
 """
 
-import pytest
 import numpy as np
+import pytest
 
-from pyorbbecsdk import (
-    Config,
-    OBSensorType,
-    OBFrameType,
-    OBStreamType,
-    OBError,
-    TemporalFilter,
-    SpatialAdvancedFilter,
-    HoleFillingFilter,
-    DecimationFilter,
-    ThresholdFilter,
-    AlignFilter,
-    PointCloudFilter,
-    NoiseRemovalFilter,
-)
+from pyorbbecsdk import (AlignFilter, Config, DecimationFilter,
+                         HoleFillingFilter, NoiseRemovalFilter, OBError,
+                         OBFrameType, OBSensorType, OBStreamType,
+                         PointCloudFilter, SpatialAdvancedFilter,
+                         TemporalFilter, ThresholdFilter)
 
 pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.functional]
 
-COLLECT_COUNT   = 10
-TIMEOUT_MS      = 2000
+COLLECT_COUNT = 10
+TIMEOUT_MS = 2000
 
 
 def _get_depth_frames(pipeline, count=COLLECT_COUNT):
     """Start depth stream and return `count` raw DepthFrame objects."""
     import time
+
     config = Config()
     pl = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
     config.enable_stream(pl.get_default_video_stream_profile())
@@ -89,11 +80,11 @@ class TestTemporalFilter:
         filt = TemporalFilter()
         for f in frames:
             filtered = filt.process(f)
-        raw_std  = float(np.std(_depth_as_array(frames[-1])))
+        raw_std = float(np.std(_depth_as_array(frames[-1])))
         filt_std = float(np.std(_depth_as_array(filtered.as_depth_frame())))
-        assert filt_std <= raw_std * 1.1, (
-            f"TemporalFilter increased std-dev: {raw_std:.2f} → {filt_std:.2f}"
-        )
+        assert (
+            filt_std <= raw_std * 1.1
+        ), f"TemporalFilter increased std-dev: {raw_std:.2f} → {filt_std:.2f}"
 
 
 class TestSpatialFilter:
@@ -107,16 +98,18 @@ class TestSpatialFilter:
     def test_spatial_filter_does_not_increase_holes(self, pipeline, g300_series_device):
         frames = _get_depth_frames(pipeline, count=3)
         assert frames
-        raw_zeros = int(np.count_nonzero(
-            np.frombuffer(frames[-1].get_data(), dtype=np.uint16) == 0
-        ))
-        result = SpatialAdvancedFilter().process(frames[-1])
-        filt_zeros = int(np.count_nonzero(
-            np.frombuffer(result.as_depth_frame().get_data(), dtype=np.uint16) == 0
-        ))
-        assert filt_zeros <= raw_zeros, (
-            f"SpatialFilter introduced new holes: {raw_zeros} → {filt_zeros} zeros"
+        raw_zeros = int(
+            np.count_nonzero(np.frombuffer(frames[-1].get_data(), dtype=np.uint16) == 0)
         )
+        result = SpatialAdvancedFilter().process(frames[-1])
+        filt_zeros = int(
+            np.count_nonzero(
+                np.frombuffer(result.as_depth_frame().get_data(), dtype=np.uint16) == 0
+            )
+        )
+        assert (
+            filt_zeros <= raw_zeros
+        ), f"SpatialFilter introduced new holes: {raw_zeros} → {filt_zeros} zeros"
 
 
 class TestHoleFillingFilter:
@@ -135,9 +128,9 @@ class TestHoleFillingFilter:
         result = HoleFillingFilter().process(frames[-1])
         filt = np.frombuffer(result.as_depth_frame().get_data(), dtype=np.uint16)
         filt_zeros = int(np.count_nonzero(filt == 0))
-        assert filt_zeros <= raw_zeros, (
-            f"HoleFillingFilter did not reduce zeros: {raw_zeros} → {filt_zeros}"
-        )
+        assert (
+            filt_zeros <= raw_zeros
+        ), f"HoleFillingFilter did not reduce zeros: {raw_zeros} → {filt_zeros}"
 
 
 class TestDecimationFilter:
@@ -155,7 +148,7 @@ class TestDecimationFilter:
         result = filt.process(original)
         assert result is not None
         out = result.as_depth_frame()
-        assert abs(out.get_width()  - orig_w // 2) <= 4
+        assert abs(out.get_width() - orig_w // 2) <= 4
         assert abs(out.get_height() - orig_h // 2) <= 4
 
 
@@ -183,15 +176,18 @@ class TestAlignFilter:
     def test_align_filter_produces_output(self, pipeline, g300_series_device):
         """AlignFilter should return a non-None depth frame aligned to color."""
         import time
+
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(
+                    OBSensorType.DEPTH_SENSOR
+                ).get_default_video_stream_profile()
             )
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(
+                    OBSensorType.COLOR_SENSOR
+                ).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Cannot configure dual stream: {e}")
@@ -209,12 +205,15 @@ class TestAlignFilter:
     def test_aligned_depth_matches_color_size(self, pipeline, g300_series_device):
         """Aligned depth frame must have same dimensions as color frame."""
         import time
+
         config = Config()
         try:
-            dp = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR) \
-                         .get_default_video_stream_profile()
-            cp = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR) \
-                         .get_default_video_stream_profile()
+            dp = pipeline.get_stream_profile_list(
+                OBSensorType.DEPTH_SENSOR
+            ).get_default_video_stream_profile()
+            cp = pipeline.get_stream_profile_list(
+                OBSensorType.COLOR_SENSOR
+            ).get_default_video_stream_profile()
             config.enable_stream(dp)
             config.enable_stream(cp)
         except OBError as e:
@@ -233,7 +232,7 @@ class TestAlignFilter:
         depth_aligned = fs_result.get_depth_frame()
         color = fs_result.get_color_frame()
         assert depth_aligned and color
-        assert depth_aligned.get_width()  == color.get_width()
+        assert depth_aligned.get_width() == color.get_width()
         assert depth_aligned.get_height() == color.get_height()
 
 
@@ -242,11 +241,13 @@ class TestPointCloudFilter:
     def test_point_cloud_produces_points(self, pipeline, g300_series_device):
         """PointCloudFilter must return a PointsFrame with at least one point."""
         import time
+
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(
+                    OBSensorType.DEPTH_SENSOR
+                ).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Cannot start depth stream: {e}")
@@ -265,11 +266,13 @@ class TestPointCloudFilter:
     def test_point_cloud_coordinates_reasonable(self, pipeline, g300_series_device):
         """All XYZ coordinates must be within ±10 000 mm (±10 m)."""
         import time
+
         config = Config()
         try:
             config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-                        .get_default_video_stream_profile()
+                pipeline.get_stream_profile_list(
+                    OBSensorType.DEPTH_SENSOR
+                ).get_default_video_stream_profile()
             )
         except OBError as e:
             pytest.skip(f"Cannot start depth stream: {e}")
@@ -285,9 +288,9 @@ class TestPointCloudFilter:
         pts = result.as_points_frame()
         data = np.frombuffer(pts.get_data(), dtype=np.float32)
         if len(data) >= 3:
-            assert np.all(np.abs(data) <= 10000.0), (
-                "Point cloud contains coordinates beyond ±10 000 mm"
-            )
+            assert np.all(
+                np.abs(data) <= 10000.0
+            ), "Point cloud contains coordinates beyond ±10 000 mm"
 
 
 class TestNoiseRemovalFilter:
