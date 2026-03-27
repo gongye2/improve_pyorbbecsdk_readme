@@ -27,9 +27,9 @@ import numpy as np
 from utils import frame_to_bgr_image
 
 import pyorbbecsdk as ob
-from pyorbbecsdk import (Config, OBFormat, OBFrameType,  # type: ignore
-                         OBPlaybackStatus, OBSensorType, Pipeline,
-                         PlaybackDevice)
+from pyorbbecsdk import OBFrameType  # type: ignore
+from pyorbbecsdk import (Config, OBFormat, OBPlaybackStatus, OBSensorType,
+                         Pipeline, PlaybackDevice)
 
 
 # Global state to share data between the processing callback and the UI thread

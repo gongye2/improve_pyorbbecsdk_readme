@@ -15,9 +15,9 @@
 # ******************************************************************************
 import cv2
 
-from pyorbbecsdk import (Config, OBError,  # type: ignore
-                         OBFrameAggregateOutputMode, OBFrameType, OBSensorType,
-                         Pipeline)
+from pyorbbecsdk import OBError  # type: ignore
+from pyorbbecsdk import (Config, OBFrameAggregateOutputMode, OBFrameType,
+                         OBSensorType, Pipeline)
 
 ESC_KEY = 27
 

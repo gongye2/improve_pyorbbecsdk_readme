@@ -21,8 +21,8 @@ import cv2
 import numpy as np
 from utils import frame_to_bgr_image
 
-from pyorbbecsdk import (ColorFrame, Config, Context,  # type: ignore
-                         DepthFrame, OBError, OBFormat,
+from pyorbbecsdk import Context  # type: ignore
+from pyorbbecsdk import (ColorFrame, Config, DepthFrame, OBError, OBFormat,
                          OBFrameAggregateOutputMode, OBSensorType, Pipeline,
                          VideoStreamProfile)
 
