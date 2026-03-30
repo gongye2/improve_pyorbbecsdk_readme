@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# utils.sh - CI 工具函数库
+# utils.sh - CI Utility Functions Library
 # =============================================================================
 
 set -euo pipefail
 
-# 颜色定义（仅在支持时）
+# Color definitions (only when supported)
 if [[ -t 1 ]]; then
     readonly RED='\033[0;31m'
     readonly GREEN='\033[0;32m'
@@ -20,7 +20,7 @@ else
     readonly NC=''
 fi
 
-# 日志函数
+# Logging functions
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -37,7 +37,7 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
-# 检测操作系统
+# Detect operating system
 detect_os() {
     case "$(uname -s)" in
         Linux*)     echo "linux";;
@@ -47,7 +47,7 @@ detect_os() {
     esac
 }
 
-# 检测架构
+# Detect architecture
 detect_arch() {
     case "$(uname -m)" in
         x86_64)     echo "x64";;
@@ -56,7 +56,7 @@ detect_arch() {
     esac
 }
 
-# 设置 Python 可执行文件路径
+# Set Python executable path
 get_python_exe() {
     local pyver="$1"
     local os="$(detect_os)"
@@ -72,7 +72,7 @@ get_python_exe() {
     fi
 }
 
-# 生成 JUnit XML 报告头部
+# Generate JUnit XML report header
 generate_junit_header() {
     local suite_name="$1"
     local timestamp
@@ -82,12 +82,12 @@ generate_junit_header() {
     echo "<testsuite name=\"${suite_name}\" timestamp=\"${timestamp}\">"
 }
 
-# 生成 JUnit XML 报告尾部
+# Generate JUnit XML report footer
 generate_junit_footer() {
     echo "</testsuite>"
 }
 
-# 生成测试报告摘要
+# Generate test report summary
 generate_report_summary() {
     local job_type="$1"
     local status="$2"
@@ -109,7 +109,7 @@ generate_report_summary() {
 EOF
 }
 
-# 上传 Artifact (跨平台抽象)
+# Upload Artifact (cross-platform abstraction)
 upload_artifact() {
     local name="$1"
     local path="$2"
@@ -118,14 +118,14 @@ upload_artifact() {
     log_info "Uploading artifact: ${name}"
 
     if [[ "${CI_PLATFORM:-}" == "github" ]]; then
-        # GitHub Actions - 使用环境变量
+        # GitHub Actions - use environment variables
         log_info "Artifact will be uploaded by GitHub Actions"
-        # 实际由 actions/upload-artifact 处理
+        # Actually handled by actions/upload-artifact
     elif [[ "${CI_PLATFORM:-}" == "gitlab" ]]; then
-        # GitLab CI - artifacts 在 .gitlab-ci.yml 中定义
+        # GitLab CI - artifacts defined in .gitlab-ci.yml
         log_info "Artifact will be collected by GitLab CI"
     else
-        # 本地运行 - 复制到 reports
+        # Local run - copy to reports
         local dest="${REPO_ROOT:-.}/artifacts/${name}"
         mkdir -p "${dest}"
         cp -r "${path}" "${dest}/"
@@ -133,7 +133,7 @@ upload_artifact() {
     fi
 }
 
-# 安装系统依赖 (Linux)
+# Install system dependencies (Linux)
 install_linux_deps() {
     log_info "Installing Linux dependencies..."
 
@@ -152,7 +152,7 @@ install_linux_deps() {
     fi
 }
 
-# 安装系统依赖 (macOS)
+# Install system dependencies (macOS)
 install_macos_deps() {
     log_info "Installing macOS dependencies..."
 
@@ -164,7 +164,7 @@ install_macos_deps() {
     fi
 }
 
-# 安装 uv
+# Install uv
 install_uv() {
     if command -v uv &> /dev/null; then
         log_info "uv is already installed"
@@ -176,16 +176,16 @@ install_uv() {
     export PATH="$HOME/.cargo/bin:$PATH"
 }
 
-# 设置构建环境
+# Setup build environment
 setup_build_env() {
     local os="$(detect_os)"
 
     log_info "Setting up build environment for ${os}..."
 
-    # 安装 uv
+    # Install uv
     install_uv
 
-    # 安装系统依赖
+    # Install system dependencies
     case "${os}" in
         linux)
             install_linux_deps
@@ -198,13 +198,13 @@ setup_build_env() {
             ;;
     esac
 
-    # 设置环境变量
+    # Set environment variables
     export UV_LINK_MODE="${UV_LINK_MODE:-copy}"
 
     log_success "Build environment ready"
 }
 
-# 计算执行时间
+# Calculate execution time
 start_timer() {
     export CI_START_TIME=$(date +%s)
 }
@@ -215,7 +215,7 @@ end_timer() {
     echo "${duration}"
 }
 
-# 格式化时间
+# Format time
 format_duration() {
     local seconds="$1"
     local mins=$((seconds / 60))
@@ -223,7 +223,7 @@ format_duration() {
     printf "%02d:%02d" ${mins} ${secs}
 }
 
-# 检查是否有 Orbbec 设备连接
+# Check if Orbbec device is connected
 check_device_connected() {
     if ! command -v python &> /dev/null; then
         log_warning "Python not found, cannot check device"
@@ -247,7 +247,7 @@ except Exception as e:
 " 2>/dev/null
 }
 
-# 获取设备信息
+# Get device information
 get_device_info() {
     python -c "
 from pyorbbecsdk import Context
@@ -263,7 +263,7 @@ except Exception as e:
 " 2>/dev/null || echo "No device info available"
 }
 
-# 导出函数供其他脚本使用
+# Export functions for use by other scripts
 export -f log_info
 export -f log_success
 export -f log_warning

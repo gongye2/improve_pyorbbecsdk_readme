@@ -1,8 +1,8 @@
 # =============================================================================
-# test-registry.yaml - 测试用例注册表
+# test-registry.yaml - Test Case Registry
 # =============================================================================
 registry:
-  # 基础测试
+  # Basic tests
   - id: TEST_BASIC_IMPORT
     name: "Basic Import"
     file: test/test_basic_import.py
@@ -21,7 +21,7 @@ registry:
     markers: [hardware]
     hardware_required: true
 
-  # G300 系列测试
+  # G300 series tests
   - id: TEST_G300_DEVICE
     name: "G300 Series Device"
     file: test/test_g300_series_device.py
@@ -58,7 +58,7 @@ registry:
     markers: [hardware, g300_series, performance]
     hardware_required: true
 
-  # Femto 系列测试
+  # Femto series tests
   - id: TEST_FEMTO_DEVICE
     name: "Femto Device"
     file: test/test_femto_device.py
@@ -77,7 +77,7 @@ registry:
     markers: [hardware, femto]
     hardware_required: true
 
-  # 其他测试
+  # Other tests
   - id: TEST_CONTEXT
     name: "Context API"
     file: test/test_context.py

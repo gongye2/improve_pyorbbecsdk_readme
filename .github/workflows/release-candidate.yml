@@ -1,7 +1,7 @@
 # =============================================================================
-# release-candidate.yml - 发版候选测试
-# 触发: workflow_dispatch (手动)
-# 目标: 完整回归、多平台构建、发布包生成
+# release-candidate.yml - Release Candidate Testing
+# Trigger: workflow_dispatch (manual)
+# Goal: Full regression, multi-platform build, release package generation
 # =============================================================================
 name: Release Candidate
 
@@ -27,11 +27,11 @@ env:
 
 jobs:
   # ============================================================
-  # Job 0: 动态生成版本矩阵
-  # 所有平台使用统一策略:
-  #   min:     3.10 (1个)
-  #   default: 3.10, 3.11, 3.12 (3个)
-  #   all:     3.8, 3.9, 3.10, 3.11, 3.12, 3.13 (6个)
+  # Job 0: Dynamically generate version matrix
+  # Unified strategy for all platforms:
+  #   min:     3.10 (1 version)
+  #   default: 3.10, 3.11, 3.12 (3 versions)
+  #   all:     3.8, 3.9, 3.10, 3.11, 3.12, 3.13 (6 versions)
   # ============================================================
   generate-matrix:
     name: "Generate Build Matrix"
@@ -57,7 +57,7 @@ jobs:
               ;;
           esac
 
-          # 构建矩阵: (Linux x64, Linux ARM64, Windows, macOS) x Python版本
+          # Build matrix: (Linux x64, Linux ARM64, Windows, macOS) x Python versions
           MATRIX="["
           FIRST=true
 
@@ -84,7 +84,7 @@ jobs:
           echo "matrix-include=$MATRIX" >> $GITHUB_OUTPUT
           echo "Matrix: $MATRIX"
   # ============================================================
-  # Job 1: 多平台 Wheel 构建 (包含 ARM64)
+  # Job 1: Multi-platform Wheel build (including ARM64)
   # ============================================================
   build-wheels:
     name: "Build Wheels - ${{ matrix.label }}"
@@ -128,7 +128,7 @@ jobs:
           retention-days: 30
 
   # ============================================================
-  # Job 2: 创建 Release
+  # Job 2: Create Release
   # ============================================================
   create-release:
     name: "Create Release"

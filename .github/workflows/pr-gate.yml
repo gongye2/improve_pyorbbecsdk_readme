@@ -1,7 +1,7 @@
 # =============================================================================
-# pr-gate.yml - PR 快速质量门禁
-# 触发: pull_request / push to main or feature branches
-# 目标: 30分钟内完成 L1+L2，不接真机
+# pr-gate.yml - PR Fast Quality Gate
+# Trigger: pull_request / push to main or feature branches
+# Goal: Complete L1+L2 within 30 minutes, no hardware required
 # =============================================================================
 name: PR Gate
 
@@ -31,7 +31,7 @@ env:
 
 jobs:
   # ============================================================
-  # Job 0: 动态生成版本矩阵
+  # Job 0: Dynamically generate version matrix
   # ============================================================
   generate-matrix:
     name: "Generate Build Matrix"
@@ -42,14 +42,14 @@ jobs:
       - name: Set version matrix
         id: set-matrix
         run: |
-          # 仅保留 Linux x64 平台的 Python 3.10
+          # Keep only Python 3.10 for Linux x64 platform
           LINUX_VERSIONS='["3.10"]'
 
           echo "linux-versions=$LINUX_VERSIONS" >> $GITHUB_OUTPUT
 
           echo "Linux versions: $LINUX_VERSIONS"
   # ============================================================
-  # Job 1: Python 代码格式检查与自动修复
+  # Job 1: Python code format checking and auto-fixing
   # ============================================================
   lint-python:
     name: "L1 | Python Lint"
@@ -81,7 +81,7 @@ jobs:
             --per-file-ignores="src/pyorbbecsdk/__init__.py:F403,F401"
 
   # ============================================================
-  # Job 2: Linux Wheel 构建测试
+  # Job 2: Linux Wheel build test
   # ============================================================
   build-linux:
     name: "L1/L2 | Build Linux"
@@ -128,7 +128,7 @@ jobs:
           retention-days: 7
 
   # ============================================================
-  # Job 3: Import 检查
+  # Job 3: Import check
   # ============================================================
   verify-import:
     name: "L2 | Import Check"

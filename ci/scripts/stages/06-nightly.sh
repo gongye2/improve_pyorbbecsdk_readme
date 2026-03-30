@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 06-nightly.sh - 夜间回归测试阶段
+# 06-nightly.sh - Nightly Regression Test Stage
 # =============================================================================
 
 set -euo pipefail
@@ -11,7 +11,7 @@ run_nightly() {
 
     export HARDWARE_AVAILABLE="true"
 
-    # 设备健康检查
+    # Device health check
     log_info "Checking device health..."
     if ! check_device_connected; then
         log_error "No Orbbec device connected"
@@ -20,18 +20,18 @@ run_nightly() {
 
     get_device_info
 
-    # 构建 wheel
+    # Build wheel
     log_info "Building wheel..."
     source "${SCRIPT_DIR}/stages/03-build.sh"
     build_wheel "linux" "${PYTHON_VERSION}"
 
-    # 安装 wheel
+    # Install wheel
     log_info "Installing wheel..."
     pip install "${REPO_ROOT}/wheel"/*.whl pytest pytest-timeout --quiet
 
     local status="success"
 
-    # 运行所有硬件测试
+    # Run all hardware tests
     log_info "Running all hardware tests..."
     if pytest "${REPO_ROOT}/test" \
         -v \
@@ -44,7 +44,7 @@ run_nightly() {
         log_warning "Some hardware tests failed"
     fi
 
-    # 运行 G300 系列测试
+    # Run G300 series tests
     log_info "Running G300 series tests..."
     if pytest "${REPO_ROOT}/test" \
         -v \
@@ -57,7 +57,7 @@ run_nightly() {
         log_warning "Some G300 series tests failed"
     fi
 
-    # 运行性能测试
+    # Run performance tests
     log_info "Running performance tests..."
     if pytest "${REPO_ROOT}/test/test_g300_series_performance.py" \
         -v \
@@ -70,7 +70,7 @@ run_nightly() {
         log_warning "Some performance tests failed"
     fi
 
-    # 生成报告
+    # Generate report
     local duration
     duration=$(end_timer)
     generate_report_summary "nightly" "${status}" "${duration}"

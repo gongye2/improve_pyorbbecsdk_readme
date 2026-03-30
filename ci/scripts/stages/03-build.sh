@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 03-build.sh - 构建阶段
+# 03-build.sh - Build Stage
 # =============================================================================
 
 set -euo pipefail
@@ -12,7 +12,7 @@ build_wheel() {
     log_info "Building wheel for ${os} with Python ${pyver}..."
     start_timer
 
-    # 设置环境
+    # Setup environment
     setup_build_env
 
     local build_script
@@ -32,18 +32,18 @@ build_wheel() {
             ;;
     esac
 
-    # 检查构建脚本是否存在
+    # Check if build script exists
     if [[ ! -f "${build_script}" ]]; then
         log_error "Build script not found: ${build_script}"
         exit 1
     fi
 
-    # 执行构建
+    # Execute build
     log_info "Executing: ${build_script} ${pyver} --clean"
 
     local status="success"
     if [[ "${os}" == "windows" ]]; then
-        # Windows 使用 PowerShell
+        # Windows uses PowerShell
         if powershell -ExecutionPolicy Bypass -Command "& '${build_script}' ${pyver} -Clean -Yes" 2>&1 | tee "${REPO_ROOT}/logs/build-${os}-py${pyver}.log"; then
             log_success "Windows build completed"
         else
@@ -51,7 +51,7 @@ build_wheel() {
             status="failure"
         fi
     else
-        # Linux/macOS 使用 Bash
+        # Linux/macOS use Bash
         if bash "${build_script}" "${pyver}" --clean 2>&1 | tee "${REPO_ROOT}/logs/build-${os}-py${pyver}.log"; then
             log_success "${os} build completed"
         else
@@ -60,7 +60,7 @@ build_wheel() {
         fi
     fi
 
-    # 验证输出
+    # Verify output
     if [[ -d "${REPO_ROOT}/wheel" ]]; then
         local wheel_count
         wheel_count=$(find "${REPO_ROOT}/wheel" -name "*.whl" | wc -l)
@@ -75,7 +75,7 @@ build_wheel() {
         status="failure"
     fi
 
-    # 生成报告
+    # Generate report
     local duration
     duration=$(end_timer)
     generate_report_summary "build-${os}" "${status}" "${duration}"

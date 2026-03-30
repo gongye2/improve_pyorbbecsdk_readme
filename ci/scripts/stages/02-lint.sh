@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 02-lint.sh - 代码检查阶段
+# 02-lint.sh - Code Linting Stage
 # =============================================================================
 
 set -euo pipefail
@@ -11,11 +11,11 @@ run_lint() {
 
     local status="success"
 
-    # 安装 lint 工具
+    # Install lint tools
     log_info "Installing lint tools..."
     pip install black isort flake8 --quiet
 
-    # 运行 black 检查
+    # Run black check
     log_info "Running black format check..."
     if black --check . 2>&1 | tee "${REPO_ROOT}/logs/black.log"; then
         log_success "Black format check passed"
@@ -24,7 +24,7 @@ run_lint() {
         status="warning"
     fi
 
-    # 运行 isort 检查
+    # Run isort check
     log_info "Running isort check..."
     if isort --check . 2>&1 | tee "${REPO_ROOT}/logs/isort.log"; then
         log_success "isort check passed"
@@ -33,7 +33,7 @@ run_lint() {
         status="warning"
     fi
 
-    # 运行 flake8
+    # Run flake8
     log_info "Running flake8..."
     if flake8 src/ --max-line-length=120 --ignore=E203,W503 2>&1 | tee "${REPO_ROOT}/logs/flake8.log"; then
         log_success "flake8 check passed"
@@ -42,7 +42,7 @@ run_lint() {
         status="failure"
     fi
 
-    # 生成报告
+    # Generate report
     local duration
     duration=$(end_timer)
     generate_report_summary "lint" "${status}" "${duration}"

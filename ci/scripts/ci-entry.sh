@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# ci-entry.sh - 统一 CI 入口脚本 (GitHub Actions & GitLab CI 通用)
+# ci-entry.sh - Unified CI Entry Script (GitHub Actions & GitLab CI Compatible)
 # =============================================================================
 # Usage:
 #   export CI_JOB_TYPE="lint" && ./ci-entry.sh
@@ -9,14 +9,14 @@
 
 set -euo pipefail
 
-# 获取脚本目录
+# Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# 加载工具函数
+# Load utility functions
 source "${SCRIPT_DIR}/utils.sh"
 
-# 检测 CI 平台
+# Detect CI platform
 CI_PLATFORM=${CI_PLATFORM:-"local"}
 if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
     CI_PLATFORM="github"
@@ -24,13 +24,13 @@ elif [[ -n "${GITLAB_CI:-}" ]]; then
     CI_PLATFORM="gitlab"
 fi
 
-# 默认环境变量
+# Default environment variables
 export CI_JOB_TYPE=${CI_JOB_TYPE:-""}
 export PYTHON_VERSION=${PYTHON_VERSION:-"3.10"}
 export HARDWARE_AVAILABLE=${HARDWARE_AVAILABLE:-"false"}
 export UV_LINK_MODE=${UV_LINK_MODE:-"copy"}
 
-# 日志头
+# Log header
 log_info "=========================================="
 log_info " CI Entry Script"
 log_info " Platform: ${CI_PLATFORM}"
@@ -38,19 +38,19 @@ log_info " Job Type: ${CI_JOB_TYPE}"
 log_info " Python: ${PYTHON_VERSION}"
 log_info "=========================================="
 
-# 参数验证
+# Parameter validation
 if [[ -z "${CI_JOB_TYPE}" ]]; then
     log_error "CI_JOB_TYPE is not set"
     log_info "Available job types: lint, build-linux, build-windows, build-macos, test-no-hw, test-hw, daily-smoke, nightly"
     exit 1
 fi
 
-# 创建必要的目录
+# Create required directories
 mkdir -p "${REPO_ROOT}/logs"
 mkdir -p "${REPO_ROOT}/reports"
 mkdir -p "${REPO_ROOT}/wheel"
 
-# 根据 JOB_TYPE 执行不同流程
+# Execute different flows based on JOB_TYPE
 case "${CI_JOB_TYPE}" in
     "lint")
         log_info "Running lint checks..."

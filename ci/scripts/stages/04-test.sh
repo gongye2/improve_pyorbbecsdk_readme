@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 04-test.sh - 测试阶段
+# 04-test.sh - Test Stage
 # =============================================================================
 
 set -euo pipefail
@@ -11,17 +11,17 @@ run_tests() {
     log_info "Running tests with markers: ${markers}"
     start_timer
 
-    # 安装测试依赖
+    # Install test dependencies
     log_info "Installing test dependencies..."
     pip install pytest pytest-timeout --quiet
 
-    # 检查 wheel 是否已安装
+    # Check if wheel is installed
     if ! python -c "import pyorbbecsdk" 2>/dev/null; then
         log_error "pyorbbecsdk not installed. Please build and install first."
         exit 1
     fi
 
-    # 运行测试
+    # Run tests
     log_info "Running pytest..."
     local status="success"
 
@@ -35,13 +35,13 @@ run_tests() {
         log_success "Tests passed"
     else
         log_warning "Some tests failed or were skipped"
-        # 非硬件测试失败时退出
+        # Exit on non-hardware test failure
         if [[ "${markers}" == "not hardware" ]]; then
             status="failure"
         fi
     fi
 
-    # 生成报告
+    # Generate report
     local duration
     duration=$(end_timer)
     generate_report_summary "test-${markers// /-}" "${status}" "${duration}"
@@ -59,19 +59,19 @@ verify_import() {
 
     local status="success"
 
-    # 检查 wheel 是否已安装
+    # Check if wheel is installed
     if ! python -c "import pyorbbecsdk" 2>/dev/null; then
         log_error "pyorbbecsdk import failed"
         status="failure"
     else
         log_success "pyorbbecsdk imported successfully"
 
-        # 检查版本
+        # Check version
         local version
         version=$(python -c "import pyorbbecsdk; print(pyorbbecsdk.__version__)" 2>/dev/null || echo "unknown")
         log_info "Package version: ${version}"
 
-        # 检查关键类
+        # Check key classes
         if python -c "from pyorbbecsdk import Context, Pipeline, Config" 2>/dev/null; then
             log_success "Key classes imported successfully"
         else
@@ -80,7 +80,7 @@ verify_import() {
         fi
     fi
 
-    # 生成报告
+    # Generate report
     local duration
     duration=$(end_timer)
     generate_report_summary "verify-import" "${status}" "${duration}"
