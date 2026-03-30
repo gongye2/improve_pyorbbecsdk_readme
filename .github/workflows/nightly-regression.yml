@@ -118,7 +118,7 @@ jobs:
   # ============================================================
   report:
     name: "Nightly Report"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs: [full-hardware-test, performance-benchmark]
     if: always()
     steps:
