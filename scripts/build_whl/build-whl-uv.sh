@@ -303,15 +303,17 @@ per_version_cleanup() {
 install_python_version() {
     local PYVER="$1"
 
-    echo "Resolving Python interpreter..."
+    echo "Resolving Python interpreter..." >&2
     # Ensure uv-managed Python is installed
-    uv python install "$PYVER"
+    uv python install "$PYVER" >&2
     local python_exe
-    python_exe=$(uv python find "$PYVER")
+    # Use cd to avoid project .venv interfering with uv python find
+    python_exe=$(cd /tmp && uv python find "$PYVER")
     if [ -z "$python_exe" ] || [ ! -x "$python_exe" ]; then
         echo "Failed to find Python ${PYVER} after installation." >&2
         exit 1
     fi
+    echo "Using Python: $python_exe" >&2
     echo "$python_exe"
 }
 
@@ -383,9 +385,17 @@ build_version() {
     # CMake configure & build (using gcc for Linux)
     pushd "$BUILD_DIR" >/dev/null
 
+    # Get Python paths for CMake (force specific Python version)
+    local PYTHON_ROOT
+    PYTHON_ROOT="$(dirname "$(dirname "$PYTHON_EXE")")"
+
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH="$PYTHON_ROOT" \
         -DPython3_EXECUTABLE="$PYTHON_EXE" \
+        -DPython3_ROOT_DIR="$PYTHON_ROOT" \
+        -DPython3_FIND_STRATEGY=LOCATION \
+        -DPython3_FIND_REGISTRY=NEVER \
         -Dpybind11_DIR="$PYBIND11_DIR" \
         -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
         -DCMAKE_C_COMPILER=gcc \

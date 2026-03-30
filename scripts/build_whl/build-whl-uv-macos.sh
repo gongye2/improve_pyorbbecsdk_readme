@@ -355,7 +355,8 @@ build_version() {
     # Ensure uv-managed Python is installed
     uv python install "$PYVER"
     local PYTHON_EXE
-    PYTHON_EXE="$(uv python find "$PYVER")"
+    # Use cd to avoid project .venv interfering with uv python find
+    PYTHON_EXE="$(cd /tmp && uv python find "$PYVER")"
     echo "Using Python: $PYTHON_EXE"
 
     # Resolve pybind11 CMake directory
@@ -367,12 +368,20 @@ build_version() {
     # CMake configure & build (using clang for macOS)
     pushd "$BUILD_DIR" >/dev/null
 
+    # Get Python paths for CMake (force specific Python version)
+    local PYTHON_ROOT
+    PYTHON_ROOT="$(dirname "$(dirname "$PYTHON_EXE")")"
+
     # Set minimum macOS deployment target for broader compatibility
     export MACOSX_DEPLOYMENT_TARGET=11.0
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH="$PYTHON_ROOT" \
         -DPython3_EXECUTABLE="$PYTHON_EXE" \
+        -DPython3_ROOT_DIR="$PYTHON_ROOT" \
+        -DPython3_FIND_STRATEGY=LOCATION \
+        -DPython3_FIND_REGISTRY=NEVER \
         -Dpybind11_DIR="$PYBIND11_DIR" \
         -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
         -DCMAKE_C_COMPILER=clang \

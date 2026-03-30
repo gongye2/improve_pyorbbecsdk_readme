@@ -353,7 +353,10 @@ function Install-PythonVersion {
     # If already installed, just find and return the executable
     if ($isInstalled) {
         try {
+            # Use Push-Location to avoid project .venv interfering with uv python find
+            Push-Location $env:TEMP
             $pythonExe = uv python find $PyVer 2>$null
+            Pop-Location
             if ($pythonExe -and (Test-Path $pythonExe)) {
                 return $pythonExe
             }
@@ -392,7 +395,10 @@ To manually install, run:
 
     # Verify installation and return executable path
     try {
+        # Use Push-Location to avoid project .venv interfering with uv python find
+        Push-Location $env:TEMP
         $pythonExe = uv python find ${PyVer} 2>$null
+        Pop-Location
     }
     catch {
         $pythonExe = $null
@@ -529,6 +535,9 @@ function Invoke-BuildVersion {
     Push-Location $BUILD_DIR
 
     try {
+        # Get Python root directory for CMake (force specific Python version)
+        $pythonRoot = Split-Path -Parent (Split-Path -Parent $PYTHON_EXE)
+
         # Detect installed Visual Studio
         $VSGenerator = Get-VSGenerator
 
@@ -536,7 +545,10 @@ function Invoke-BuildVersion {
             Write-Warning "Visual Studio 2017/2019/2022/2026 not found, trying default generator"
             cmake `
                 -DCMAKE_BUILD_TYPE=Release `
+                -DCMAKE_PREFIX_PATH="$pythonRoot" `
                 -DPython3_EXECUTABLE="$PYTHON_EXE" `
+                -DPython3_ROOT_DIR="$pythonRoot" `
+                -DPython3_FIND_STRATEGY=LOCATION `
                 -Dpybind11_DIR="$PYBIND11_DIR" `
                 -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
                 "$ROOT_DIR"
@@ -544,7 +556,10 @@ function Invoke-BuildVersion {
             Write-Host "Using generator: $VSGenerator"
             cmake -G $VSGenerator -A x64 `
                 -DCMAKE_BUILD_TYPE=Release `
+                -DCMAKE_PREFIX_PATH="$pythonRoot" `
                 -DPython3_EXECUTABLE="$PYTHON_EXE" `
+                -DPython3_ROOT_DIR="$pythonRoot" `
+                -DPython3_FIND_STRATEGY=LOCATION `
                 -Dpybind11_DIR="$PYBIND11_DIR" `
                 -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
                 "$ROOT_DIR"
