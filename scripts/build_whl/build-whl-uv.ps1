@@ -101,12 +101,27 @@ $INSTALL_LIB_DIR = Join-Path $INSTALL_DIR "lib\pyorbbecsdk"
 $SHARED_DST_DIR = Join-Path $INSTALL_LIB_DIR "shared"
 $ENV_SETUP_SRC = Join-Path $ROOT_DIR (Join-Path "scripts" "env_setup")
 
-# Parse Python versions
+# Parse Python versions and options
 $PYTHON_VERSIONS = @()
 foreach ($v in $Version) {
     switch -Wildcard ($v) {
         "all" {
             $PYTHON_VERSIONS = @("3.8", "3.9", "3.10", "3.11", "3.12", "3.13")
+        }
+        "--clean" {
+            $Clean = $true
+        }
+        "--offline" {
+            $Offline = $true
+        }
+        "--no-clean" {
+            $NoClean = $true
+        }
+        "--clean-only" {
+            $CleanOnly = $true
+        }
+        "--yes" {
+            $Yes = $true
         }
         "3.*" {
             $PYTHON_VERSIONS += $v
