@@ -130,7 +130,7 @@ jobs:
   # ============================================================
   build-linux-arm64:
     name: "Build Wheels - Linux ARM64"
-    runs-on: [self-hosted, linux, arm64, ubuntu-22.04]
+    runs-on: [self-hosted, linux, arm64, ubuntu-22.04-arm]
     timeout-minutes: 60
     needs: generate-matrix
     strategy:
