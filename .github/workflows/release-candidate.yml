@@ -28,6 +28,10 @@ env:
 jobs:
   # ============================================================
   # Job 0: 动态生成版本矩阵
+  # 所有平台使用统一策略:
+  #   min:     3.10 (1个)
+  #   default: 3.10, 3.11, 3.12 (3个)
+  #   all:     3.8, 3.9, 3.10, 3.11, 3.12, 3.13 (6个)
   # ============================================================
   generate-matrix:
     name: "Generate Build Matrix"
@@ -38,45 +42,41 @@ jobs:
       - name: Set version matrix
         id: set-matrix
         run: |
-          # 根据输入选择版本，默认 all (发版场景)
           VERSION_MODE="${{ github.event.inputs.python_versions || 'all' }}"
           echo "Version mode: $VERSION_MODE"
 
           case "$VERSION_MODE" in
             min)
-              LINUX_VERSIONS=("3.10")
-              WINDOWS_VERSIONS=("3.10")
-              MACOS_VERSIONS=("3.10")
+              VERSIONS=("3.10")
               ;;
             default)
-              LINUX_VERSIONS=("3.9" "3.10" "3.11" "3.12")
-              WINDOWS_VERSIONS=("3.10" "3.11" "3.12")
-              MACOS_VERSIONS=("3.10" "3.11" "3.12")
+              VERSIONS=("3.10" "3.11" "3.12")
               ;;
             all|*)
-              LINUX_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
-              WINDOWS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
-              MACOS_VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
+              VERSIONS=("3.8" "3.9" "3.10" "3.11" "3.12" "3.13")
               ;;
           esac
 
-          # 构建完整的矩阵 (OS x Python版本)
+          # 构建矩阵: (Linux x64, Linux ARM64, Windows, macOS) x Python版本
           MATRIX="["
           FIRST=true
 
-          for pyver in "${LINUX_VERSIONS[@]}"; do
+          for pyver in "${VERSIONS[@]}"; do
+            # Linux x64 (ubuntu-22.04)
             if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
-            MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-Python-'$pyver'"}'
-          done
+            MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","arch":"x64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-x64-Python-'$pyver'"}'
 
-          for pyver in "${WINDOWS_VERSIONS[@]}"; do
-            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
-            MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-Python-'$pyver'"}'
-          done
+            # Linux ARM64 (ubuntu-22.04-arm)
+            MATRIX+=","
+            MATRIX+='{"os":"ubuntu-22.04-arm","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
 
-          for pyver in "${MACOS_VERSIONS[@]}"; do
-            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
-            MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-Python-'$pyver'"}'
+            # Windows (windows-2022)
+            MATRIX+=","
+            MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","arch":"x64","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-x64-Python-'$pyver'"}'
+
+            # macOS (macos-latest)
+            MATRIX+=","
+            MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-arm64-Python-'$pyver'"}'
           done
 
           MATRIX+="]"
@@ -84,13 +84,15 @@ jobs:
           echo "matrix-include=$MATRIX" >> $GITHUB_OUTPUT
           echo "Matrix: $MATRIX"
   # ============================================================
-  # Job 1: 多平台 Wheel 构建
+  # Job 1: 多平台 Wheel 构建 (包含 ARM64)
   # ============================================================
   build-wheels:
     name: "Build Wheels - ${{ matrix.label }}"
     runs-on: ${{ matrix.os }}
     needs: generate-matrix
+    timeout-minutes: 60
     strategy:
+      fail-fast: false
       matrix:
         include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}
     steps:
@@ -121,56 +123,17 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: release-wheels-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: release-wheels-${{ matrix.os }}-${{ matrix.arch }}-py${{ matrix.python-version }}
           path: wheel/*.whl
           retention-days: 30
 
   # ============================================================
-  # Job 2: Linux ARM64 Wheel 构建 (使用 GitHub-hosted ARM64 runners)
-  # 支持的 runner: ubuntu-22.04-arm, ubuntu-24.04-arm
-  # ============================================================
-  build-linux-arm64:
-    name: "Build Wheels - Linux ARM64"
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
-    needs: generate-matrix
-    strategy:
-      matrix:
-        os: ["ubuntu-22.04-arm"]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
-
-      - name: Install dependencies (Ubuntu ARM64)
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            cmake ninja-build build-essential \
-            libusb-1.0-0-dev libudev-dev
-
-      - name: Build wheel (Linux ARM64)
-        run: |
-          bash scripts/build_whl/build-whl-uv.sh ${{ matrix.python-version }} --clean
-
-      - name: Upload wheel
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-wheels-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: wheel/*.whl
-          retention-days: 30
-
-  # ============================================================
-  # Job 3: 创建 Release
+  # Job 2: 创建 Release
   # ============================================================
   create-release:
     name: "Create Release"
     runs-on: ubuntu-22.04
-    needs: [generate-matrix, build-wheels, build-linux-arm64]
+    needs: [generate-matrix, build-wheels]
     if: success()
     steps:
       - name: Download all wheels
