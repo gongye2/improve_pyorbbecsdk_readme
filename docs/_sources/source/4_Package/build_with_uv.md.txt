@@ -47,7 +47,7 @@ This guide explains how to build pyorbbecsdk wheel packages using **uv**, a fast
        # Check CMake version (requires 3.15.0+)
        cmake --version
 
-       # Check GCC version (requires 5.4.0+)
+       # Check GCC version (requires 7.4.0+)
        gcc --version
        g++ --version
        ```
@@ -88,7 +88,7 @@ This guide explains how to build pyorbbecsdk wheel packages using **uv**, a fast
 
 #### Linux
 
-- GCC 5.4.0 or higher
+- GCC 7.4.0 or higher
 - Python development headers
 
 ```bash
