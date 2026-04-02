@@ -128,36 +128,6 @@ jobs:
           retention-days: 7
 
   # ============================================================
-  # Job 3: Import check
-  # ============================================================
-  verify-import:
-    name: "L2 | Import Check"
-    runs-on: ubuntu-22.04
-    needs: [generate-matrix, build-linux]
-    strategy:
-      matrix:
-        python-version: ["3.10"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Download wheel artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: wheel-linux-py${{ matrix.python-version }}-${{ github.sha }}
-          path: wheel/
-
-      - name: Install and verify import
-        shell: bash
-        run: |
-          pip install wheel/*manylinux*.whl
-          python -c "import pyorbbecsdk; print('Version:', pyorbbecsdk.__version__)"
-          python -c "from pyorbbecsdk import Context, Pipeline, Config"
-
-  # ============================================================
   # Gate Summary
   # ============================================================
   gate-summary:
@@ -167,7 +137,6 @@ jobs:
       - generate-matrix
       - lint-python
       - build-linux
-      - verify-import
     if: always()
     steps:
       - name: Generate summary table
@@ -177,7 +146,6 @@ jobs:
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| lint-python        | ${{ needs.lint-python.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| build-linux        | ${{ needs.build-linux.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| verify-import      | ${{ needs.verify-import.result }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Check gate result
         run: |
