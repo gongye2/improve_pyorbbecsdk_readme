@@ -262,6 +262,9 @@ PYBIND11_MODULE(pyorbbecsdk, m) {
   pyorbbecsdk::define_sequence_id_filter(m);
   pyorbbecsdk::define_noise_removal_filter(m);
   pyorbbecsdk::define_decimation_filter(m);
+  pyorbbecsdk::define_edge_noise_removal_filter(m);
+  pyorbbecsdk::define_mgc_noise_removal_filter(m);
+  pyorbbecsdk::define_lut_noise_removal_filter(m);
   pyorbbecsdk::define_filter_list(m);
 
   // context
@@ -351,6 +354,9 @@ PYBIND11_MODULE(pyorbbecsdk2, m) {
   pyorbbecsdk::define_sequence_id_filter(m);
   pyorbbecsdk::define_noise_removal_filter(m);
   pyorbbecsdk::define_decimation_filter(m);
+  pyorbbecsdk::define_edge_noise_removal_filter(m);
+  pyorbbecsdk::define_mgc_noise_removal_filter(m);
+  pyorbbecsdk::define_lut_noise_removal_filter(m);
   pyorbbecsdk::define_filter_list(m);
 
   // context

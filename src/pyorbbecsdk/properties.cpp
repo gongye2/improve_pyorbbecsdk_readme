@@ -96,6 +96,9 @@ void define_properties(const py::object& m) {
       .value("OB_PROP_COLOR_PRESET_PRIORITY_INT",
              OBPropertyID::OB_PROP_COLOR_PRESET_PRIORITY_INT,
              "Color camera preset priority")
+      .value("OB_PROP_COLOR_ANTI_FLICKER_BOOL",
+             OBPropertyID::OB_PROP_COLOR_ANTI_FLICKER_BOOL,
+             "Color anti-flicker switch")
       .value("OB_PROP_DEPTH_PRECISION_LEVEL_INT",
              OBPropertyID::OB_PROP_DEPTH_PRECISION_LEVEL_INT,
              "he depth precision level, which may change the depth frame data "
@@ -375,6 +378,9 @@ void define_properties(const py::object& m) {
       .value("OB_STRUCT_RGB_CROP_ROI", OBPropertyID::OB_STRUCT_RGB_CROP_ROI)
       .value("OB_STRUCT_DEVICE_IP_ADDR_CONFIG",
              OBPropertyID::OB_STRUCT_DEVICE_IP_ADDR_CONFIG)
+      .value("OB_STRUCT_DEVICE_IP_ADDR_CONFIG_V2",
+             OBPropertyID::OB_STRUCT_DEVICE_IP_ADDR_CONFIG_V2,
+             "Device IP address configuration v2")
       .value("OB_STRUCT_CURRENT_DEPTH_ALG_MODE",
              OBPropertyID::OB_STRUCT_CURRENT_DEPTH_ALG_MODE)
       .value("OB_STRUCT_DEPTH_PRECISION_SUPPORT_LIST",

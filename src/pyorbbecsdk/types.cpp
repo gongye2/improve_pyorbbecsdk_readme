@@ -27,7 +27,35 @@ void define_orbbec_types(const py::object &m) {
 
   py::enum_<OBStatus>(m, "OBStatus")
       .value("STATUS_OK", OB_STATUS_OK)
-      .value("STATUS_ERROR", OB_STATUS_ERROR);
+      .value("STATUS_ERROR", OB_STATUS_ERROR)
+      .value("ERROR_UNKNOWN", OB_ERROR_UNKNOWN)
+      .value("ERROR_INVALID_PARAMETER", OB_ERROR_INVALID_PARAMETER)
+      .value("ERROR_INVALID_DATA", OB_ERROR_INVALID_DATA)
+      .value("ERROR_INVALID_DATA_LEN", OB_ERROR_INVALID_DATA_LEN)
+      .value("ERROR_BUFFER_TOO_SMALL", OB_ERROR_BUFFER_TOO_SMALL)
+      .value("ERROR_MEMORY", OB_ERROR_MEMORY)
+      .value("ERROR_WAIT_TIMEOUT", OB_ERROR_WAIT_TIMEOUT)
+      .value("ERROR_NOT_IMPLEMENTED", OB_ERROR_NOT_IMPLEMENTED)
+      .value("ERROR_UNSUPPORTED_OPERATION", OB_ERROR_UNSUPPORTED_OPERATION)
+      .value("ERROR_WRONG_API_CALL_SEQUENCE", OB_ERROR_WRONG_API_CALL_SEQUENCE)
+      .value("ERROR_NO_DEVICE", OB_ERROR_NO_DEVICE)
+      .value("ERROR_DEVICE_CONNECT_FAILED", OB_ERROR_DEVICE_CONNECT_FAILED)
+      .value("ERROR_DEVICE_ACCESS_DENIED", OB_ERROR_DEVICE_ACCESS_DENIED)
+      .value("ERROR_DEVICE_DISCONNECTED", OB_ERROR_DEVICE_DISCONNECTED)
+      .value("ERROR_DEVICE_UNAVAILABLE", OB_ERROR_DEVICE_UNAVAILABLE)
+      .value("ERROR_ITEM_NOT_FOUND", OB_ERROR_ITEM_NOT_FOUND)
+      .value("ERROR_IO_FAILURE", OB_ERROR_IO_FAILURE)
+      .value("ERROR_RESOURCE_BUSY", OB_ERROR_RESOURCE_BUSY)
+      .value("ERROR_FRAME_QUEUE_OVERFLOW", OB_ERROR_FRAME_QUEUE_OVERFLOW)
+      .value("ERROR_FRAME_DATA", OB_ERROR_FRAME_DATA)
+      .value("ERROR_FRAME_DATA_LEN", OB_ERROR_FRAME_DATA_LEN)
+      .value("ERROR_DEVICE_UNKNOWN", OB_ERROR_DEVICE_UNKNOWN)
+      .value("ERROR_DEVICE_RESPONSE_BAD_MAGIC", OB_ERROR_DEVICE_RESPONSE_BAD_MAGIC)
+      .value("ERROR_DEVICE_RESPONSE_WRONG_ID", OB_ERROR_DEVICE_RESPONSE_WRONG_ID)
+      .value("ERROR_DEVICE_RESPONSE_WRONG_OPCODE", OB_ERROR_DEVICE_RESPONSE_WRONG_OPCODE)
+      .value("ERROR_DEVICE_RESPONSE_WRONG_DATA_SIZE", OB_ERROR_DEVICE_RESPONSE_WRONG_DATA_SIZE)
+      .value("ERROR_DEVICE_RESPONSE_ERROR", OB_ERROR_DEVICE_RESPONSE_ERROR)
+      .value("ERROR_DEVICE_RESPONSE_WARNING", OB_ERROR_DEVICE_RESPONSE_WARNING);
 
   py::enum_<OBLogSeverity>(m, "OBLogLevel")
       .value("DEBUG", OB_LOG_SEVERITY_DEBUG)
@@ -45,7 +73,13 @@ void define_orbbec_types(const py::object &m) {
       .value("WRONG_API_CALL_SEQUENCE",
              OB_EXCEPTION_TYPE_WRONG_API_CALL_SEQUENCE)
       .value("NOT_IMPLEMENTED", OB_EXCEPTION_TYPE_NOT_IMPLEMENTED)
-      .value("IO_ERROR", OB_EXCEPTION_TYPE_IO);
+      .value("IO_ERROR", OB_EXCEPTION_TYPE_IO)
+      .value("UNSUPPORTED_OPERATION", OB_EXCEPTION_TYPE_UNSUPPORTED_OPERATION)
+      .value("ACCESS_DENIED", OB_EXCEPTION_TYPE_ACCESS_DENIED)
+      .value("DEVICE_UNAVAILABLE", OB_EXCEPTION_TYPE_DEVICE_UNAVAILABLE)
+      .value("INVALID_DATA", OB_EXCEPTION_TYPE_INVALID_DATA)
+      .value("NOT_FOUND", OB_EXCEPTION_TYPE_NOT_FOUND)
+      .value("RESOURCE_BUSY", OB_EXCEPTION_TYPE_RESOURCE_BUSY);
 
   py::enum_<OBSensorType>(m, "OBSensorType")
       .value("UNKNOWN_SENSOR", OB_SENSOR_UNKNOWN)
@@ -831,15 +865,71 @@ void define_orbbec_types(const py::object &m) {
   py::class_<OBEdgeNoiseRemovalFilterParams>(m,
                                              "OBEdgeNoiseRemovalFilterParams")
       .def(py::init<>())
-      .def_readwrite("type", &OBEdgeNoiseRemovalFilterParams::type)
-      .def_readwrite("margin_left_th",
-                     &OBEdgeNoiseRemovalFilterParams::marginLeftTh)
-      .def_readwrite("margin_right_th",
-                     &OBEdgeNoiseRemovalFilterParams::marginRightTh)
-      .def_readwrite("margin_top_th",
-                     &OBEdgeNoiseRemovalFilterParams::marginTopTh)
-      .def_readwrite("margin_bottom_th",
-                     &OBEdgeNoiseRemovalFilterParams::marginBottomTh);
+      .def_readwrite("margin_x_th", &OBEdgeNoiseRemovalFilterParams::margin_x_th)
+      .def_readwrite("margin_y_th", &OBEdgeNoiseRemovalFilterParams::margin_y_th)
+      .def_readwrite("limit_x_th", &OBEdgeNoiseRemovalFilterParams::limit_x_th)
+      .def_readwrite("limit_y_th", &OBEdgeNoiseRemovalFilterParams::limit_y_th)
+      .def_readwrite("width", &OBEdgeNoiseRemovalFilterParams::width)
+      .def_readwrite("height", &OBEdgeNoiseRemovalFilterParams::height)
+      .def_readwrite("enable_direction", &OBEdgeNoiseRemovalFilterParams::enable_direction)
+      .def("__repr__", [](const OBEdgeNoiseRemovalFilterParams &p) {
+        return "<OBEdgeNoiseRemovalFilterParams margin_x_th=" + std::to_string(p.margin_x_th) +
+               " margin_y_th=" + std::to_string(p.margin_y_th) +
+               " limit_x_th=" + std::to_string(p.limit_x_th) +
+               " limit_y_th=" + std::to_string(p.limit_y_th) +
+               " width=" + std::to_string(p.width) +
+               " height=" + std::to_string(p.height) +
+               " enable_direction=" + std::to_string(p.enable_direction) + ">";
+      });
+
+  // OBMgcNoiseRemovalFilterParams for SDK v2.8.1
+  py::class_<OBMgcNoiseRemovalFilterParams>(m, "OBMgcNoiseRemovalFilterParams")
+      .def(py::init<>())
+      .def_readwrite("max_width_left", &OBMgcNoiseRemovalFilterParams::max_width_left)
+      .def_readwrite("max_width_right", &OBMgcNoiseRemovalFilterParams::max_width_right)
+      .def_readwrite("max_radius", &OBMgcNoiseRemovalFilterParams::max_radius)
+      .def_readwrite("margin_x_th", &OBMgcNoiseRemovalFilterParams::margin_x_th)
+      .def_readwrite("margin_y_th", &OBMgcNoiseRemovalFilterParams::margin_y_th)
+      .def_readwrite("limit_x_th", &OBMgcNoiseRemovalFilterParams::limit_x_th)
+      .def_readwrite("limit_y_th", &OBMgcNoiseRemovalFilterParams::limit_y_th)
+      .def_readwrite("width", &OBMgcNoiseRemovalFilterParams::width)
+      .def_readwrite("height", &OBMgcNoiseRemovalFilterParams::height)
+      .def("__repr__", [](const OBMgcNoiseRemovalFilterParams &p) {
+        return "<OBMgcNoiseRemovalFilterParams max_width_left=" + std::to_string(p.max_width_left) +
+               " max_width_right=" + std::to_string(p.max_width_right) +
+               " max_radius=" + std::to_string(p.max_radius) +
+               " margin_x_th=" + std::to_string(p.margin_x_th) +
+               " margin_y_th=" + std::to_string(p.margin_y_th) +
+               " limit_x_th=" + std::to_string(p.limit_x_th) +
+               " limit_y_th=" + std::to_string(p.limit_y_th) +
+               " width=" + std::to_string(p.width) +
+               " height=" + std::to_string(p.height) + ">";
+      });
+
+  // OBLutNoiseRemovalFilterParams for SDK v2.8.1
+  py::class_<OBLutNoiseRemovalFilterParams>(m, "OBLutNoiseRemovalFilterParams")
+      .def(py::init<>())
+      .def_property(
+          "max_lut",
+          [](const OBLutNoiseRemovalFilterParams &self) -> py::array_t<uint16_t> {
+            py::array_t<uint16_t> arr(16);
+            std::memcpy(arr.mutable_data(), self.max_lut, 16 * sizeof(uint16_t));
+            return arr;
+          },
+          [](OBLutNoiseRemovalFilterParams &self, const py::array_t<uint16_t> &arr) {
+            if (arr.size() != 16) {
+              throw std::runtime_error("max_lut must be an array of 16 elements");
+            }
+            std::memcpy(self.max_lut, arr.data(), 16 * sizeof(uint16_t));
+          })
+      .def_readwrite("min_diff", &OBLutNoiseRemovalFilterParams::min_diff)
+      .def_readwrite("width", &OBLutNoiseRemovalFilterParams::width)
+      .def_readwrite("height", &OBLutNoiseRemovalFilterParams::height)
+      .def("__repr__", [](const OBLutNoiseRemovalFilterParams &p) {
+        return "<OBLutNoiseRemovalFilterParams min_diff=" + std::to_string(p.min_diff) +
+               " width=" + std::to_string(p.width) +
+               " height=" + std::to_string(p.height) + ">";
+      });
 
   py::enum_<OBDDONoiseRemovalType>(m, "OBDDONoiseRemovalType")
       .value("LUT", OBDDONoiseRemovalType::OB_NR_LUT)
@@ -910,6 +1000,73 @@ void define_orbbec_types(const py::object &m) {
               config.gateway[i] = std::stoi(addr[i]);
             }
           });
+
+  // OBNetIpConfigV2 for SDK v2.8.1
+  py::class_<OBNetIpConfigV2>(m, "OBNetIpConfigV2")
+      .def(py::init<>())
+      .def_readwrite("flags", &OBNetIpConfigV2::flags)
+      .def_property(
+          "address",
+          [](const OBNetIpConfigV2 &config) -> std::string {
+            std::string addr = std::to_string(config.address[0]) + "." +
+                               std::to_string(config.address[1]) + "." +
+                               std::to_string(config.address[2]) + "." +
+                               std::to_string(config.address[3]);
+            return addr;
+          },
+          [](OBNetIpConfigV2 &config, const std::string &str) {
+            auto addr = split(str, ".");
+            if (addr.size() != 4) {
+              throw std::runtime_error("Invalid IP address");
+            }
+            for (int i = 0; i < 4; i++) {
+              config.address[i] = std::stoi(addr[i]);
+            }
+          })
+      .def_property(
+          "netmask",
+          [](const OBNetIpConfigV2 &config) -> std::string {
+            std::string addr = std::to_string(config.mask[0]) + "." +
+                               std::to_string(config.mask[1]) + "." +
+                               std::to_string(config.mask[2]) + "." +
+                               std::to_string(config.mask[3]);
+            return addr;
+          },
+          [](OBNetIpConfigV2 &config, const std::string &str) {
+            auto addr = split(str, ".");
+
+            if (addr.size() != 4) {
+              throw std::runtime_error("Invalid netmask");
+            }
+            for (int i = 0; i < 4; i++) {
+              config.mask[i] = std::stoi(addr[i]);
+            }
+          })
+      .def_property(
+          "gateway",
+          [](const OBNetIpConfigV2 &config) -> std::string {
+            std::string addr = std::to_string(config.gateway[0]) + "." +
+                               std::to_string(config.gateway[1]) + "." +
+                               std::to_string(config.gateway[2]) + "." +
+                               std::to_string(config.gateway[3]);
+            return addr;
+          },
+          [](OBNetIpConfigV2 &config, const std::string &str) {
+            auto addr = split(str, ".");
+            if (addr.size() != 4) {
+              throw std::runtime_error("Invalid gateway");
+            }
+            for (int i = 0; i < 4; i++) {
+              config.gateway[i] = std::stoi(addr[i]);
+            }
+          })
+      .def("__repr__", [](const OBNetIpConfigV2 &c) {
+        return "<OBNetIpConfigV2 flags=" + std::to_string(c.flags) +
+               " address=" + std::to_string(c.address[0]) + "." +
+               std::to_string(c.address[1]) + "." +
+               std::to_string(c.address[2]) + "." +
+               std::to_string(c.address[3]) + ">";
+      });
 
   py::enum_<OBCommunicationType>(m, "OBCommunicationType")
       .value("USB", OBCommunicationType::OB_COMM_USB)
@@ -1205,5 +1362,37 @@ void define_orbbec_types(const py::object &m) {
              OBDeviceAccessMode::OB_DEVICE_MONITOR_ACCESS)
       .value("OB_DEVICE_DEFAULT_ACCESS",
              OBDeviceAccessMode::OB_DEVICE_DEFAULT_ACCESS);
+
+  // OBIpSourceType for SDK v2.8.1
+  py::enum_<OBIpSourceType>(m, "OBIpSourceType")
+      .value("NONE", OB_IP_SOURCE_NONE)
+      .value("LLA", OB_IP_SOURCE_LLA)
+      .value("DHCP", OB_IP_SOURCE_DHCP)
+      .value("PERSISTENT", OB_IP_SOURCE_PERSISTENT);
+
+  // New enums and structs for SDK v2.8.1
+  py::enum_<OBGvcpPortScheme>(m, "OBGvcpPortScheme")
+      .value("STANDARD", OB_GVCP_PORT_SCHEME_STANDARD)
+      .value("B", OB_GVCP_PORT_SCHEME_B);
+
+  py::enum_<OBPipelineIssue>(m, "OBPipelineIssue")
+      .value("NONE", OB_PIPELINE_ISSUE_NONE)
+      .value("SDK", OB_PIPELINE_ISSUE_SDK)
+      .value("DRIVER", OB_PIPELINE_ISSUE_DRIVER)
+      .value("FW", OB_PIPELINE_ISSUE_FW)
+      .value("HW", OB_PIPELINE_ISSUE_HW);
+
+  py::class_<OBPipelineStatus>(m, "OBPipelineStatus")
+      .def(py::init<>())
+      .def_readwrite("issue", &OBPipelineStatus::issue)
+      .def_readwrite("sdk_status", &OBPipelineStatus::sdkStatus)
+      .def_readwrite("dev_status", &OBPipelineStatus::devStatus)
+      .def_readwrite("drv_status", &OBPipelineStatus::drvStatus)
+      .def("__repr__", [](const OBPipelineStatus &s) {
+        return "<OBPipelineStatus issue=" + std::to_string(s.issue) +
+               " sdk_status=" + std::to_string(s.sdkStatus) +
+               " dev_status=" + std::to_string(s.devStatus) +
+               " drv_status=" + std::to_string(s.drvStatus) + ">";
+      });
 }
 }  // namespace pyorbbecsdk
