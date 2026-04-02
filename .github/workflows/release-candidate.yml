@@ -21,6 +21,17 @@ on:
           - min
           - default
           - all
+      platform:
+        description: 'Platform to build (linux-x64/linux-arm64/macos/windows-x64/all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - linux-x64
+          - linux-arm64
+          - macos
+          - windows-x64
 
 env:
   UV_LINK_MODE: copy
@@ -43,7 +54,9 @@ jobs:
         id: set-matrix
         run: |
           VERSION_MODE="${{ github.event.inputs.python_versions || 'all' }}"
+          PLATFORM="${{ github.event.inputs.platform || 'all' }}"
           echo "Version mode: $VERSION_MODE"
+          echo "Platform: $PLATFORM"
 
           case "$VERSION_MODE" in
             min)
@@ -57,26 +70,34 @@ jobs:
               ;;
           esac
 
-          # Build matrix: (Linux x64, Linux ARM64, Windows, macOS) x Python versions
+          # Build matrix based on platform selection
           MATRIX="["
           FIRST=true
 
           for pyver in "${VERSIONS[@]}"; do
             # Linux x64 (ubuntu-22.04)
-            if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
-            MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","arch":"x64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-x64-Python-'$pyver'"}'
+            if [[ "$PLATFORM" == "all" || "$PLATFORM" == "linux-x64" ]]; then
+              if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+              MATRIX+='{"os":"ubuntu-22.04","python-version":"'$pyver'","arch":"x64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-x64-Python-'$pyver'"}'
+            fi
 
             # Linux ARM64 (ubuntu-22.04-arm)
-            MATRIX+=","
-            MATRIX+='{"os":"ubuntu-22.04-arm","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
+            if [[ "$PLATFORM" == "all" || "$PLATFORM" == "linux-arm64" ]]; then
+              if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+              MATRIX+='{"os":"ubuntu-22.04-arm","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
+            fi
 
             # Windows (windows-2022)
-            MATRIX+=","
-            MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","arch":"x64","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-x64-Python-'$pyver'"}'
+            if [[ "$PLATFORM" == "all" || "$PLATFORM" == "windows-x64" ]]; then
+              if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+              MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","arch":"x64","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-x64-Python-'$pyver'"}'
+            fi
 
             # macOS (macos-latest)
-            MATRIX+=","
-            MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-arm64-Python-'$pyver'"}'
+            if [[ "$PLATFORM" == "all" || "$PLATFORM" == "macos" ]]; then
+              if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
+              MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-arm64-Python-'$pyver'"}'
+            fi
           done
 
           MATRIX+="]"
