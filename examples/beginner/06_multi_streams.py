@@ -30,7 +30,7 @@ import numpy as np
 from utils import frame_to_bgr_image, is_astra_mini_device
 
 from pyorbbecsdk import OBFormat  # type: ignore
-from pyorbbecsdk import Config, OBError, OBFrameType, OBSensorType, Pipeline
+from pyorbbecsdk import Config, Context, OBError, OBFrameType, OBSensorType, Pipeline
 
 
 class GlobalState:
