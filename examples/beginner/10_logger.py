@@ -15,6 +15,13 @@ def main():
 
     See LOG_CONFIGURATION.md for detailed documentation on log levels and configuration options.
     """
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
     # Set console logger (INFO level)
     # To disable console logging, use OBLogLevel.NONE
     Context.set_logger_to_console(OBLogLevel.INFO)

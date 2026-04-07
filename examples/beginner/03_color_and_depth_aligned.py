@@ -42,6 +42,7 @@ from pyorbbecsdk import OBAlignMode  # type: ignore
 from pyorbbecsdk import (
     AlignFilter,
     Config,
+    Context,
     OBFormat,
     OBFrameAggregateOutputMode,
     OBSensorType,
@@ -102,6 +103,13 @@ def switch_hw_d2c(pipeline: Pipeline, config: Config, enable: bool):
 
 
 def main():
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
     parser = argparse.ArgumentParser(description="Color + Depth aligned viewer")
     parser.add_argument(
         "--hw",

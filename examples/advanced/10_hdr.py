@@ -24,6 +24,7 @@ import numpy as np
 from pyorbbecsdk import HDRMergeFilter  # type: ignore
 from pyorbbecsdk import (
     Config,
+    Context,
     OBFrameAggregateOutputMode,
     OBHdrConfig,
     OBPermissionType,
@@ -83,6 +84,13 @@ def enhance_contrast(image, clip_limit=3.0, tile_grid_size=(8, 8)):
 
 
 def main(argv):
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
     pipeline = Pipeline()
     device = pipeline.get_device()
     is_support_hdr = device.is_property_supported(

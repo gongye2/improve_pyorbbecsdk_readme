@@ -25,6 +25,7 @@ import numpy as np
 from pyorbbecsdk import OBFormat  # type: ignore
 from pyorbbecsdk import (
     Config,
+    Context,
     OBError,
     OBFrameAggregateOutputMode,
     OBFrameType,
@@ -255,6 +256,13 @@ def main():
     global postDepthFilter
     global postLeftInfraredFilter
     global postRightInfraredFilter
+
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
 
     WINDOW_NAME = "Viewer"
     DISPLAY_WIDTH = 1280

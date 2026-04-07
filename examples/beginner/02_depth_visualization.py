@@ -181,8 +181,14 @@ def _render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
 
 
 def main():
-    # Suppress SDK info messages; set DEBUG for diagnostics
+    # Check if device is connected
     ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
+    # Suppress SDK info messages; set DEBUG for diagnostics
     ctx.set_logger_level(OBLogLevel.WARNING)
 
     # --- Step 1: Create pipeline and configure depth stream ---

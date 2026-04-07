@@ -78,6 +78,13 @@ def save_color_frame(frame: ColorFrame, index):
 
 
 def main():
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
     pipeline = Pipeline()
     config = Config()
 

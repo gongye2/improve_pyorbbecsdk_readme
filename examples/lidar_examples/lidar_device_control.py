@@ -86,20 +86,24 @@ def printf_property_list(device, property_list):
         str_range = ""
         try:
             if item.type == OBPropertyType.OB_BOOL_PROPERTY:
+                # Bool type: fixed string, no range query needed
                 str_range = "Bool value(min:0, max:1, step:1)"
             elif item.type == OBPropertyType.OB_INT_PROPERTY:
-                if item.permission & OBPermissionType.PERMISSION_READ:
+                # Try to get range (same as 06_control.py)
+                try:
                     int_range = device.get_int_property_range(item.id)
                     str_range = f"Int value(min:{int_range.min}, max:{int_range.max}, step:{int_range.step})"
-                else:
+                except Exception:
                     str_range = "Int value"
             elif item.type == OBPropertyType.OB_FLOAT_PROPERTY:
-                float_range = device.get_float_property_range(item.id)
-                str_range = (
-                    f"Float value(min:{float_range.min:.2f}, max:{float_range.max:.2f}, step:{float_range.step:.2f})"
-                )
+                # Try to get range (same as 06_control.py)
+                try:
+                    float_range = device.get_float_property_range(item.id)
+                    str_range = f"Float value(min:{float_range.min:.2f}, max:{float_range.max:.2f}, step:{float_range.step:.2f})"
+                except Exception:
+                    str_range = "Float value"
         except Exception:
-            str_range = "get range failed"
+            str_range = "Int value" if item.type == OBPropertyType.OB_INT_PROPERTY else "Float value"
 
         print(
             f"{i:02d}. {item.name}({int(item.id)}), "

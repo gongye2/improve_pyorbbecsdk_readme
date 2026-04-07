@@ -24,7 +24,7 @@ import cv2
 import numpy as np
 
 from pyorbbecsdk import OBSensorType  # type: ignore
-from pyorbbecsdk import Config, OBError, OBStreamType, Pipeline
+from pyorbbecsdk import Config, Context, OBError, OBStreamType, Pipeline
 
 # --- Configuration Constants ---
 ESC_KEY = 27
@@ -191,6 +191,13 @@ def filter_control(filter_list):
 def main():
     global quit_program
     try:
+        # Check if device is connected
+        ctx = Context()
+        device_list = ctx.query_devices()
+        if device_list.get_count() == 0:
+            print("Device Not Found! Please connect an Orbbec camera and try again.")
+            return
+
         # Initialize the Orbbec pipeline and stream configuration
         pipeline = Pipeline()
         config = Config()

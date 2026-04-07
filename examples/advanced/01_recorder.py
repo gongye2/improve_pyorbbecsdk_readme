@@ -39,6 +39,7 @@ from utils import frame_to_bgr_image, is_astra_mini_device
 from pyorbbecsdk import OBFormat  # type: ignore
 from pyorbbecsdk import (
     Config,
+    Context,
     OBError,
     OBFrameType,
     OBSensorType,
@@ -215,7 +216,7 @@ def _create_imu_panel(imu_frame, title, w=480, h=240):
     panel = np.zeros((h, w, 3), dtype=np.uint8)
     if not imu_frame:
         return panel
-    unit = "rad/s" if title == "GYRO" else "m/s²"
+    unit = "rad/s" if title == "GYRO" else "m/s^2"
     lines = [
         f"{title}:",
         f"  Time: {imu_frame.get_timestamp_us()} us",
@@ -378,6 +379,13 @@ def render_frames():
 
 
 def main():
+    # Check if device is connected
+    ctx = Context()
+    device_list = ctx.query_devices()
+    if device_list.get_count() == 0:
+        print("Device Not Found! Please connect an Orbbec camera and try again.")
+        return
+
     parser = argparse.ArgumentParser(description="Multi-stream recorder")
     parser.add_argument(
         "--no-gui",
