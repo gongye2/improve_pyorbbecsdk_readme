@@ -629,7 +629,13 @@ function Invoke-BuildVersion {
 
     # Build wheel via uv
     Write-Host "Building wheel..."
-    uv build --wheel --python $PyVer --link-mode copy
+    Push-Location $ROOT_DIR
+    try {
+        uv build --wheel --python $PyVer --link-mode copy
+    }
+    finally {
+        Pop-Location
+    }
 
     $distDir = Join-Path $ROOT_DIR "dist"
     if (Test-Path $distDir) {
