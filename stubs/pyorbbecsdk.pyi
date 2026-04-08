@@ -237,20 +237,16 @@ class Config:
     def disable_stream(self, arg0: OBSensorType) -> None: ...
     def enable_accel_stream(
         self,
-        full_scale_range: OBAccelFullScaleRange = OBAccelFullScaleRange.ACCEL_FS_UNKNOWN,
-        sample_rate: OBGyroSampleRate = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN,
+        full_scale_range: OBAccelFullScaleRange = ...,
+        sample_rate: OBGyroSampleRate = ...,
     ) -> None: ...
     def enable_all_stream(self) -> None: ...
     def enable_gyro_stream(
         self,
-        full_scale_range: OBGyroFullScaleRange = OBGyroFullScaleRange.FS_UNKNOWN,
-        sample_rate: OBGyroSampleRate = OBGyroSampleRate.SAMPLE_RATE_UNKNOWN,
+        full_scale_range: OBGyroFullScaleRange = ...,
+        sample_rate: OBGyroSampleRate = ...,
     ) -> None: ...
-    def enable_lidar_stream(
-        self,
-        scan_rate: OBLiDARScanRate = OBLiDARScanRate.LIDAR_SCAN_UNKNOWN,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
-    ) -> None: ...
+    def enable_lidar_stream(self, scan_rate: OBLiDARScanRate = ..., format: OBFormat = ...) -> None: ...
     @typing.overload
     def enable_stream(self, arg0: StreamProfile) -> None: ...
     @typing.overload
@@ -264,7 +260,7 @@ class Config:
         width: typing.SupportsInt | typing.SupportsIndex = 0,
         height: typing.SupportsInt | typing.SupportsIndex = 0,
         fps: typing.SupportsInt | typing.SupportsIndex = 0,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
+        format: OBFormat = ...,
     ) -> None: ...
     @typing.overload
     def enable_video_stream(
@@ -273,7 +269,7 @@ class Config:
         width: typing.SupportsInt | typing.SupportsIndex = 0,
         height: typing.SupportsInt | typing.SupportsIndex = 0,
         fps: typing.SupportsInt | typing.SupportsIndex = 0,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
+        format: OBFormat = ...,
     ) -> None: ...
     @typing.overload
     def enable_video_stream(
@@ -281,7 +277,7 @@ class Config:
         sensor_type: OBSensorType,
         decimation_config: OBHardwareDecimationConfig,
         fps: typing.SupportsInt | typing.SupportsIndex = 0,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
+        format: OBFormat = ...,
     ) -> None: ...
     def get_enabled_stream_profile_list(self) -> StreamProfileList: ...
     def set_align_mode(self, arg0: OBAlignMode) -> None: ...
@@ -332,7 +328,7 @@ class Context:
         self,
         address: str,
         port: typing.SupportsInt | typing.SupportsIndex,
-        access_mode: OBDeviceAccessMode = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS,
+        access_mode: OBDeviceAccessMode = ...,
     ) -> Device:
         """
         Create net device
@@ -526,18 +522,10 @@ class DeviceList:
     def get_device_by_index(
         self,
         index: typing.SupportsInt | typing.SupportsIndex,
-        access_mode: OBDeviceAccessMode = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS,
+        access_mode: OBDeviceAccessMode = ...,
     ) -> Device: ...
-    def get_device_by_serial_number(
-        self,
-        serial_number: str,
-        access_mode: OBDeviceAccessMode = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS,
-    ) -> Device: ...
-    def get_device_by_uid(
-        self,
-        uid: str,
-        access_mode: OBDeviceAccessMode = OBDeviceAccessMode.OB_DEVICE_DEFAULT_ACCESS,
-    ) -> Device: ...
+    def get_device_by_serial_number(self, serial_number: str, access_mode: OBDeviceAccessMode = ...) -> Device: ...
+    def get_device_by_uid(self, uid: str, access_mode: OBDeviceAccessMode = ...) -> Device: ...
     def get_device_connection_type_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
     def get_device_gateway_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
     def get_device_ip_address_by_index(self, arg0: typing.SupportsInt | typing.SupportsIndex) -> str: ...
@@ -5154,14 +5142,14 @@ class StreamProfileList:
         self,
         width: typing.SupportsInt | typing.SupportsIndex = 0,
         height: typing.SupportsInt | typing.SupportsIndex = 0,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
+        format: OBFormat = ...,
         fps: typing.SupportsInt | typing.SupportsIndex = 0,
     ) -> VideoStreamProfile: ...
     @typing.overload
     def get_video_stream_profile(
         self,
         decimation_config: OBHardwareDecimationConfig,
-        format: OBFormat = OBFormat.UNKNOWN_FORMAT,
+        format: OBFormat = ...,
         fps: typing.SupportsInt | typing.SupportsIndex = 0,
     ) -> VideoStreamProfile: ...
 

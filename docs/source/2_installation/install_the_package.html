@@ -107,7 +107,6 @@
 <li class="toctree-l3"><a class="reference internal" href="virtual_environment_guide.html#platform-specific-notes">2.1.7. Platform-Specific Notes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="virtual_environment_guide.html#linux">2.1.7.1. Linux</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="virtual_environment_guide.html#ubuntu-debian">2.1.7.1.1. Ubuntu/Debian</a></li>
-<li class="toctree-l5"><a class="reference internal" href="virtual_environment_guide.html#udev-rules">2.1.7.1.2. udev Rules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="virtual_environment_guide.html#macos">2.1.7.2. macOS</a><ul>
@@ -664,10 +663,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmode">6.4.4.3. OBDepthWorkMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodelist">6.4.4.4. OBDepthWorkModeList</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBDepthWorkModeTag"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obpresetresolutionconfig">6.4.4.6. OBPresetResolutionConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obalignmode">6.4.4.7. OBAlignMode</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBAlignMode"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBAlignMode</span></code></a></li>
@@ -1144,12 +1140,15 @@ orbbec_env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
 <h3><span class="section-number">2.3.2.4. </span>Environment Setup (One-Time)<a class="headerlink" href="#environment-setup-one-time" title="Link to this heading"></a></h3>
 <p>Before using the SDK, run the environment setup script once per machine to configure device permissions (Linux) and register UVC metadata (Windows).</p>
 <p><strong>Quick Setup:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From repository</span>
-<span class="nb">cd</span><span class="w"> </span>pyorbbecsdk/scripts/env_setup
-python<span class="w"> </span>setup_env.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1: From repository</span>
+python<span class="w"> </span>scripts/env_setup/setup_env.py
 
-<span class="c1"># Or from installed package</span>
-python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
+<span class="c1"># Option 2: From installed package (v2.1.0+)</span>
+<span class="c1"># 1. Get pyorbbecsdk installation path</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
+<span class="c1"># Example output: /path/to/site-packages/pyorbbecsdk</span>
+<span class="c1"># 2. Run setup.py(replace with the path from step 1)</span>
+python<span class="w"> </span>/path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 </pre></div>
 </div>
 <table border="1" class="docutils">
@@ -1197,7 +1196,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
 <section id="method-1-pip-install-recommended">
 <h3><span class="section-number">2.3.2.7. </span>Method 1: pip install (Recommended)<a class="headerlink" href="#method-1-pip-install-recommended" title="Link to this heading"></a></h3>
 <p>The easiest way to install pyorbbecsdk is from PyPI:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
 </pre></div>
 </div>
 <p><strong>Features:</strong></p>
@@ -1254,15 +1253,11 @@ python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
 <section id="step-2-install-the-wheel">
 <h4><span class="section-number">2.3.2.8.2. </span>Step 2: Install the Wheel<a class="headerlink" href="#step-2-install-the-wheel" title="Link to this heading"></a></h4>
 <p>Navigate to the download directory and install:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux/macOS</span>
-python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyorbbecsdk-2.1.0-cp311-cp311-linux_x86_64.whl
-
-<span class="c1"># Windows</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyorbbecsdk-2.1.0-cp311-cp311-win_amd64.whl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyorbbecsdk-2.1.0-cp311-cp311-&lt;platform&gt;.whl
 </pre></div>
 </div>
 <p>Verify installation (package will be listed as <code class="docutils literal notranslate"><span class="pre">pyorbbecsdk2</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2
 </pre></div>
 </div>
 <p>Expected output:</p>
@@ -1283,7 +1278,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># test_installation.py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyorbbecsdk</span>
 
-<span class="c1"># Check version (run: pip3 show pyorbbecsdk2 | grep Version)</span>
+<span class="c1"># Check version (run: pip show pyorbbecsdk2 | grep Version)</span>
 <span class="c1"># or check SDK version with: pyorbbecsdk.get_version()</span>
 
 <span class="c1"># Initialize context and list devices</span>
@@ -1298,17 +1293,16 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
     <span class="n">device_info</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">get_device_info</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Device name: </span><span class="si">{</span><span class="n">device_info</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Serial number: </span><span class="si">{</span><span class="n">device_info</span><span class="o">.</span><span class="n">get_serial_number</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">device</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✅ Installation verified successfully!&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Run the test:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux/Windows</span>
-python3<span class="w"> </span>test_installation.py
+python<span class="w"> </span>test_installation.py
 
 <span class="c1"># macOS (requires sudo -E, see note below)</span>
-sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </span>test_installation.py
+sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </span>test_installation.py
 </pre></div>
 </div>
 </section>
@@ -1316,19 +1310,19 @@ sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </
 <h3><span class="section-number">2.3.2.10. </span>Run an Example<a class="headerlink" href="#run-an-example" title="Link to this heading"></a></h3>
 <p>If you have a camera connected:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find the examples directory</span>
-python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk; import os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk; import os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
 
 <span class="c1"># Run an example (Linux/Windows)</span>
 <span class="nb">cd</span><span class="w"> </span>/path/to/site-packages/pyorbbecsdk
-python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+python<span class="w"> </span>examples/beginner/02_depth_visualization.py
 
 <span class="c1"># macOS (requires sudo -E)</span>
-sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </span>examples/beginner/02_depth_visualization.py
 </pre></div>
 </div>
 <blockquote>
 <div><p><strong>Note for versions &lt; 2.1.0:</strong> If you installed an older version, you need to manually install example dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
 </pre></div>
 </div>
 </div></blockquote>
@@ -1357,10 +1351,10 @@ python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </
 <span class="nb">source</span><span class="w"> </span>orbbec_env/bin/activate
 
 <span class="c1"># Install SDK</span>
-pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
 
 <span class="c1"># Verify installation</span>
-pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
+pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
 </pre></div>
 </div>
 <p><strong>Windows:</strong></p>
@@ -1383,11 +1377,16 @@ pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class=
 <h3><span class="section-number">2.3.4.1. </span>“No device found” (Linux)<a class="headerlink" href="#no-device-found-linux" title="Link to this heading"></a></h3>
 <p><strong>Problem:</strong> Camera not detected or permission denied.</p>
 <p><strong>Solution:</strong> Run the environment setup script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From repository</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="sb">```</span>bash
+<span class="c1"># Option 1: From repository</span>
 python<span class="w"> </span>scripts/env_setup/setup_env.py
 
-<span class="c1"># Or from installed package</span>
-python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
+<span class="c1"># Option 2: From installed package (v2.1.0+)</span>
+<span class="c1"># 1. Get pyorbbecsdk installation path</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
+<span class="c1"># Example output: /path/to/site-packages/pyorbbecsdk</span>
+<span class="c1"># 2. Run setup.py(replace with the path from step 1)</span>
+python<span class="w"> </span>/path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 </pre></div>
 </div>
 <p>Or manually install udev rules:</p>
@@ -1406,7 +1405,7 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w
 <h3><span class="section-number">2.3.4.2. </span>Permission denied (macOS)<a class="headerlink" href="#permission-denied-macos" title="Link to this heading"></a></h3>
 <p><strong>Problem:</strong> <code class="docutils literal notranslate"><span class="pre">Permission</span> <span class="pre">denied</span></code> or <code class="docutils literal notranslate"><span class="pre">Library</span> <span class="pre">not</span> <span class="pre">loaded</span></code> errors.</p>
 <p><strong>Solution:</strong> Use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">-E</span></code> to preserve environment variables:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </span>examples/beginner/02_depth_visualization.py
 </pre></div>
 </div>
 </section>
@@ -1468,11 +1467,11 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w
 <h3><span class="section-number">2.3.4.7. </span>Examples Not Running<a class="headerlink" href="#examples-not-running" title="Link to this heading"></a></h3>
 <p><strong>Problem:</strong> Examples fail with missing dependencies.</p>
 <p><strong>Solution:</strong> Manually install dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
 </pre></div>
 </div>
 <p>For the object detection example, also install:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>onnxruntime
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>onnxruntime
 </pre></div>
 </div>
 </section>
@@ -1489,13 +1488,13 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w
 <section id="common-example-commands">
 <h3><span class="section-number">2.3.5.1. </span>Common Example Commands<a class="headerlink" href="#common-example-commands" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enumerate connected devices</span>
-python3<span class="w"> </span>examples/advanced/04_enumerate.py
+python<span class="w"> </span>examples/advanced/04_enumerate.py
 
 <span class="c1"># Display depth stream</span>
-python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+python<span class="w"> </span>examples/beginner/02_depth_visualization.py
 
 <span class="c1"># Quick start (minimal example)</span>
-python3<span class="w"> </span>examples/quick_start.py
+python<span class="w"> </span>examples/quick_start.py
 </pre></div>
 </div>
 <blockquote>
@@ -1527,7 +1526,7 @@ python3<span class="w"> </span>examples/quick_start.py
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-03-31 14:19:53.
+      <span class="lastupdated">Last updated on 2026-04-08 16:58:15.
       </span></p>
   </div>
 

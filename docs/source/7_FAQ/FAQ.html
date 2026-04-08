@@ -107,7 +107,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#platform-specific-notes">2.1.7. Platform-Specific Notes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux">2.1.7.1. Linux</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#ubuntu-debian">2.1.7.1.1. Ubuntu/Debian</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#udev-rules">2.1.7.1.2. udev Rules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#macos">2.1.7.2. macOS</a><ul>
@@ -664,10 +663,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmode">6.4.4.3. OBDepthWorkMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodelist">6.4.4.4. OBDepthWorkModeList</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBDepthWorkModeTag"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obpresetresolutionconfig">6.4.4.6. OBPresetResolutionConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obalignmode">6.4.4.7. OBAlignMode</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBAlignMode"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBAlignMode</span></code></a></li>
@@ -1118,11 +1114,15 @@
 <p><strong>Solution:</strong></p>
 <p>This is typically a USB permission issue. The current user doesn’t have permission to access the USB device.</p>
 <p><strong>Quick Fix - Run the environment setup script:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From repository</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1: From repository</span>
 python<span class="w"> </span>scripts/env_setup/setup_env.py
 
-<span class="c1"># Or from installed package</span>
-python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
+<span class="c1"># Option 2: From installed package (v2.1.0+)</span>
+<span class="c1"># 1. Get pyorbbecsdk installation path</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
+<span class="c1"># Example output: /path/to/site-packages/pyorbbecsdk</span>
+<span class="c1"># 2. Run setup.py(replace with the path from step 1)</span>
+python<span class="w"> </span>/path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 </pre></div>
 </div>
 <p><strong>Manual Fix - Install udev rules:</strong></p>
@@ -1158,7 +1158,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
 <p><strong>Question:</strong> I get <code class="docutils literal notranslate"><span class="pre">Permission</span> <span class="pre">denied</span></code> or <code class="docutils literal notranslate"><span class="pre">Library</span> <span class="pre">not</span> <span class="pre">loaded</span></code> errors when running on macOS.</p>
 <p><strong>Solution:</strong></p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">-E</span></code> to preserve environment variables (especially important when using virtual environments):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </span>examples/beginner/02_depth_visualization.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </span>examples/beginner/02_depth_visualization.py
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">-E</span></code> flag preserves your Python environment variables, ensuring your virtualenv packages are accessible.</p>
@@ -1210,7 +1210,10 @@ python<span class="w"> </span>-m<span class="w"> </span>pyorbbecsdk.setup_env
 <li><p>Python version (cp38, cp39, cp310, cp311, cp312, cp313)</p></li>
 </ul>
 <p>Check platform tags:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine()); print(platform.system())&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Linux/macOS</span>
+python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine()); print(platform.system())&quot;</span>
+<span class="c1"># For Windows</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine()); print(platform.system())&quot;</span>
 </pre></div>
 </div>
 <p><strong>Wheel naming convention:</strong></p>
@@ -1388,7 +1391,7 @@ sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> <
 <p><strong>Solution:</strong></p>
 <ol>
 <li><p><strong>Check OpenCV installation:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cv2; print(cv2.__version__)&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cv2; print(cv2.__version__)&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -1401,7 +1404,7 @@ sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> <
 </div>
 </li>
 <li><p><strong>Install dependencies</strong> (for versions &lt; 2.1.0):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python<span class="w"> </span>numpy
 </pre></div>
 </div>
 </li>
@@ -1440,10 +1443,10 @@ sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> <
 <p><strong>Solution:</strong></p>
 <p>Install the SDK and verify installation:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the SDK</span>
-pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
 
 <span class="c1"># Verify installation</span>
-pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
+pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
 </pre></div>
 </div>
 <p>If using a virtual environment, ensure it’s activated:</p>
@@ -1506,7 +1509,7 @@ pyorbbecsdk.OBError: usbEnumerator createUsbDevice failed!
 <li><p><strong>If you accidentally denied permission</strong>:</p>
 <ul class="simple">
 <li><p>Open <strong>System Settings</strong> (or System Preferences on older macOS)</p></li>
-<li><p>Go to <strong>Privacy &amp; Security</strong> → <strong>Camera</strong></p></li>
+<li><p>Go to <strong>Privacy &amp; Security</strong> → <strong>Input Monitoring</strong></p></li>
 <li><p>Find <strong>Terminal</strong> (or iTerm2 if using that) in the list</p></li>
 <li><p>Toggle the switch to <strong>ON</strong></p></li>
 </ul>
@@ -1724,7 +1727,7 @@ python<span class="w"> </span>examples/beginner/01_hello_camera.py
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-03-31 14:19:53.
+      <span class="lastupdated">Last updated on 2026-04-08 16:58:15.
       </span></p>
   </div>
 

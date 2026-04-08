@@ -71,12 +71,15 @@ Before using the SDK, run the environment setup script once per machine to confi
 **Quick Setup:**
 
 ```bash
-# From repository
-cd pyorbbecsdk/scripts/env_setup
-python setup_env.py
+# Option 1: From repository
+python scripts/env_setup/setup_env.py
 
-# Or from installed package
-python -m pyorbbecsdk.setup_env
+# Option 2: From installed package (v2.1.0+)
+# 1. Get pyorbbecsdk installation path
+python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))"
+# Example output: /path/to/site-packages/pyorbbecsdk
+# 2. Run setup.py(replace with the path from step 1)
+python /path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 ```
 
 | Platform | Action | Note |
@@ -109,7 +112,7 @@ python -m pyorbbecsdk.setup_env
 The easiest way to install pyorbbecsdk is from PyPI:
 
 ```bash
-pip3 install --upgrade pyorbbecsdk2
+pip install --upgrade pyorbbecsdk2
 ```
 
 **Features:**
@@ -143,17 +146,13 @@ Download the appropriate `.whl` file from [GitHub Releases](https://github.com/o
 Navigate to the download directory and install:
 
 ```bash
-# Linux/macOS
-python3 -m pip install pyorbbecsdk-2.1.0-cp311-cp311-linux_x86_64.whl
-
-# Windows
-python -m pip install pyorbbecsdk-2.1.0-cp311-cp311-win_amd64.whl
+python -m pip install pyorbbecsdk-2.1.0-cp311-cp311-<platform>.whl
 ```
 
 Verify installation (package will be listed as `pyorbbecsdk2`):
 
 ```bash
-pip3 show pyorbbecsdk2
+pip show pyorbbecsdk2
 ```
 
 Expected output:
@@ -174,7 +173,7 @@ Create a test script to verify the installation:
 # test_installation.py
 import pyorbbecsdk
 
-# Check version (run: pip3 show pyorbbecsdk2 | grep Version)
+# Check version (run: pip show pyorbbecsdk2 | grep Version)
 # or check SDK version with: pyorbbecsdk.get_version()
 
 # Initialize context and list devices
@@ -189,7 +188,6 @@ if device_count > 0:
     device_info = device.get_device_info()
     print(f"✓ Device name: {device_info.get_name()}")
     print(f"✓ Serial number: {device_info.get_serial_number()}")
-    device.close()
 
 print("\n✅ Installation verified successfully!")
 ```
@@ -198,10 +196,10 @@ Run the test:
 
 ```bash
 # Linux/Windows
-python3 test_installation.py
+python test_installation.py
 
 # macOS (requires sudo -E, see note below)
-sudo -E python3 test_installation.py
+sudo -E python test_installation.py
 ```
 
 ### Run an Example
@@ -210,19 +208,19 @@ If you have a camera connected:
 
 ```bash
 # Find the examples directory
-python3 -c "import pyorbbecsdk; import os; print(os.path.dirname(pyorbbecsdk.__file__))"
+python -c "import pyorbbecsdk; import os; print(os.path.dirname(pyorbbecsdk.__file__))"
 
 # Run an example (Linux/Windows)
 cd /path/to/site-packages/pyorbbecsdk
-python3 examples/beginner/02_depth_visualization.py
+python examples/beginner/02_depth_visualization.py
 
 # macOS (requires sudo -E)
-sudo -E python3 examples/beginner/02_depth_visualization.py
+sudo -E python examples/beginner/02_depth_visualization.py
 ```
 
 > **Note for versions < 2.1.0:** If you installed an older version, you need to manually install example dependencies:
 > ```bash
-> pip3 install opencv-python numpy
+> pip install opencv-python numpy
 > ```
 
 ---
@@ -252,10 +250,10 @@ python3 -m venv orbbec_env
 source orbbec_env/bin/activate
 
 # Install SDK
-pip3 install --upgrade pyorbbecsdk2
+pip install --upgrade pyorbbecsdk2
 
 # Verify installation
-pip3 show pyorbbecsdk2 | grep Version
+pip show pyorbbecsdk2 | grep Version
 ```
 
 **Windows:**
@@ -283,11 +281,16 @@ pip show pyorbbecsdk2 | findstr Version
 **Solution:** Run the environment setup script:
 
 ```bash
-# From repository
+```bash
+# Option 1: From repository
 python scripts/env_setup/setup_env.py
 
-# Or from installed package
-python -m pyorbbecsdk.setup_env
+# Option 2: From installed package (v2.1.0+)
+# 1. Get pyorbbecsdk installation path
+python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))"
+# Example output: /path/to/site-packages/pyorbbecsdk
+# 2. Run setup.py(replace with the path from step 1)
+python /path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 ```
 
 Or manually install udev rules:
@@ -310,7 +313,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 **Solution:** Use `sudo -E` to preserve environment variables:
 
 ```bash
-sudo -E python3 examples/beginner/02_depth_visualization.py
+sudo -E python examples/beginner/02_depth_visualization.py
 ```
 
 ### ImportError on Windows
@@ -382,12 +385,12 @@ python3 -c "import platform; print(platform.machine()); print(platform.system())
 **Solution:** Manually install dependencies:
 
 ```bash
-pip3 install opencv-python numpy
+pip install opencv-python numpy
 ```
 
 For the object detection example, also install:
 ```bash
-pip3 install onnxruntime
+pip install onnxruntime
 ```
 
 ---
@@ -403,13 +406,13 @@ pip3 install onnxruntime
 
 ```bash
 # Enumerate connected devices
-python3 examples/advanced/04_enumerate.py
+python examples/advanced/04_enumerate.py
 
 # Display depth stream
-python3 examples/beginner/02_depth_visualization.py
+python examples/beginner/02_depth_visualization.py
 
 # Quick start (minimal example)
-python3 examples/quick_start.py
+python examples/quick_start.py
 ```
 
 > **macOS Users:** Remember to prefix commands with `sudo -E` to preserve environment variables.

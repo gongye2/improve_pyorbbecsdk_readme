@@ -47,7 +47,7 @@ Run this command to verify your installation:
 
 ```bash
 # Linux/Windows/macOS
-pip3 show pyorbbecsdk2 | grep Version
+pip show pyorbbecsdk2 | grep Version
 ```
 
 You should see the SDK version printed without errors.
@@ -182,11 +182,15 @@ if color_frame and depth_frame:
 **Solution:** Install udev rules:
 
 ```bash
-# Download the udev rules from the SDK repository
-cd /path/to/pyorbbecsdk/scripts/env_setup
-sudo chmod +x ./install_udev_rules.sh
-sudo ./install_udev_rules.sh
-sudo udevadm control --reload-rules && sudo udevadm trigger
+# Option 1: From repository
+python scripts/env_setup/setup_env.py
+
+# Option 2: From installed package (v2.1.0+)
+# 1. Get pyorbbecsdk installation path
+python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))"
+# Example output: /path/to/site-packages/pyorbbecsdk
+# 2. Run setup.py(replace with the path from step 1)
+python /path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 ```
 
 > **Note:** Without udev rules, you'll need to run scripts with `sudo` every time.
@@ -203,7 +207,7 @@ python examples/beginner/01_hello_camera.py
 **Solution:** Use `sudo -E` to preserve environment variables:
 
 ```bash
-sudo -E python3 hello_camera.py
+sudo -E python hello_camera.py
 ```
 
 The `-E` flag preserves your Python environment (virtualenv, etc.).
@@ -216,10 +220,10 @@ The `-E` flag preserves your Python environment (virtualenv, etc.).
 
 ```bash
 # Install the SDK and dependencies
-pip3 install --upgrade pyorbbecsdk2
+pip install --upgrade pyorbbecsdk2
 
 # Verify installation
-pip3 show pyorbbecsdk2 | grep Version
+pip show pyorbbecsdk2 | grep Version
 ```
 
 ### Empty Frames
@@ -251,7 +255,7 @@ pip3 show pyorbbecsdk2 | grep Version
 
 1. **Check OpenCV installation:**
    ```bash
-   python3 -c "import cv2; print(cv2.__version__)"
+   python -c "import cv2; print(cv2.__version__)"
    ```
 
 2. **Ensure frames are valid before displaying:**

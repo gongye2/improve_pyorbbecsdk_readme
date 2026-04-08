@@ -70,9 +70,21 @@ OBException
         - C++ Binding Object
         - Value
         - Description
+      * - ``ACCESS_DENIED``
+        - ``<OBException.ACCESS_DENIED: 10>``
+        - 10
+        - Auto-generated from C++ bindings
       * - ``CAMERA_DISCONNECTED``
         - ``<OBException.CAMERA_DISCONNECTED: 2>``
         - 2
+        - Auto-generated from C++ bindings
+      * - ``DEVICE_UNAVAILABLE``
+        - ``<OBException.DEVICE_UNAVAILABLE: 11>``
+        - 11
+        - Auto-generated from C++ bindings
+      * - ``INVALID_DATA``
+        - ``<OBException.INVALID_DATA: 12>``
+        - 12
         - Auto-generated from C++ bindings
       * - ``INVALID_VALUE``
         - ``<OBException.INVALID_VALUE: 4>``
@@ -82,6 +94,10 @@ OBException
         - ``<OBException.IO_ERROR: 7>``
         - 7
         - Auto-generated from C++ bindings
+      * - ``NOT_FOUND``
+        - ``<OBException.NOT_FOUND: 13>``
+        - 13
+        - Auto-generated from C++ bindings
       * - ``NOT_IMPLEMENTED``
         - ``<OBException.NOT_IMPLEMENTED: 6>``
         - 6
@@ -90,9 +106,17 @@ OBException
         - ``<OBException.PLATFORM: 3>``
         - 3
         - Auto-generated from C++ bindings
+      * - ``RESOURCE_BUSY``
+        - ``<OBException.RESOURCE_BUSY: 14>``
+        - 14
+        - Auto-generated from C++ bindings
       * - ``UNKNOWN``
         - ``<OBException.UNKNOWN: 0>``
         - 0
+        - Auto-generated from C++ bindings
+      * - ``UNSUPPORTED_OPERATION``
+        - ``<OBException.UNSUPPORTED_OPERATION: 9>``
+        - 9
         - Auto-generated from C++ bindings
       * - ``WRONG_API_CALL_SEQUENCE``
         - ``<OBException.WRONG_API_CALL_SEQUENCE: 5>``
@@ -114,6 +138,106 @@ OBStatus
         - C++ Binding Object
         - Value
         - Description
+      * - ``ERROR_BUFFER_TOO_SMALL``
+        - ``<OBStatus.ERROR_BUFFER_TOO_SMALL: 103>``
+        - 103
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_ACCESS_DENIED``
+        - ``<OBStatus.ERROR_DEVICE_ACCESS_DENIED: 111>``
+        - 111
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_CONNECT_FAILED``
+        - ``<OBStatus.ERROR_DEVICE_CONNECT_FAILED: 110>``
+        - 110
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_DISCONNECTED``
+        - ``<OBStatus.ERROR_DEVICE_DISCONNECTED: 112>``
+        - 112
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_RESPONSE_ERROR``
+        - ``<OBStatus.ERROR_DEVICE_RESPONSE_ERROR: 1005>``
+        - 1005
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_RESPONSE_WARNING``
+        - ``<OBStatus.ERROR_DEVICE_RESPONSE_WARNING: 1006>``
+        - 1006
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_RESPONSE_WRONG_ID``
+        - ``<OBStatus.ERROR_DEVICE_RESPONSE_WRONG_ID: 1002>``
+        - 1002
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_UNAVAILABLE``
+        - ``<OBStatus.ERROR_DEVICE_UNAVAILABLE: 113>``
+        - 113
+        - Auto-generated from C++ bindings
+      * - ``ERROR_DEVICE_UNKNOWN``
+        - ``<OBStatus.ERROR_DEVICE_UNKNOWN: 1000>``
+        - 1000
+        - Auto-generated from C++ bindings
+      * - ``ERROR_FRAME_DATA``
+        - ``<OBStatus.ERROR_FRAME_DATA: 201>``
+        - 201
+        - Auto-generated from C++ bindings
+      * - ``ERROR_FRAME_DATA_LEN``
+        - ``<OBStatus.ERROR_FRAME_DATA_LEN: 202>``
+        - 202
+        - Auto-generated from C++ bindings
+      * - ``ERROR_FRAME_QUEUE_OVERFLOW``
+        - ``<OBStatus.ERROR_FRAME_QUEUE_OVERFLOW: 200>``
+        - 200
+        - Auto-generated from C++ bindings
+      * - ``ERROR_INVALID_DATA``
+        - ``<OBStatus.ERROR_INVALID_DATA: 101>``
+        - 101
+        - Auto-generated from C++ bindings
+      * - ``ERROR_INVALID_DATA_LEN``
+        - ``<OBStatus.ERROR_INVALID_DATA_LEN: 102>``
+        - 102
+        - Auto-generated from C++ bindings
+      * - ``ERROR_INVALID_PARAMETER``
+        - ``<OBStatus.ERROR_INVALID_PARAMETER: 100>``
+        - 100
+        - Auto-generated from C++ bindings
+      * - ``ERROR_IO_FAILURE``
+        - ``<OBStatus.ERROR_IO_FAILURE: 115>``
+        - 115
+        - Auto-generated from C++ bindings
+      * - ``ERROR_ITEM_NOT_FOUND``
+        - ``<OBStatus.ERROR_ITEM_NOT_FOUND: 114>``
+        - 114
+        - Auto-generated from C++ bindings
+      * - ``ERROR_MEMORY``
+        - ``<OBStatus.ERROR_MEMORY: 104>``
+        - 104
+        - Auto-generated from C++ bindings
+      * - ``ERROR_NOT_IMPLEMENTED``
+        - ``<OBStatus.ERROR_NOT_IMPLEMENTED: 106>``
+        - 106
+        - Auto-generated from C++ bindings
+      * - ``ERROR_NO_DEVICE``
+        - ``<OBStatus.ERROR_NO_DEVICE: 109>``
+        - 109
+        - Auto-generated from C++ bindings
+      * - ``ERROR_RESOURCE_BUSY``
+        - ``<OBStatus.ERROR_RESOURCE_BUSY: 116>``
+        - 116
+        - Auto-generated from C++ bindings
+      * - ``ERROR_UNKNOWN``
+        - ``<OBStatus.STATUS_ERROR: 1>``
+        - 1
+        - Auto-generated from C++ bindings
+      * - ``ERROR_UNSUPPORTED_OPERATION``
+        - ``<OBStatus.ERROR_UNSUPPORTED_OPERATION: 107>``
+        - 107
+        - Auto-generated from C++ bindings
+      * - ``ERROR_WAIT_TIMEOUT``
+        - ``<OBStatus.ERROR_WAIT_TIMEOUT: 105>``
+        - 105
+        - Auto-generated from C++ bindings
+      * - ``ERROR_WRONG_API_CALL_SEQUENCE``
+        - ``<OBStatus.ERROR_WRONG_API_CALL_SEQUENCE: 108>``
+        - 108
+        - Auto-generated from C++ bindings
       * - ``STATUS_ERROR``
         - ``<OBStatus.STATUS_ERROR: 1>``
         - 1
@@ -168,14 +292,6 @@ OBCameraDistortionModel
       * - ``BROWN_CONRADY``
         - ``<OBCameraDistortionModel.BROWN_CONRADY: 3>``
         - 3
-        - Auto-generated from C++ bindings
-      * - ``INVERSE_BROWN_CONRADY``
-        - ``<OBCameraDistortionModel.INVERSE_BROWN_CONRADY: 2>``
-        - 2
-        - Auto-generated from C++ bindings
-      * - ``MODIFIED_BROWN_CONRADY``
-        - ``<OBCameraDistortionModel.MODIFIED_BROWN_CONRADY: 1>``
-        - 1
         - Auto-generated from C++ bindings
       * - ``NONE``
         - ``<OBCameraDistortionModel.NONE: 0>``
@@ -753,10 +869,6 @@ OBDepthPrecisionLevel
       * - ``ONE_MM``
         - ``<OBDepthPrecisionLevel.ONE_MM: 0>``
         - 0
-        - Auto-generated from C++ bindings
-      * - ``ZERO_POINT_EIGHT_MM``
-        - ``<OBDepthPrecisionLevel.ZERO_POINT_EIGHT_MM: 1>``
-        - 1
         - Auto-generated from C++ bindings
       * - ``ZERO_POINT_FOUR_MM``
         - ``<OBDepthPrecisionLevel.ZERO_POINT_FOUR_MM: 2>``

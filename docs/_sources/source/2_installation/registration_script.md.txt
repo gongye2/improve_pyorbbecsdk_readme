@@ -50,7 +50,12 @@ python setup_env.py
 If you have installed `pyorbbecsdk` via pip, you can also run the embedded setup script:
 
 ```bash
-python -m pyorbbecsdk.setup_env
+# From installed package (v2.1.0+)
+# 1. Get pyorbbecsdk installation path
+python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))"
+# Example output: /path/to/site-packages/pyorbbecsdk
+# 2. Run setup.py(replace with the path from step 1)
+python /path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 ```
 
 ### Command Options

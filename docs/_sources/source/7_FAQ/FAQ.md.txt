@@ -50,11 +50,15 @@ This is typically a USB permission issue. The current user doesn't have permissi
 **Quick Fix - Run the environment setup script:**
 
 ```bash
-# From repository
+# Option 1: From repository
 python scripts/env_setup/setup_env.py
 
-# Or from installed package
-python -m pyorbbecsdk.setup_env
+# Option 2: From installed package (v2.1.0+)
+# 1. Get pyorbbecsdk installation path
+python -c "import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))"
+# Example output: /path/to/site-packages/pyorbbecsdk
+# 2. Run setup.py(replace with the path from step 1)
+python /path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 ```
 
 **Manual Fix - Install udev rules:**
@@ -92,7 +96,7 @@ python -m pyorbbecsdk.setup_env
 Use `sudo -E` to preserve environment variables (especially important when using virtual environments):
 
 ```bash
-sudo -E python3 examples/beginner/02_depth_visualization.py
+sudo -E python examples/beginner/02_depth_visualization.py
 ```
 
 The `-E` flag preserves your Python environment variables, ensuring your virtualenv packages are accessible.
@@ -156,7 +160,10 @@ Ensure you download the correct wheel for your:
 Check platform tags:
 
 ```bash
+# For Linux/macOS
 python3 -c "import platform; print(platform.machine()); print(platform.system())"
+# For Windows
+python -c "import platform; print(platform.machine()); print(platform.system())"
 ```
 
 **Wheel naming convention:**
@@ -356,7 +363,7 @@ Required components:
 
 1. **Check OpenCV installation:**
    ```bash
-   python3 -c "import cv2; print(cv2.__version__)"
+   python -c "import cv2; print(cv2.__version__)"
    ```
 
 2. **Ensure frames are valid before displaying:**
@@ -369,7 +376,7 @@ Required components:
 
 3. **Install dependencies** (for versions < 2.1.0):
    ```bash
-   pip3 install opencv-python numpy
+   pip install opencv-python numpy
    ```
 
 ---
@@ -422,10 +429,10 @@ Install the SDK and verify installation:
 
 ```bash
 # Install the SDK
-pip3 install --upgrade pyorbbecsdk2
+pip install --upgrade pyorbbecsdk2
 
 # Verify installation
-pip3 show pyorbbecsdk2 | grep Version
+pip show pyorbbecsdk2 | grep Version
 ```
 
 If using a virtual environment, ensure it's activated:
@@ -498,7 +505,7 @@ macOS requires explicit permission grants for applications to access camera and 
 
 2. **If you accidentally denied permission**:
    - Open **System Settings** (or System Preferences on older macOS)
-   - Go to **Privacy & Security** → **Camera**
+   - Go to **Privacy & Security** → **Input Monitoring**
    - Find **Terminal** (or iTerm2 if using that) in the list
    - Toggle the switch to **ON**
 

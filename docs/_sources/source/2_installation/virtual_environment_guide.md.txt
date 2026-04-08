@@ -323,16 +323,6 @@ sudo apt-get update
 sudo apt-get install python3-venv
 ```
 
-#### udev Rules
-
-Even when using virtual environments, **you still need to install udev rules** to get camera access permissions:
-```bash
-# In pyorbbecsdk source directory
-sudo chmod +x ./scripts/env_setup/install_udev_rules.sh
-sudo ./scripts/env_setup/install_udev_rules.sh
-sudo udevadm control --reload-rules && sudo udevadm trigger
-```
-
 ### macOS
 
 #### Xcode Command Line Tools

@@ -107,7 +107,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#platform-specific-notes">2.1.7. Platform-Specific Notes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux">2.1.7.1. Linux</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#ubuntu-debian">2.1.7.1.1. Ubuntu/Debian</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#udev-rules">2.1.7.1.2. udev Rules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#macos">2.1.7.2. macOS</a><ul>
@@ -664,10 +663,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#obdepthworkmode">6.4.4.3. OBDepthWorkMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#obdepthworkmodelist">6.4.4.4. OBDepthWorkModeList</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#pyorbbecsdk.OBDepthWorkModeTag"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#obpresetresolutionconfig">6.4.4.6. OBPresetResolutionConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#obalignmode">6.4.4.7. OBAlignMode</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#pyorbbecsdk.OBAlignMode"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBAlignMode</span></code></a></li>
@@ -1626,35 +1622,37 @@
 <section id="obdepthworkmodetag">
 <h3><span class="section-number">6.4.4.5. </span>OBDepthWorkModeTag<a class="headerlink" href="#obdepthworkmodetag" title="Link to this heading"></a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyorbbecsdk.OBDepthWorkModeTag">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBDepthWorkModeTag</span></span><a class="headerlink" href="#pyorbbecsdk.OBDepthWorkModeTag" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBDepthWorkModeTag</span></span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id4">
-<caption><span class="caption-text">OBDepthWorkModeTag Members</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
-<colgroup>
-<col style="width: 25.0%" />
-<col style="width: 35.0%" />
-<col style="width: 15.0%" />
-<col style="width: 25.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Name</p></td>
-<td><p>C++ Binding Object</p></td>
-<td><p>Value</p></td>
-<td><p>Description</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OB_CUSTOM_DEPTH_WORK_MODE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBDepthWorkModeTag.OB_CUSTOM_DEPTH_WORK_MODE:</span> <span class="pre">1&gt;</span></code></p></td>
-<td><p>1</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OB_DEVICE_DEPTH_WORK_MODE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBDepthWorkModeTag.OB_DEVICE_DEPTH_WORK_MODE:</span> <span class="pre">0&gt;</span></code></p></td>
-<td><p>0</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-</tbody>
-</table>
+<p>Members:</p>
+<p>OB_DEVICE_DEPTH_WORK_MODE</p>
+<p>OB_CUSTOM_DEPTH_WORK_MODE</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">OB_CUSTOM_DEPTH_WORK_MODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;OBDepthWorkModeTag.OB_CUSTOM_DEPTH_WORK_MODE:</span> <span class="pre">1&gt;</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">OB_DEVICE_DEPTH_WORK_MODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;OBDepthWorkModeTag.OB_DEVICE_DEPTH_WORK_MODE:</span> <span class="pre">0&gt;</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.SupportsInt" title="(in Python v3.14)"><span class="pre">SupportsInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.SupportsIndex" title="(in Python v3.14)"><span class="pre">SupportsIndex</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1698,8 +1696,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBAlignMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBAlignMode</span></span><a class="headerlink" href="#pyorbbecsdk.OBAlignMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id5">
-<caption><span class="caption-text">OBAlignMode Members</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id4">
+<caption><span class="caption-text">OBAlignMode Members</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -1738,8 +1736,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBFrameAggregateOutputMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBFrameAggregateOutputMode</span></span><a class="headerlink" href="#pyorbbecsdk.OBFrameAggregateOutputMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id6">
-<caption><span class="caption-text">OBFrameAggregateOutputMode Members</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id5">
+<caption><span class="caption-text">OBFrameAggregateOutputMode Members</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -1757,19 +1755,9 @@
 <td><p>2</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COLOR_FRAME_REQUIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameAggregateOutputMode.COLOR_FRAME_REQUIRE:</span> <span class="pre">1&gt;</span></code></p></td>
-<td><p>1</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DISABLE</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DISABLE</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameAggregateOutputMode.DISABLE:</span> <span class="pre">3&gt;</span></code></p></td>
 <td><p>3</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FULL_FRAME_REQUIRE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE:</span> <span class="pre">0&gt;</span></code></p></td>
-<td><p>0</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
 </tbody>
@@ -1783,8 +1771,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBCompressionMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBCompressionMode</span></span><a class="headerlink" href="#pyorbbecsdk.OBCompressionMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id7">
-<caption><span class="caption-text">OBCompressionMode Members</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id6">
+<caption><span class="caption-text">OBCompressionMode Members</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -1910,8 +1898,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBSyncMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBSyncMode</span></span><a class="headerlink" href="#pyorbbecsdk.OBSyncMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id8">
-<caption><span class="caption-text">OBSyncMode Members</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id7">
+<caption><span class="caption-text">OBSyncMode Members</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -1985,8 +1973,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBMultiDeviceSyncMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBMultiDeviceSyncMode</span></span><a class="headerlink" href="#pyorbbecsdk.OBMultiDeviceSyncMode" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id9">
-<caption><span class="caption-text">OBMultiDeviceSyncMode Members</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id8">
+<caption><span class="caption-text">OBMultiDeviceSyncMode Members</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -2004,39 +1992,29 @@
 <td><p>1</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HARDWARE_TRIGGERING</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.HARDWARE_TRIGGERING:</span> <span class="pre">64&gt;</span></code></p></td>
-<td><p>64</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IR_IMU_SYNC</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IR_IMU_SYNC</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.IR_IMU_SYNC:</span> <span class="pre">128&gt;</span></code></p></td>
 <td><p>128</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PRIMARY</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PRIMARY</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.PRIMARY:</span> <span class="pre">4&gt;</span></code></p></td>
 <td><p>4</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECONDARY</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SECONDARY</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.SECONDARY:</span> <span class="pre">8&gt;</span></code></p></td>
 <td><p>8</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SECONDARY_SYNCED</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECONDARY_SYNCED</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.SECONDARY_SYNCED:</span> <span class="pre">16&gt;</span></code></p></td>
 <td><p>16</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SOFTWARE_SYNCED</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SOFTWARE_SYNCED</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.SOFTWARE_SYNCED:</span> <span class="pre">256&gt;</span></code></p></td>
 <td><p>256</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SOFTWARE_TRIGGERING</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBMultiDeviceSyncMode.SOFTWARE_TRIGGERING:</span> <span class="pre">32&gt;</span></code></p></td>
-<td><p>32</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">STANDALONE</span></code></p></td>
@@ -2055,8 +2033,8 @@
 <dt class="sig sig-object py" id="pyorbbecsdk.OBGyroSampleRate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyorbbecsdk.</span></span><span class="sig-name descname"><span class="pre">OBGyroSampleRate</span></span><a class="headerlink" href="#pyorbbecsdk.OBGyroSampleRate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
-<table class="enum-table docutils align-default" id="id10">
-<caption><span class="caption-text">OBGyroSampleRate Members</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
+<table class="enum-table docutils align-default" id="id9">
+<caption><span class="caption-text">OBGyroSampleRate Members</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 35.0%" />
@@ -2614,7 +2592,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-03-31 14:19:53.
+      <span class="lastupdated">Last updated on 2026-04-08 16:58:15.
       </span></p>
   </div>
 

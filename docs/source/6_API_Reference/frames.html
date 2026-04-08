@@ -107,7 +107,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#platform-specific-notes">2.1.7. Platform-Specific Notes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux">2.1.7.1. Linux</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#ubuntu-debian">2.1.7.1.1. Ubuntu/Debian</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#udev-rules">2.1.7.1.2. udev Rules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#macos">2.1.7.2. macOS</a><ul>
@@ -664,10 +663,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obdepthworkmode">6.4.4.3. OBDepthWorkMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obdepthworkmodelist">6.4.4.4. OBDepthWorkModeList</a></li>
-<li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="stream_profile.html#pyorbbecsdk.OBDepthWorkModeTag"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obpresetresolutionconfig">6.4.4.6. OBPresetResolutionConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stream_profile.html#obalignmode">6.4.4.7. OBAlignMode</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="stream_profile.html#pyorbbecsdk.OBAlignMode"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBAlignMode</span></code></a></li>
@@ -1856,109 +1852,89 @@
 <td><p>6</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BACKLIGHT_COMPENSATION</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.BACKLIGHT_COMPENSATION:</span> <span class="pre">12&gt;</span></code></p></td>
-<td><p>12</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BRIGHTNESS</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BRIGHTNESS</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.BRIGHTNESS:</span> <span class="pre">8&gt;</span></code></p></td>
 <td><p>8</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CONTRAST</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CONTRAST</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.CONTRAST:</span> <span class="pre">9&gt;</span></code></p></td>
 <td><p>9</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COUNT</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COUNT</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.COUNT:</span> <span class="pre">34&gt;</span></code></p></td>
 <td><p>34</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DISPARITY_SEARCH_OFFSET</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.DISPARITY_SEARCH_OFFSET:</span> <span class="pre">32&gt;</span></code></p></td>
-<td><p>32</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DISPARITY_SEARCH_RANGE</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.DISPARITY_SEARCH_RANGE:</span> <span class="pre">33&gt;</span></code></p></td>
-<td><p>33</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXPOSURE</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXPOSURE</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.EXPOSURE:</span> <span class="pre">4&gt;</span></code></p></td>
 <td><p>4</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXPOSURE_PRIORITY</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXPOSURE_PRIORITY</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.EXPOSURE_PRIORITY:</span> <span class="pre">24&gt;</span></code></p></td>
 <td><p>24</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FRAME_NUMBER</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FRAME_NUMBER</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.FRAME_NUMBER:</span> <span class="pre">2&gt;</span></code></p></td>
 <td><p>2</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FRAME_RATE</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FRAME_RATE</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.FRAME_RATE:</span> <span class="pre">19&gt;</span></code></p></td>
 <td><p>19</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GAIN</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GAIN</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.GAIN:</span> <span class="pre">5&gt;</span></code></p></td>
 <td><p>5</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GAMMA</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GAMMA</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.GAMMA:</span> <span class="pre">14&gt;</span></code></p></td>
 <td><p>14</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GPIO_INPUT_DATA</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GPIO_INPUT_DATA</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.GPIO_INPUT_DATA:</span> <span class="pre">31&gt;</span></code></p></td>
 <td><p>31</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_INDEX</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_INDEX</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.HDR_SEQUENCE_INDEX:</span> <span class="pre">27&gt;</span></code></p></td>
 <td><p>27</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_NAME</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_NAME</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.HDR_SEQUENCE_NAME:</span> <span class="pre">25&gt;</span></code></p></td>
 <td><p>25</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_SIZE</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HDR_SEQUENCE_SIZE</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.HDR_SEQUENCE_SIZE:</span> <span class="pre">26&gt;</span></code></p></td>
 <td><p>26</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HUE</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HUE</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.HUE:</span> <span class="pre">13&gt;</span></code></p></td>
 <td><p>13</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_POWER</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_POWER</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.LASER_POWER:</span> <span class="pre">28&gt;</span></code></p></td>
 <td><p>28</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_POWER_LEVEL</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_POWER_LEVEL</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.LASER_POWER_LEVEL:</span> <span class="pre">29&gt;</span></code></p></td>
 <td><p>29</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_STATUS</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LASER_STATUS</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.LASER_STATUS:</span> <span class="pre">30&gt;</span></code></p></td>
 <td><p>30</p></td>
-<td><p>Auto-generated from C++ bindings</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LOW_LIGHT_COMPENSATION</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&lt;OBFrameMetadataType.LOW_LIGHT_COMPENSATION:</span> <span class="pre">16&gt;</span></code></p></td>
-<td><p>16</p></td>
 <td><p>Auto-generated from C++ bindings</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MANUAL_WHITE_BALANCE</span></code></p></td>
@@ -2464,7 +2440,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-03-31 14:19:53.
+      <span class="lastupdated">Last updated on 2026-04-08 16:58:15.
       </span></p>
   </div>
 

@@ -107,7 +107,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#platform-specific-notes">2.1.7. Platform-Specific Notes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#linux">2.1.7.1. Linux</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#ubuntu-debian">2.1.7.1.1. Ubuntu/Debian</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#udev-rules">2.1.7.1.2. udev Rules</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../2_installation/virtual_environment_guide.html#macos">2.1.7.2. macOS</a><ul>
@@ -664,10 +663,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmode">6.4.4.3. OBDepthWorkMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodelist">6.4.4.4. OBDepthWorkModeList</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBDepthWorkModeTag"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBDepthWorkModeTag</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obdepthworkmodetag">6.4.4.5. OBDepthWorkModeTag</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obpresetresolutionconfig">6.4.4.6. OBPresetResolutionConfig</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../6_API_Reference/stream_profile.html#obalignmode">6.4.4.7. OBAlignMode</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../6_API_Reference/stream_profile.html#pyorbbecsdk.OBAlignMode"><code class="docutils literal notranslate"><span class="pre">pyorbbecsdk.OBAlignMode</span></code></a></li>
@@ -1100,7 +1096,7 @@
 <h2><span class="section-number">3.3.3. </span>Quick Verification<a class="headerlink" href="#quick-verification" title="Link to this heading"></a></h2>
 <p>Run this command to verify your installation:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux/Windows/macOS</span>
-pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
+pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
 </pre></div>
 </div>
 <p>You should see the SDK version printed without errors.</p>
@@ -1246,11 +1242,15 @@ sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </s
 <h2><span class="section-number">3.5.1. </span>“No device found” (Linux)<a class="headerlink" href="#no-device-found-linux" title="Link to this heading"></a></h2>
 <p><strong>Problem:</strong> Camera not detected or permission denied.</p>
 <p><strong>Solution:</strong> Install udev rules:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the udev rules from the SDK repository</span>
-<span class="nb">cd</span><span class="w"> </span>/path/to/pyorbbecsdk/scripts/env_setup
-sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>./install_udev_rules.sh
-sudo<span class="w"> </span>./install_udev_rules.sh
-sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w"> </span>--reload-rules<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>udevadm<span class="w"> </span>trigger
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option 1: From repository</span>
+python<span class="w"> </span>scripts/env_setup/setup_env.py
+
+<span class="c1"># Option 2: From installed package (v2.1.0+)</span>
+<span class="c1"># 1. Get pyorbbecsdk installation path</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pyorbbecsdk, os; print(os.path.dirname(pyorbbecsdk.__file__))&quot;</span>
+<span class="c1"># Example output: /path/to/site-packages/pyorbbecsdk</span>
+<span class="c1"># 2. Run setup.py(replace with the path from step 1)</span>
+python<span class="w"> </span>/path/to/site-packages/pyorbbecsdk/shared/setup_env.py
 </pre></div>
 </div>
 <blockquote>
@@ -1265,7 +1265,7 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w
 <h2><span class="section-number">3.5.2. </span>Permission denied (macOS)<a class="headerlink" href="#permission-denied-macos" title="Link to this heading"></a></h2>
 <p><strong>Problem:</strong> <code class="docutils literal notranslate"><span class="pre">Permission</span> <span class="pre">denied</span></code> or <code class="docutils literal notranslate"><span class="pre">Library</span> <span class="pre">not</span> <span class="pre">loaded</span></code> errors.</p>
 <p><strong>Solution:</strong> Use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">-E</span></code> to preserve environment variables:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python3<span class="w"> </span>hello_camera.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>-E<span class="w"> </span>python<span class="w"> </span>hello_camera.py
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">-E</span></code> flag preserves your Python environment (virtualenv, etc.).</p>
@@ -1275,10 +1275,10 @@ sudo<span class="w"> </span>udevadm<span class="w"> </span>control<span class="w
 <p><strong>Problem:</strong> <code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'pyorbbecsdk'</span></code></p>
 <p><strong>Solution:</strong></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the SDK and dependencies</span>
-pip3<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pyorbbecsdk2
 
 <span class="c1"># Verify installation</span>
-pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
+pip<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Version
 </pre></div>
 </div>
 </section>
@@ -1310,7 +1310,7 @@ pip3<span class="w"> </span>show<span class="w"> </span>pyorbbecsdk2<span class=
 <p><strong>Solutions:</strong></p>
 <ol>
 <li><p><strong>Check OpenCV installation:</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cv2; print(cv2.__version__)&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cv2; print(cv2.__version__)&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -1762,7 +1762,7 @@ python<span class="w"> </span>examples/applications/object_detection.py
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, ORBBEC INC. www.orbbec.com..
-      <span class="lastupdated">Last updated on 2026-03-31 14:19:53.
+      <span class="lastupdated">Last updated on 2026-04-08 16:58:15.
       </span></p>
   </div>
 
