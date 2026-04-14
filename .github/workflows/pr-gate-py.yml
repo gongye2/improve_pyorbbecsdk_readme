@@ -1,0 +1,160 @@
+name: PR Gate (Python)
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: pr-gate-py-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install lint tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Ruff lint
+        run: ruff check pyorbbecsdk/ test/ samples/ scripts/
+
+      - name: Ruff format check
+        run: ruff format --check pyorbbecsdk/ test/ samples/ scripts/
+
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install pyorbbecsdk
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Install test dependencies
+        run: |
+          pip install -r test/requirements_test.txt
+
+      - name: Run no-hardware tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -m pytest test/ -m "not hardware" -v \
+            --tb=short \
+            --junitxml=reports/nohw_junit.xml \
+            2>&1 | tee reports/nohw_linux.log
+
+      - name: Import smoke test
+        shell: bash
+        run: |
+          python -c "
+          import pyorbbecsdk
+          from pyorbbecsdk import Context, Pipeline, Config
+          ctx = Context()
+          print(f'pyorbbecsdk version: {pyorbbecsdk.__version__}')
+          print(f'Context created successfully')
+          dev_list = ctx.query_devices()
+          print(f'Connected devices: {dev_list.get_count()}')
+          "
+
+      - name: Publish nohw test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: reports/nohw_junit.xml
+          check_name: PR Gate Python NoHW Report (Linux)
+          detailed_summary: true
+          include_passed: true
+          require_tests: true
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-nohw-linux-artifacts-${{ github.run_id }}
+          path: |
+            reports/nohw_junit.xml
+            reports/nohw_linux.log
+          retention-days: 14
+
+  build-windows:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install pyorbbecsdk
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      - name: Install test dependencies
+        run: |
+          pip install -r test/requirements_test.txt
+
+      - name: Run no-hardware tests
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -m pytest test/ -m "not hardware" -v `
+            --tb=short `
+            --junitxml=reports/nohw_junit.xml `
+            2>&1 | Tee-Object -FilePath reports/nohw_windows.log
+
+      - name: Import smoke test
+        shell: pwsh
+        run: |
+          python -c "
+          import pyorbbecsdk
+          from pyorbbecsdk import Context, Pipeline, Config
+          ctx = Context()
+          print(f'pyorbbecsdk version: {pyorbbecsdk.__version__}')
+          print(f'Context created successfully')
+          dev_list = ctx.query_devices()
+          print(f'Connected devices: {dev_list.get_count()}')
+          "
+
+      - name: Publish nohw test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: reports/nohw_junit.xml
+          check_name: PR Gate Python NoHW Report (Windows)
+          detailed_summary: true
+          include_passed: true
+          require_tests: true
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-nohw-windows-artifacts-${{ github.run_id }}
+          path: |
+            reports/nohw_junit.xml
+            reports/nohw_windows.log
+          retention-days: 14

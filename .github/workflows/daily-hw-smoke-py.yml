@@ -1,0 +1,197 @@
+name: Daily HW Smoke (Python)
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: false
+        default: "windows_x64"
+        type: choice
+        options:
+          - windows_x64
+          - linux_x86_64
+          - linux_arm64
+
+jobs:
+  discover-hw-runners:
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.export.outputs.matrix }}
+      has_matrix: ${{ steps.export.outputs.has_matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Generate hw_full_test matrix from global runner pools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/hw_discovery
+          python scripts/runner/generate_hw_full_test_matrix.py \
+            --runner-pools scripts/runner/runner_pools.json \
+            --platform "${{ github.event.inputs.platform || 'windows_x64' }}" \
+            --required-capabilities depth,color \
+            --output-matrix reports/hw_discovery/hw_matrix.json
+
+      - name: Export matrix output
+        id: export
+        shell: bash
+        run: |
+          set -euo pipefail
+          MATRIX_JSON=$(python -c "
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
+          print(json.dumps(payload, separators=(',', ':')))
+          ")
+          MATRIX_COUNT=$(python -c "
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
+          print(len(payload))
+          ")
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+          if [ "$MATRIX_COUNT" -gt 0 ]; then
+            echo "has_matrix=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_matrix=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize discovery
+        shell: bash
+        run: |
+          python -c "
+          import json
+          import os
+          from pathlib import Path
+
+          matrix = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
+              summary.write('## HW Runner Discovery\n')
+              summary.write(f'- Matrix jobs: {len(matrix)}\n')
+              for item in matrix:
+                  summary.write(f'- {item[\"pool_name\"]} -> {item[\"platform\"]}\n')
+          "
+
+  py-tests:
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.discover-hw-runners.outputs.matrix) }}
+    name: ${{ matrix.display_name }}
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install test dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test/requirements_test.txt
+
+      - name: Install pyorbbecsdk
+        shell: bash
+        run: |
+          pip install .
+
+      - name: Device health check
+        shell: bash
+        run: |
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      - name: Run no-hardware tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -m pytest test/ -m "not hardware" -v \
+            --tb=short \
+            --junitxml=reports/nohw_junit.xml \
+            2>&1 | tee reports/nohw.log
+
+      - name: Run hardware tests (functional)
+        env:
+          HARDWARE_AVAILABLE: "true"
+          DEVICE_TYPE: ${{ matrix.pool_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -m pytest test/ -m "hardware and not performance" -v \
+            --tb=short \
+            --junitxml=reports/hw_junit.xml \
+            2>&1 | tee reports/hw.log
+
+      - name: Run run_tests.py (full suite with HTML report)
+        env:
+          DEVICE_TYPE: ${{ matrix.pool_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python test/run_tests.py \
+            --output reports \
+            --quick \
+            || true
+
+      - name: Publish daily test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: reports/*_junit.xml
+          check_name: Daily HW Smoke Test Report (${{ matrix.pool_name }})
+          detailed_summary: true
+          include_passed: true
+          require_tests: true
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-daily-hw-reports-${{ matrix.pool_name }}-${{ github.run_id }}
+          path: |
+            reports/*.xml
+            reports/*.log
+            reports/*.html
+          retention-days: 30
+
+  no-runner-summary:
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix != 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Report missing runner mapping
+        run: |
+          echo "No eligible runner pool found for hw_full_test in scripts/runner/runner_pools.json" >> "$GITHUB_STEP_SUMMARY"
