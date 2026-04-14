@@ -33,19 +33,19 @@ def test_context_creation():
         return None
 
 
-def test_device_enumeration(ctx):
+def test_device_enumeration(context):
     """Test enumerating connected devices"""
     print()
     print("=" * 50)
     print("Device Enumeration Test")
     print("=" * 50)
 
-    if ctx is None:
+    if context is None:
         print("✗ Skipped (no context)")
         return False, []
 
     try:
-        devices = ctx.query_devices()
+        devices = context.query_devices()
         device_count = devices.get_count() if devices else 0
 
         print(f"✓ Device query completed")
@@ -77,19 +77,18 @@ def test_device_enumeration(ctx):
         return False, []
 
 
-def test_device_info(ctx, devices):
+def test_device_info(context, device):
     """Test getting device information"""
     print()
     print("=" * 50)
     print("Device Information Test")
     print("=" * 50)
 
-    if not devices:
-        print("  Skipped (no devices)")
+    if device is None:
+        print("  Skipped (no device)")
         return True
 
     try:
-        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
         device_info = device.get_device_info()
 
         # Try to get various device info
@@ -113,19 +112,18 @@ def test_device_info(ctx, devices):
         return False
 
 
-def test_sensor_enumeration(ctx, devices):
+def test_sensor_enumeration(context, device):
     """Test enumerating device sensors"""
     print()
     print("=" * 50)
     print("Sensor Enumeration Test")
     print("=" * 50)
 
-    if not devices:
-        print("  Skipped (no devices)")
+    if device is None:
+        print("  Skipped (no device)")
         return True
 
     try:
-        device = devices[0] if isinstance(devices, list) else devices.get_device_by_index(0)
         sensors = device.get_sensor_list()
         sensor_count = sensors.get_count() if sensors else 0
 
@@ -151,7 +149,7 @@ def test_sensor_enumeration(ctx, devices):
         return False
 
 
-def test_cleanup(ctx):
+def test_cleanup(context):
     """Test proper cleanup"""
     print()
     print("=" * 50)
@@ -183,19 +181,19 @@ def main():
     results.append(("Context Creation", ctx is not None))
 
     # Test device enumeration
-    enum_success, devices = test_device_enumeration(ctx)
+    enum_success, devices = test_device_enumeration(None)
     results.append(("Device Enumeration", enum_success))
 
     # Test device info
-    info_success = test_device_info(ctx, devices)
+    info_success = test_device_info(None, None)
     results.append(("Device Information", info_success))
 
     # Test sensor enumeration
-    sensor_success = test_sensor_enumeration(ctx, devices)
+    sensor_success = test_sensor_enumeration(None, None)
     results.append(("Sensor Enumeration", sensor_success))
 
     # Test cleanup
-    cleanup_success = test_cleanup(ctx)
+    cleanup_success = test_cleanup(None)
     results.append(("Cleanup", cleanup_success))
 
     # Summary

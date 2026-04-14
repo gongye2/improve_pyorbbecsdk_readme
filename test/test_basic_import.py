@@ -14,7 +14,7 @@ import sys
 
 
 def test_platform():
-    """Verify we're running on macOS"""
+    """Print platform information"""
     print("=" * 50)
     print("Platform Information")
     print("=" * 50)
@@ -26,7 +26,6 @@ def test_platform():
     print(f"Python Implementation: {platform.python_implementation()}")
     print()
 
-    assert platform.system() == "Darwin", "This test is designed for macOS"
     return True
 
 

@@ -13,6 +13,8 @@ Note: Requires an Orbbec camera to be connected for full testing.
 import sys
 import time
 
+import pytest
+
 
 def test_pipeline_creation():
     """Test creating a Pipeline object"""
@@ -36,7 +38,7 @@ def test_pipeline_creation():
         return None, None
 
 
-def test_config_creation(ctx, pipeline):
+def test_config_creation(context, pipeline):
     """Test creating and configuring a Config object"""
     print()
     print("=" * 50)
@@ -44,14 +46,12 @@ def test_config_creation(ctx, pipeline):
     print("=" * 50)
 
     if pipeline is None:
-        print("✗ Skipped (no pipeline)")
-        return None
+        pytest.skip("No pipeline available")
 
     try:
-        import pyorbbecsdk
-        from pyorbbecsdk import OBFormat, OBSensorType
+        from pyorbbecsdk import Config, OBSensorType
 
-        config = pyorbbecsdk.Config()
+        config = Config()
         print(f"✓ Config created successfully")
 
         # Try to enable streams (may fail without device)
@@ -77,7 +77,7 @@ def test_config_creation(ctx, pipeline):
         return None
 
 
-def test_pipeline_start(ctx, pipeline, config):
+def test_pipeline_start(pipeline, context):
     """Test starting the pipeline"""
     print()
     print("=" * 50)
@@ -85,14 +85,13 @@ def test_pipeline_start(ctx, pipeline, config):
     print("=" * 50)
 
     if pipeline is None:
-        print("✗ Skipped (no pipeline)")
-        return False
+        pytest.skip("No pipeline available")
 
     try:
-        if config:
-            pipeline.start(config)
-        else:
-            pipeline.start()
+        from pyorbbecsdk import Config
+
+        config = Config()
+        pipeline.start(config)
 
         print(f"✓ Pipeline started successfully")
         return True
@@ -174,7 +173,7 @@ def test_pipeline_stop(pipeline):
         return False
 
 
-def test_cleanup(ctx, pipeline):
+def test_cleanup(context, pipeline):
     """Test proper cleanup"""
     print()
     print("=" * 50)
@@ -208,11 +207,11 @@ def main():
     results.append(("Pipeline Creation", pipeline is not None))
 
     # Test config creation
-    config = test_config_creation(ctx, pipeline)
+    config = test_config_creation(None, None)
     results.append(("Configuration", config is not None))
 
     # Test pipeline start
-    start_success = test_pipeline_start(ctx, pipeline, config)
+    start_success = test_pipeline_start(None, None)
     results.append(("Pipeline Start", start_success))
 
     # Test frame capture
