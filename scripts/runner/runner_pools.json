@@ -1,0 +1,382 @@
+{
+  "pools": [
+    {
+      "name": "python-linux-gemini-330",
+      "platform": "linux_x86_64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "python-sdk",
+        "usb",
+        "gemini-330"
+      ],
+      "device_series": [
+        "Gemini 330 Series"
+      ],
+      "device_models": [
+        "Gemini 330",
+        "Gemini 330L",
+        "Gemini 335",
+        "Gemini 335L",
+        "Gemini 335Le",
+        "Gemini 336",
+        "Gemini 336L",
+        "Gemini 335Lg",
+        "Gemini 305",
+        "Gemini 345",
+        "Gemini 435Le"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "hdr_merge",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 10,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-windows-gemini-330",
+      "platform": "windows_x64",
+      "runs_on": [
+        "self-hosted",
+        "windows",
+        "python-sdk",
+        "usb",
+        "gemini-330"
+      ],
+      "device_series": [
+        "Gemini 330 Series"
+      ],
+      "device_models": [
+        "Gemini 330",
+        "Gemini 330L",
+        "Gemini 335",
+        "Gemini 335L",
+        "Gemini 335Le",
+        "Gemini 336",
+        "Gemini 336L",
+        "Gemini 335Lg",
+        "Gemini 305",
+        "Gemini 345",
+        "Gemini 435Le"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "hdr_merge",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 10,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-arm64-gemini-330",
+      "platform": "linux_arm64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "arm64",
+        "python-sdk",
+        "usb",
+        "gemini-330"
+      ],
+      "device_series": [
+        "Gemini 330 Series"
+      ],
+      "device_models": [
+        "Gemini 330",
+        "Gemini 330L",
+        "Gemini 335",
+        "Gemini 335L",
+        "Gemini 335Le",
+        "Gemini 336",
+        "Gemini 336L",
+        "Gemini 335Lg",
+        "Gemini 305",
+        "Gemini 345",
+        "Gemini 435Le"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "hdr_merge",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 5,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-windows-gemini-2",
+      "platform": "windows_x64",
+      "runs_on": [
+        "self-hosted",
+        "windows",
+        "x64",
+        "python-sdk",
+        "usb",
+        "gemini-2"
+      ],
+      "device_series": [
+        "Gemini 2 Series"
+      ],
+      "device_models": [
+        "Gemini 2",
+        "Gemini 2L",
+        "Gemini 215",
+        "Astra 2"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 5,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-gemini-2",
+      "platform": "linux_x86_64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "x86_64",
+        "python-sdk",
+        "usb",
+        "gemini-2"
+      ],
+      "device_series": [
+        "Gemini 2 Series"
+      ],
+      "device_models": [
+        "Gemini 2",
+        "Gemini 2L",
+        "Gemini 215",
+        "Astra 2"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 5,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-arm64-gemini-2",
+      "platform": "linux_arm64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "arm64",
+        "python-sdk",
+        "usb",
+        "gemini-2"
+      ],
+      "device_series": [
+        "Gemini 2 Series"
+      ],
+      "device_models": [
+        "Gemini 2",
+        "Gemini 2L",
+        "Gemini 215",
+        "Astra 2"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset",
+        "frame_interleave"
+      ],
+      "device_count": 1,
+      "priority": 5,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-femto",
+      "platform": "linux_x86_64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "python-sdk",
+        "usb",
+        "femto-bolt",
+        "femto-mega"
+      ],
+      "device_series": [
+        "Femto Series"
+      ],
+      "device_models": [
+        "Femto Bolt",
+        "Femto Mega",
+        "Femto Mega I"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset"
+      ],
+      "device_count": 1,
+      "priority": 12,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-windows-femto",
+      "platform": "windows_x64",
+      "runs_on": [
+        "self-hosted",
+        "windows",
+        "python-sdk",
+        "usb",
+        "femto-bolt",
+        "femto-mega",
+        "femto-mega-i"
+      ],
+      "device_series": [
+        "Femto Series"
+      ],
+      "device_models": [
+        "Femto Bolt",
+        "Femto Mega",
+        "Femto Mega I"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "preset"
+      ],
+      "device_count": 1,
+      "priority": 12,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-lidar",
+      "platform": "linux_x86_64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "python-sdk",
+        "lidar"
+      ],
+      "device_series": [
+        "LiDAR Series"
+      ],
+      "device_models": [
+        "Orbbec LiDAR"
+      ],
+      "capabilities": [
+        "lidar",
+        "playback_bag"
+      ],
+      "device_count": 1,
+      "priority": 20,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-multi-device",
+      "platform": "linux_x86_64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "python-sdk",
+        "usb",
+        "multi-device",
+        "gemini-335"
+      ],
+      "device_series": [
+        "Gemini 330 Series"
+      ],
+      "device_models": [
+        "Gemini 330",
+        "Gemini 330L",
+        "Gemini 335",
+        "Gemini 335L",
+        "Gemini 335Le",
+        "Gemini 336",
+        "Gemini 336L",
+        "Gemini 335Lg"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "imu",
+        "multi_device"
+      ],
+      "device_count": 2,
+      "priority": 15,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-gmsl",
+      "platform": "linux_arm64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "arm64",
+        "python-sdk",
+        "gmsl"
+      ],
+      "device_series": [
+        "Gemini 330 Series"
+      ],
+      "device_models": [
+        "Gemini 335Lg",
+        "Gemini 345Lg",
+        "Gemini 305g"
+      ],
+      "capabilities": [
+        "depth",
+        "color",
+        "multi_device",
+        "gmsl"
+      ],
+      "device_count": 2,
+      "priority": 20,
+      "allow_destructive": false
+    },
+    {
+      "name": "python-linux-arm64-astra-mini",
+      "platform": "linux_arm64",
+      "runs_on": [
+        "self-hosted",
+        "linux",
+        "arm64",
+        "python-sdk",
+        "usb",
+        "astra-mini"
+      ],
+      "device_series": [
+        "Astra Mini Series"
+      ],
+      "device_models": [
+        "Astra mini pro",
+        "Astra mini S pro"
+      ],
+      "capabilities": [
+        "depth",
+        "color"
+      ],
+      "device_count": 1,
+      "priority": 5,
+      "allow_destructive": false
+    }
+  ]
+}
