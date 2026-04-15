@@ -44,16 +44,12 @@ pytestmark = [pytest.mark.functional]
 
 
 def _find_playback_bag() -> str:
-    """Find a .bag file in the test resource directory."""
-    bag_dir = os.path.join(os.path.dirname(__file__), "resource", "rosbag")
+    """Find a .bag file in the test/resource/rosbag directory."""
+    test_root = os.path.join(os.path.dirname(__file__), "..")
+    bag_dir = os.path.join(test_root, "resource", "rosbag")
     bags = glob.glob(os.path.join(bag_dir, "*.bag"))
     if bags:
         return bags[0]
-    # Fallback: check the old name "present" (typo in original resource dir)
-    bag_dir2 = os.path.join(os.path.dirname(__file__), "resource", "present")
-    bags2 = glob.glob(os.path.join(bag_dir2, "*.bag"))
-    if bags2:
-        return bags2[0]
     return ""
 
 
@@ -98,7 +94,8 @@ class TC_CPP_18_Playback:
 
         # Enable all available streams
         for i in range(sensor_list.get_count()):
-            sensor_type = sensor_list.get_sensor_type(i)
+            sensor = sensor_list.get_sensor_by_index(i)
+            sensor_type = sensor.get_type()
             try:
                 profile_list = pipeline.get_stream_profile_list(sensor_type)
                 profile = profile_list.get_default_video_stream_profile()
@@ -155,7 +152,8 @@ class TC_CPP_18_Playback:
         assert sensor_list.get_count() > 0
 
         for i in range(sensor_list.get_count()):
-            sensor_type = sensor_list.get_sensor_type(i)
+            sensor = sensor_list.get_sensor_by_index(i)
+            sensor_type = sensor.get_type()
             try:
                 profile_list = pipeline.get_stream_profile_list(sensor_type)
                 profile = profile_list.get_default_video_stream_profile()
@@ -204,7 +202,8 @@ class TC_CPP_18_Playback:
         assert sensor_list.get_count() > 0
 
         for i in range(sensor_list.get_count()):
-            sensor_type = sensor_list.get_sensor_type(i)
+            sensor = sensor_list.get_sensor_by_index(i)
+            sensor_type = sensor.get_type()
             try:
                 profile_list = pipeline.get_stream_profile_list(sensor_type)
                 profile = profile_list.get_default_video_stream_profile()
