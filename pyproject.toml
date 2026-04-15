@@ -49,4 +49,4 @@ line_length = 120
 skip_gitignore = true
 
 [tool.pytest.ini_options]
-python_classes = ["Test*", "TC_CPP_*"]
+python_classes = ["Test*", "TC_*"]
