@@ -31,11 +31,8 @@ def test_pipeline_creation():
 
         print(f"✓ Pipeline created successfully")
         print(f"  Pipeline object: {pipeline}")
-
-        return ctx, pipeline
     except Exception as e:
         print(f"✗ Pipeline creation failed: {e}")
-        return None, None
 
 
 def test_config_creation(context, pipeline):
@@ -70,11 +67,8 @@ def test_config_creation(context, pipeline):
             print(f"✓ Depth stream configured")
         except Exception as e:
             print(f"  Depth stream config skipped: {type(e).__name__}")
-
-        return config
     except Exception as e:
         print(f"✗ Config creation failed: {e}")
-        return None
 
 
 def test_pipeline_start(pipeline, context):
@@ -94,10 +88,8 @@ def test_pipeline_start(pipeline, context):
         pipeline.start(config)
 
         print(f"✓ Pipeline started successfully")
-        return True
     except Exception as e:
         print(f"  Pipeline start skipped (no device): {type(e).__name__}")
-        return False
 
 
 def test_frame_capture(pipeline, duration=3):
@@ -109,7 +101,7 @@ def test_frame_capture(pipeline, duration=3):
 
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
-        return False
+        pytest.skip("No pipeline")
 
     try:
         print(f"  Capturing frames for {duration} seconds...")
@@ -147,10 +139,8 @@ def test_frame_capture(pipeline, duration=3):
                 pass
 
         print(f"✓ Captured {frame_count} frames")
-        return True
     except Exception as e:
         print(f"✗ Frame capture failed: {e}")
-        return False
 
 
 def test_pipeline_stop(pipeline):
@@ -162,15 +152,13 @@ def test_pipeline_stop(pipeline):
 
     if pipeline is None:
         print("✗ Skipped (no pipeline)")
-        return True
+        return
 
     try:
         pipeline.stop()
         print(f"✓ Pipeline stopped successfully")
-        return True
     except Exception as e:
         print(f"✗ Pipeline stop failed: {e}")
-        return False
 
 
 def test_cleanup(context, pipeline):
@@ -183,50 +171,137 @@ def test_cleanup(context, pipeline):
     try:
         if pipeline:
             del pipeline
-        if ctx:
-            del ctx
+        if context:
+            del context
         print("✓ Cleanup completed")
-        return True
     except Exception as e:
         print(f"✗ Cleanup failed: {e}")
-        return False
 
 
 def main():
     """Run all tests"""
     print()
     print("╔" + "=" * 48 + "╗")
-    print("║  pyorbbecsdk macOS Capture Test Suite       ║")
+    print("║  pyorbbecsdk Capture Test Suite             ║")
     print("╚" + "=" * 48 + "╝")
     print()
 
     results = []
 
+    import pyorbbecsdk
+
+    ctx = None
+    pipeline = None
+
     # Test pipeline creation
-    ctx, pipeline = test_pipeline_creation()
-    results.append(("Pipeline Creation", pipeline is not None))
+    try:
+        ctx = pyorbbecsdk.Context()
+        pipeline = pyorbbecsdk.Pipeline()
+        print("✓ Pipeline created successfully")
+        print(f"  Pipeline object: {pipeline}")
+        results.append(("Pipeline Creation", True))
+    except Exception as e:
+        print(f"✗ Pipeline creation failed: {e}")
+        results.append(("Pipeline Creation", False))
 
     # Test config creation
-    config = test_config_creation(None, None)
-    results.append(("Configuration", config is not None))
+    try:
+        from pyorbbecsdk import Config, OBSensorType
+
+        config = Config()
+        print(f"✓ Config created successfully")
+        if pipeline is not None:
+            try:
+                profile_list = pipeline.get_stream_profile_list(
+                    OBSensorType.COLOR_SENSOR
+                )
+                config.enable_stream(profile_list.get_default_video_stream_profile())
+                print(f"✓ Color stream configured")
+            except Exception:
+                pass
+            try:
+                profile_list = pipeline.get_stream_profile_list(
+                    OBSensorType.DEPTH_SENSOR
+                )
+                config.enable_stream(profile_list.get_default_video_stream_profile())
+                print(f"✓ Depth stream configured")
+            except Exception:
+                pass
+        results.append(("Configuration", True))
+    except Exception as e:
+        print(f"✗ Config creation failed: {e}")
+        results.append(("Configuration", False))
 
     # Test pipeline start
-    start_success = test_pipeline_start(None, None)
-    results.append(("Pipeline Start", start_success))
+    start_success = False
+    try:
+        if pipeline is None:
+            raise RuntimeError("No pipeline")
+        config = Config()
+        pipeline.start(config)
+        print(f"✓ Pipeline started successfully")
+        start_success = True
+        results.append(("Pipeline Start", True))
+    except Exception as e:
+        print(f"  Pipeline start skipped: {type(e).__name__}")
+        results.append(("Pipeline Start", False))
 
     # Test frame capture
     capture_success = False
-    if start_success:
-        capture_success = test_frame_capture(pipeline)
+    if start_success and pipeline is not None:
+        try:
+            frame_count = 0
+            start_time = time.time()
+            while time.time() - start_time < 3:
+                try:
+                    frames = pipeline.wait_for_frames(1000)
+                    if frames:
+                        frame_count += 1
+                        try:
+                            color_frame = frames.get_color_frame()
+                            if color_frame:
+                                print(
+                                    f"  Frame {frame_count}: Color {color_frame.get_width()}x{color_frame.get_height()}"
+                                )
+                        except:
+                            pass
+                        try:
+                            depth_frame = frames.get_depth_frame()
+                            if depth_frame:
+                                print(
+                                    f"  Frame {frame_count}: Depth {depth_frame.get_width()}x{depth_frame.get_height()}"
+                                )
+                        except:
+                            pass
+                except:
+                    pass
+            print(f"✓ Captured {frame_count} frames")
+            capture_success = frame_count > 0
+        except Exception as e:
+            print(f"✗ Frame capture failed: {e}")
     results.append(("Frame Capture", capture_success))
 
     # Test pipeline stop
-    stop_success = test_pipeline_stop(pipeline)
-    results.append(("Pipeline Stop", stop_success))
+    try:
+        if pipeline is not None:
+            pipeline.stop()
+            print(f"✓ Pipeline stopped successfully")
+            results.append(("Pipeline Stop", True))
+    except Exception as e:
+        print(f"✗ Pipeline stop failed: {e}")
+        results.append(("Pipeline Stop", False))
 
     # Test cleanup
-    cleanup_success = test_cleanup(ctx, pipeline)
-    results.append(("Cleanup", cleanup_success))
+    try:
+        if pipeline:
+            del pipeline
+        if ctx:
+            del ctx
+        print("✓ Cleanup completed")
+        results.append(("Cleanup", True))
+    except Exception as e:
+        print(f"✗ Cleanup failed: {e}")
+        results.append(("Cleanup", False))
 
     # Summary
     print()
