@@ -98,7 +98,10 @@ class TC_CPP_13_Filter_Expanded:
         filt = SpatialAdvancedFilter()
         # Set filter params via the proper struct with valid values
         params = OBSpatialAdvancedFilterParams()
-        params.smooth_alpha = 0.5  # Must be in range [0.1, 1]
+        params.alpha = 0.5       # [0.1, 1]
+        params.magnitude = 2     # smoothing magnitude (int)
+        params.radius = 2        # filter radius
+        params.disp_diff = 10    # [1, 10000] disparity threshold
         filt.set_filter_params(params)
         # Processing should work after configuration
         result = filt.process(frames[-1])

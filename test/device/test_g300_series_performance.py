@@ -29,7 +29,7 @@ import time
 import numpy as np
 import pytest
 
-from pyorbbecsdk import Config, OBError, OBSensorType
+from pyorbbecsdk import Config, OBError, OBFormat, OBSensorType
 
 pytestmark = [pytest.mark.hardware, pytest.mark.g300_series, pytest.mark.performance]
 
@@ -43,10 +43,19 @@ FRAME_BUDGET_MS = 1000.0 / TARGET_FPS  # 33.3ms
 # ---------------------------------------------------------------------------
 
 
-def _depth_config(pipeline):
+def _depth_config(pipeline, fps=30):
+    """Configure depth stream at the given fps.
+
+    The default profile is 848x480@10fps which is too slow for performance
+    tests, so we explicitly select 640x480@30fps.
+    """
     config = Config()
     pl = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-    config.enable_stream(pl.get_default_video_stream_profile())
+    try:
+        profile = pl.get_video_stream_profile(640, 480, OBFormat.Y16, fps)
+    except OBError:
+        profile = pl.get_video_stream_profile(640, 400, OBFormat.Y16, fps)
+    config.enable_stream(profile)
     return config
 
 

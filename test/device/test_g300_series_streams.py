@@ -52,6 +52,46 @@ DEPTH_MAX_MM = 15000.0
 DEPTH_DEBUG_DIR = os.path.join(os.path.dirname(__file__), "..", "reports", "depth_debug")
 
 
+def _find_matching_profiles(pipeline, fps=30):
+    """Find depth and color profiles with matching resolution and target fps.
+
+    The default profiles (848x480@10fps depth, 1280x720@10fps color) are
+    incompatible for sync tests. This helper selects a common resolution
+    (640x480) available on both sensors at the target fps.
+    """
+    depth_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+    color_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+
+    depth_profile = None
+    color_profile = None
+
+    for w, h in [(640, 480), (640, 400), (640, 360), (480, 270), (424, 266)]:
+        try:
+            p = depth_list.get_video_stream_profile(w, h, OBFormat.Y16, fps)
+            depth_profile = p
+            break
+        except OBError:
+            continue
+
+    for fmt in [OBFormat.MJPG, OBFormat.YUYV]:
+        for w, h in [(640, 480), (424, 240)]:
+            try:
+                p = color_list.get_video_stream_profile(w, h, fmt, fps)
+                color_profile = p
+                break
+            except OBError:
+                continue
+        if color_profile:
+            break
+
+    if depth_profile is None:
+        depth_profile = depth_list.get_default_video_stream_profile()
+    if color_profile is None:
+        color_profile = color_list.get_default_video_stream_profile()
+
+    return depth_profile, color_profile
+
+
 def _save_depth_debug(raw_u16, width, height, scale, val_min, val_max):
     """Save raw depth frame as .npy and a normalised 8-bit PNG for visual inspection."""
     os.makedirs(DEPTH_DEBUG_DIR, exist_ok=True)
@@ -197,7 +237,21 @@ class TestDepthStream:
 
     @pytest.mark.timeout(30)
     def test_depth_fps_accuracy(self, pipeline, g300_series_device):
-        _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR, fps=TARGET_FPS)
+        """Measure depth FPS; requires explicit 30fps profile since default is 10fps."""
+        profile = _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR, fps=TARGET_FPS)
+        # If default profile was used and it's not 30fps, skip
+        actual_profile_fps = profile.get_fps() if hasattr(profile, 'get_fps') else TARGET_FPS
+        if actual_profile_fps != TARGET_FPS:
+            # Try to find a 30fps profile explicitly
+            config = Config()
+            try:
+                depth_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+                p30 = depth_list.get_video_stream_profile(640, 480, OBFormat.Y16, TARGET_FPS)
+                config.enable_stream(p30)
+                pipeline.stop()
+                pipeline.start(config)
+            except OBError:
+                pytest.skip(f"Cannot find {TARGET_FPS}fps depth profile")
         frames = _collect_frames(pipeline, OBFrameType.DEPTH_FRAME, count=FRAME_COLLECT_COUNT)
         assert len(frames) >= 10, "Insufficient frames to measure FPS"
         elapsed = (frames[-1].get_timestamp() - frames[0].get_timestamp()) / 1000.0
@@ -359,12 +413,9 @@ class TestMultiStreamSync:
         """Color and depth timestamps must differ by < 33 ms."""
         config = Config()
         try:
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
-            )
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
-            )
+            depth_profile, color_profile = _find_matching_profiles(pipeline, fps=TARGET_FPS)
+            config.enable_stream(depth_profile)
+            config.enable_stream(color_profile)
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
         pipeline.start(config)
@@ -385,12 +436,9 @@ class TestMultiStreamSync:
         """With frame sync enabled, P95 color↔depth delta should be ≤ 10 ms."""
         config = Config()
         try:
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
-            )
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
-            )
+            depth_profile, color_profile = _find_matching_profiles(pipeline, fps=TARGET_FPS)
+            config.enable_stream(depth_profile)
+            config.enable_stream(color_profile)
         except OBError as e:
             pytest.skip(f"Could not configure dual stream: {e}")
         pipeline.enable_frame_sync()
