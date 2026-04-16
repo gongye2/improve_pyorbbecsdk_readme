@@ -21,9 +21,9 @@ Ported from C++ nohw_full_test.cpp:
   TC_CPP_10_04 frame_ref_count     → skipped (C API not exposed in Python)
   TC_CPP_10_13 frameset_push_frame → adapted to playback frames
   TC_CPP_11_06 update_metadata_c_api → adapted to playback frames
-  TC_CPP_12_01 create_frame_and_video_frame → skipped (C API not exposed)
+  TC_CPP_12_01 create_frame_and_video_frame → now uses Frame/VideoFrame constructors
   TC_CPP_12_03 create_frame_from_buffer → skipped (C API not exposed)
-  TC_CPP_12_04 create_empty_frameset → adapted to playback frames
+  TC_CPP_12_04 create_empty_frameset → now uses FrameSet constructor
 
 Tests that require frames use playback (.bag) as a no-hardware frame source.
 """
@@ -41,8 +41,8 @@ from pyorbbecsdk import (
     OBFrameAggregateOutputMode,
     OBFrameType,
     OBSensorType,
-    PlaybackDevice,
     Pipeline,
+    PlaybackDevice,
 )
 
 pytestmark = [pytest.mark.functional]
@@ -65,30 +65,22 @@ def _get_playbag_or_skip() -> str:
     return bag
 
 
-def _start_playback_pipeline(bag_path: str):
-    """Start a playback pipeline and return (pipeline, pb_device)."""
+def _setup_playback_pipeline(bag_path: str):
+    """Create PlaybackDevice, Pipeline, and Config with depth stream enabled."""
     pb_device = PlaybackDevice(bag_path)
     pipeline = Pipeline(pb_device)
     config = Config()
-    sensor_list = pb_device.get_sensor_list()
-    assert sensor_list is not None
-    assert sensor_list.get_count() > 0
 
-    for i in range(sensor_list.get_count()):
-        sensor = sensor_list.get_sensor_by_index(i)
-        sensor_type = sensor.get_type()
-        try:
-            profile_list = pipeline.get_stream_profile_list(sensor_type)
-            profile = profile_list.get_default_video_stream_profile()
-            config.enable_stream(profile)
-        except Exception:
-            pass
+    # Enable depth stream (most reliably available in bag recordings)
+    try:
+        profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+        profile = profile_list.get_default_video_stream_profile()
+        config.enable_stream(profile)
+    except Exception:
+        pass
 
-    config.set_frame_aggregate_output_mode(
-        OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-    )
-    pipeline.start(config)
-    return pipeline, pb_device
+    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+    return pipeline, config, pb_device
 
 
 class TC_CPP_10_Frame_Nohw:
@@ -97,7 +89,8 @@ class TC_CPP_10_Frame_Nohw:
     def test_frameset_push_frame(self):
         """TC_CPP_10_13: FrameSet can contain frames from playback."""
         bag_path = _get_playbag_or_skip()
-        pipeline, pb_device = _start_playback_pipeline(bag_path)
+        pipeline, config, pb_device = _setup_playback_pipeline(bag_path)
+        pipeline.start(config)
 
         frames = pipeline.wait_for_frames(5000)
         pipeline.stop()
@@ -116,12 +109,26 @@ class TC_CPP_10_Frame_Nohw:
 
     def test_frame_copy_frame_info(self):
         """TC_CPP_12: Frame.copy_frame_info clones frame metadata."""
-        pytest.skip("Python SDK Frame class has no public no-arg constructor")
+        from pyorbbecsdk import OBFormat, OBFrameType
+
+        # Create a source frame
+        src = Frame(frame_type=OBFrameType.DEPTH_FRAME, format=OBFormat.Y16, data_size=100)
+        # Set a timestamp on the source
+        src.set_system_timestamp_us(12345678)
+
+        # Create a destination frame and copy metadata from source
+        dst = Frame(frame_type=OBFrameType.COLOR_FRAME, format=OBFormat.RGB, data_size=200)
+        dst.copy_frame_info(src)
+
+        # Verify metadata was copied
+        assert dst.get_timestamp_us() == src.get_timestamp_us()
+        assert dst.get_system_timestamp_us() == src.get_system_timestamp_us()
 
     def test_frame_metadata_update(self):
         """TC_CPP_11_06: Frame metadata can be updated and read back."""
         bag_path = _get_playbag_or_skip()
-        pipeline, pb_device = _start_playback_pipeline(bag_path)
+        pipeline, config, pb_device = _setup_playback_pipeline(bag_path)
+        pipeline.start(config)
 
         frames = pipeline.wait_for_frames(5000)
         pipeline.stop()
@@ -140,4 +147,16 @@ class TC_CPP_10_Frame_Nohw:
 
     def test_frame_empty_frameset(self):
         """TC_CPP_12_04: Empty FrameSet can be created and populated."""
-        pytest.skip("Python SDK FrameSet class has no public no-arg constructor")
+        from pyorbbecsdk import OBFormat, OBFrameType, VideoFrame
+
+        # Create an empty FrameSet
+        fs = FrameSet()
+        assert fs.get_frame_count() == 0
+        assert len(fs) == 0
+
+        # Create a frame and push it into the frameset
+        vf = VideoFrame(frame_type=OBFrameType.DEPTH_FRAME, format=OBFormat.Y16, width=640, height=480)
+        fs.push_frame(vf)
+
+        assert fs.get_frame_count() == 1
+        assert fs.get_depth_frame() is not None

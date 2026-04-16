@@ -46,6 +46,10 @@ void define_filter(const py::object& m) {
            [](std::shared_ptr<ob::Filter>& self,
               std::shared_ptr<ob::Frame> frame) {
              CHECK_NULLPTR(self);
+             if (!frame) {
+               throw std::invalid_argument(
+                   "filter.process(): frame cannot be None");
+             }
              OB_TRY_CATCH({
                auto out = self->process(frame);
                if (!out) {

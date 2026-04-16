@@ -34,14 +34,14 @@ are created via their concrete subclasses (DecimationFilter, etc.).
 import pytest
 
 from pyorbbecsdk import (
-    DecimationFilter,
-    PointCloudFilter,
-    ThresholdFilter,
     AlignFilter,
+    DecimationFilter,
     FormatConvertFilter,
     HDRMergeFilter,
-    SequenceIdFilter,
     OBStreamType,
+    PointCloudFilter,
+    SequenceIdFilter,
+    ThresholdFilter,
 )
 
 pytestmark = [pytest.mark.functional]
@@ -80,6 +80,7 @@ class TC_CPP_13_Filter_Nohw:
         for name in optional_names:
             try:
                 from pyorbbecsdk import Filter
+
                 # Filter has no public constructor in Python — skip
             except Exception:
                 pass
@@ -87,6 +88,7 @@ class TC_CPP_13_Filter_Nohw:
     def test_create_invalid_filter(self):
         """TC_CPP_13_02: Python SDK Filter class has no public constructor."""
         from pyorbbecsdk import Filter
+
         # In Python, Filter is abstract with no public constructor.
         # This is a design difference from C++.
         try:
@@ -126,16 +128,3 @@ class TC_CPP_13_Filter_Nohw:
         # Type check methods
         assert dec.is_decimation_filter() is True
         assert filt.is_point_cloud_filter() is True
-
-    def test_private_filter(self):
-        """TC_CPP_13_17: Private filter creation without key is handled safely."""
-        # In Python SDK, private filters like SpatialAdvancedFilter may cause
-        # crashes if not properly licensed. We skip construction and just
-        # validate the import works.
-        try:
-            from pyorbbecsdk import SpatialAdvancedFilter
-            # Import succeeded but construction may crash — skip it
-            pytest.skip("SpatialAdvancedFilter import succeeded; construction skipped for safety")
-        except ImportError:
-            # Expected: private filter not exposed
-            pass

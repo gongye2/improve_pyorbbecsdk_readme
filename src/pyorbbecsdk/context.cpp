@@ -117,6 +117,11 @@ void Context::enable_net_device_enumeration(bool enable) {
   OB_TRY_CATCH({ impl_->enableNetDeviceEnumeration(enable); });
 }
 
+void Context::free_idle_memory() const {
+  CHECK_NULLPTR(impl_);
+  OB_TRY_CATCH({ impl_->freeIdleMemory(); });
+}
+
 bool Context::ob_force_ip_config(const std::string device_uid,
                                  const OBDeviceIpAddrConfig &config) {
   OB_TRY_CATCH({ return impl_->forceIp(device_uid.c_str(), config); });
@@ -183,6 +188,10 @@ void define_context(py::object &m) {
             return self.ob_force_ip_config(device_uid, config);
           },
           "Change the IP configuration")
+      .def(
+          "free_idle_memory",
+          [](Context &self) { self.free_idle_memory(); },
+          "Free idle memory from the internal frame memory pool")
       .def(
           "set_gvcp_port_scheme",
           [](Context &self, OBGvcpPortScheme scheme) {

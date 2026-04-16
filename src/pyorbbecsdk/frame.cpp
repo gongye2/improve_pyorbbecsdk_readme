@@ -17,11 +17,48 @@
 
 #include <pybind11/numpy.h>
 
+#include <libobsensor/h/Frame.h>
+
 #include "error.hpp"
 
 namespace pyorbbecsdk {
+
+// Helper: wrap a C-level ob_frame* into a C++ ob::Frame shared_ptr.
+// The ob::Frame destructor calls ob_delete_frame(), so we must NOT
+// add a separate custom deleter — just transfer ownership to ob::Frame.
+static std::shared_ptr<ob::Frame> wrap_c_frame(ob_frame *raw) {
+  if (!raw) {
+    throw std::runtime_error("Failed to create frame: null pointer returned");
+  }
+  return std::make_shared<ob::Frame>(raw);
+}
+
 void define_frame(const py::object& m) {
   py::class_<ob::Frame, std::shared_ptr<ob::Frame>>(m, "Frame")
+      .def(py::init(
+               [](OBFrameType frame_type, OBFormat format, uint32_t data_size) {
+                 ob_error* error = nullptr;
+                 ob_frame* raw =
+                     ob_create_frame(frame_type, format, data_size, &error);
+                 if (error && ob_error_get_status(error)) {
+                   std::string msg = ob_error_get_message(error);
+                   OBStatus status = ob_error_get_status(error);
+                   ob_delete_error(error);
+                   throw std::runtime_error(msg);
+                 }
+                 return wrap_c_frame(raw);
+               }),
+           py::arg("frame_type"), py::arg("format"), py::arg("data_size"),
+           R"pbdoc(Create a Frame object.
+
+Args:
+    frame_type: The frame type (OBFrameType enum).
+    format: The frame format (OBFormat enum).
+    data_size: The size of the frame data in bytes.
+
+Returns:
+    A new Frame object with the specified type, format, and data buffer.
+)pbdoc")
       .def("get_type",
            [](const std::shared_ptr<ob::Frame>& self) {
              OB_TRY_CATCH({ return self->type(); });
@@ -250,6 +287,34 @@ void define_frame(const py::object& m) {
 void define_video_frame(const py::object& m) {
   py::class_<ob::VideoFrame, ob::Frame, std::shared_ptr<ob::VideoFrame>>(
       m, "VideoFrame")
+      .def(py::init(
+               [](OBFrameType frame_type, OBFormat format, uint32_t width,
+                  uint32_t height) {
+                 ob_error* error = nullptr;
+                 // stride=0 => auto-calculate based on width and format
+                 ob_frame* raw =
+                     ob_create_video_frame(frame_type, format, width, height, 0,
+                                           &error);
+                 if (error && ob_error_get_status(error)) {
+                   std::string msg = ob_error_get_message(error);
+                   ob_delete_error(error);
+                   throw std::runtime_error(msg);
+                 }
+                 return std::make_shared<ob::VideoFrame>(raw);
+               }),
+           py::arg("frame_type"), py::arg("format"), py::arg("width"),
+           py::arg("height"),
+           R"pbdoc(Create a VideoFrame object.
+
+Args:
+    frame_type: The video frame type (OBFrameType enum).
+    format: The frame format (OBFormat enum).
+    width: Frame width in pixels.
+    height: Frame height in pixels.
+
+Returns:
+    A new VideoFrame object with the specified type, format, and dimensions.
+)pbdoc")
       .def("get_width",
            [](const std::shared_ptr<ob::VideoFrame>& self) {
              OB_TRY_CATCH({ return self->width(); });
@@ -378,6 +443,22 @@ void define_points_frame(const py::object& m) {
 void define_frame_set(const py::object& m) {
   py::class_<ob::FrameSet, ob::Frame, std::shared_ptr<ob::FrameSet>>(m,
                                                                      "FrameSet")
+      .def(py::init(
+               []() {
+                 ob_error* error = nullptr;
+                 ob_frame* raw = ob_create_frameset(&error);
+                 if (error && ob_error_get_status(error)) {
+                   std::string msg = ob_error_get_message(error);
+                   ob_delete_error(error);
+                   throw std::runtime_error(msg);
+                 }
+                 return std::make_shared<ob::FrameSet>(raw);
+               }),
+           R"pbdoc(Create an empty FrameSet object.
+
+Returns:
+    A new empty FrameSet that can be populated with push_frame().
+)pbdoc")
       .def("get_frame_count",
            [](const std::shared_ptr<ob::FrameSet>& self) {
              OB_TRY_CATCH({ return self->frameCount(); });

@@ -26,6 +26,7 @@ import numpy as np
 import pytest
 
 from pyorbbecsdk import (
+    OBAccelValue,
     OBDepthWorkMode,
     OBFilterConfigSchemaItem,
     OBFloatPropertyRange,
@@ -33,7 +34,6 @@ from pyorbbecsdk import (
     OBIntPropertyRange,
     OBMultiDeviceSyncConfig,
     OBMultiDeviceSyncMode,
-    OBAccelValue,
     OBPoint3f,
     OBRegionOfInterest,
 )

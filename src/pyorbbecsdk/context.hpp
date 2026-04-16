@@ -70,6 +70,8 @@ class Context {
                                    const std::string &file,
                                    const std::string &func, int line);
 
+  void free_idle_memory() const;
+
  private:
   std::shared_ptr<ob::Context> impl_;
 };

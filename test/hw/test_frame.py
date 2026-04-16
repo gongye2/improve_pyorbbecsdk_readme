@@ -38,6 +38,7 @@ import pytest
 
 from pyorbbecsdk import (
     Config,
+    OBFrameAggregateOutputMode,
     OBFrameType,
     OBSensorType,
     OBStreamType,
@@ -47,6 +48,24 @@ from pyorbbecsdk import (
 pytestmark = [pytest.mark.hardware, pytest.mark.functional]
 
 _TIMEOUT_MS = 3000
+
+
+def _find_matching_profiles(pipeline, min_fps: int = 10) -> tuple:
+    """Find depth and color profiles with matching resolution and fps."""
+    from pyorbbecsdk import OBFormat
+
+    depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+    color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+
+    for i in range(depth_profiles.get_count()):
+        dp = depth_profiles.get_stream_profile_by_index(i)
+        if dp.get_format() != OBFormat.Y16 or dp.get_fps() < min_fps:
+            continue
+        for j in range(color_profiles.get_count()):
+            cp = color_profiles.get_stream_profile_by_index(j)
+            if dp.get_width() == cp.get_width() and dp.get_height() == cp.get_height() and dp.get_fps() == cp.get_fps():
+                return dp, cp
+    raise ValueError("No matching depth+color profiles found")
 
 
 class TC_CPP_10_Frame_Expanded:
@@ -195,11 +214,10 @@ class TC_CPP_10_Frame_Expanded:
         """TC_CPP_10_09: Accel frame data is accessible."""
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.ACCEL_SENSOR)
-            # Get the first accel profile
             count = profile_list.get_count()
             if count == 0:
                 pytest.skip("No accel profiles available")
-            profile = profile_list.get_video_stream_profile(0)
+            profile = profile_list.get_stream_profile_by_index(0)
         except Exception:
             pytest.skip("Accel sensor not available")
 
@@ -227,7 +245,7 @@ class TC_CPP_10_Frame_Expanded:
             count = profile_list.get_count()
             if count == 0:
                 pytest.skip("No gyro profiles available")
-            profile = profile_list.get_video_stream_profile(0)
+            profile = profile_list.get_stream_profile_by_index(0)
         except Exception:
             pytest.skip("Gyro sensor not available")
 
@@ -273,13 +291,13 @@ class TC_CPP_10_Frame_Expanded:
         """TC_CPP_10_12: Frameset can extract frames by type and index."""
         config = Config()
         try:
-            depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-            color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-            config.enable_stream(depth_profiles.get_default_video_stream_profile())
-            config.enable_stream(color_profiles.get_default_video_stream_profile())
+            dp, cp = _find_matching_profiles(pipeline)
+            config.enable_stream(dp)
+            config.enable_stream(cp)
         except Exception:
-            pytest.skip("Cannot enable both depth and color streams")
+            pytest.skip("Cannot find matching depth+color profiles")
 
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         pipeline.start(config)
         frames = pipeline.wait_for_frames(_TIMEOUT_MS)
         pipeline.stop()
@@ -304,13 +322,13 @@ class TC_CPP_10_Frame_Expanded:
         """TC_CPP_10_14: Frameset contains synced depth+color frames."""
         config = Config()
         try:
-            depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
-            color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-            config.enable_stream(depth_profiles.get_default_video_stream_profile())
-            config.enable_stream(color_profiles.get_default_video_stream_profile())
+            dp, cp = _find_matching_profiles(pipeline)
+            config.enable_stream(dp)
+            config.enable_stream(cp)
         except Exception:
-            pytest.skip("Cannot enable both depth and color streams")
+            pytest.skip("Cannot find matching depth+color profiles")
 
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         pipeline.start(config)
 
         synced_count = 0

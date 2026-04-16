@@ -36,8 +36,8 @@ from pyorbbecsdk import (
     Config,
     OBFrameAggregateOutputMode,
     OBSensorType,
-    PlaybackDevice,
     Pipeline,
+    PlaybackDevice,
 )
 
 pytestmark = [pytest.mark.functional]
@@ -60,17 +60,23 @@ def _get_playbag_or_skip() -> str:
     return bag
 
 
-def _collect_depth_frames_from_playback(pipeline: Pipeline, count=3):
-    """Collect depth frames from a playback pipeline."""
-    frames_list = []
-    deadline = time.time() + count * 5
-    while len(frames_list) < count and time.time() < deadline:
-        fs = pipeline.wait_for_frames(3000)
-        if fs:
-            depth = fs.get_depth_frame()
-            if depth:
-                frames_list.append(depth)
-    return frames_list
+def _setup_playback_pipeline(bag_path: str):
+    """Create PlaybackDevice, Pipeline, and Config with depth stream enabled."""
+    pb_device = PlaybackDevice(bag_path)
+    pipeline = Pipeline(pb_device)
+    config = Config()
+
+    # Enable depth stream (most reliably available in bag recordings)
+    try:
+        profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+        profile = profile_list.get_default_video_stream_profile()
+        config.enable_stream(profile)
+    except Exception:
+        pass
+
+    # Reduce latency by allowing partial framesets
+    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+    return pipeline, config, pb_device
 
 
 class TC_CPP_18_Playback:
@@ -79,33 +85,13 @@ class TC_CPP_18_Playback:
     def test_playback_device_create_and_play(self):
         """TC_CPP_18_03: PlaybackDevice can be created and used with pipeline."""
         bag_path = _get_playbag_or_skip()
-        pb_device = PlaybackDevice(bag_path)
+        pipeline, config, pb_device = _setup_playback_pipeline(bag_path)
         assert pb_device is not None
 
         dev_info = pb_device.get_device_info()
         assert dev_info is not None
         assert dev_info.get_name() is not None
 
-        pipeline = Pipeline(pb_device)
-        config = Config()
-        sensor_list = pb_device.get_sensor_list()
-        assert sensor_list is not None
-        assert sensor_list.get_count() > 0
-
-        # Enable all available streams
-        for i in range(sensor_list.get_count()):
-            sensor = sensor_list.get_sensor_by_index(i)
-            sensor_type = sensor.get_type()
-            try:
-                profile_list = pipeline.get_stream_profile_list(sensor_type)
-                profile = profile_list.get_default_video_stream_profile()
-                config.enable_stream(profile)
-            except Exception:
-                pass
-
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
         pipeline.start(config)
 
         frames = pipeline.wait_for_frames(5000)
@@ -142,28 +128,7 @@ class TC_CPP_18_Playback:
     def test_playback_pause_resume_status(self):
         """TC_CPP_18_06: Playback can be paused and resumed."""
         bag_path = _get_playbag_or_skip()
-        pb_device = PlaybackDevice(bag_path)
-        assert pb_device is not None
-
-        pipeline = Pipeline(pb_device)
-        config = Config()
-        sensor_list = pb_device.get_sensor_list()
-        assert sensor_list is not None
-        assert sensor_list.get_count() > 0
-
-        for i in range(sensor_list.get_count()):
-            sensor = sensor_list.get_sensor_by_index(i)
-            sensor_type = sensor.get_type()
-            try:
-                profile_list = pipeline.get_stream_profile_list(sensor_type)
-                profile = profile_list.get_default_video_stream_profile()
-                config.enable_stream(profile)
-            except Exception:
-                pass
-
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
+        pipeline, config, pb_device = _setup_playback_pipeline(bag_path)
         pipeline.start(config)
 
         # Wait for frames to validate runtime behavior
@@ -173,6 +138,7 @@ class TC_CPP_18_Playback:
         pb_device.pause()
         status = pb_device.get_playback_status()
         from pyorbbecsdk import OBPlaybackStatus
+
         assert status == OBPlaybackStatus.PAUSED
 
         # Resume
@@ -185,8 +151,7 @@ class TC_CPP_18_Playback:
     def test_playback_status_callback(self):
         """TC_CPP_18_07: Playback status change callback is triggered."""
         bag_path = _get_playbag_or_skip()
-        pb_device = PlaybackDevice(bag_path)
-        assert pb_device is not None
+        pipeline, config, pb_device = _setup_playback_pipeline(bag_path)
 
         cb_count = [0]
 
@@ -194,26 +159,6 @@ class TC_CPP_18_Playback:
             cb_count[0] += 1
 
         pb_device.set_playback_status_change_callback(status_cb)
-
-        pipeline = Pipeline(pb_device)
-        config = Config()
-        sensor_list = pb_device.get_sensor_list()
-        assert sensor_list is not None
-        assert sensor_list.get_count() > 0
-
-        for i in range(sensor_list.get_count()):
-            sensor = sensor_list.get_sensor_by_index(i)
-            sensor_type = sensor.get_type()
-            try:
-                profile_list = pipeline.get_stream_profile_list(sensor_type)
-                profile = profile_list.get_default_video_stream_profile()
-                config.enable_stream(profile)
-            except Exception:
-                pass
-
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
         pipeline.start(config)
 
         time.sleep(0.5)

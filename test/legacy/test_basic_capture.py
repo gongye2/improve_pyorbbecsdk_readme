@@ -212,17 +212,13 @@ def main():
         print(f"✓ Config created successfully")
         if pipeline is not None:
             try:
-                profile_list = pipeline.get_stream_profile_list(
-                    OBSensorType.COLOR_SENSOR
-                )
+                profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
                 config.enable_stream(profile_list.get_default_video_stream_profile())
                 print(f"✓ Color stream configured")
             except Exception:
                 pass
             try:
-                profile_list = pipeline.get_stream_profile_list(
-                    OBSensorType.DEPTH_SENSOR
-                )
+                profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
                 config.enable_stream(profile_list.get_default_video_stream_profile())
                 print(f"✓ Depth stream configured")
             except Exception:

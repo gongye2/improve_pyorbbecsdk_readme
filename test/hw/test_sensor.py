@@ -58,10 +58,7 @@ class TC_CPP_06_Sensor_Expanded:
             types.add(sensor.get_type())
 
         # At least one of depth or IR should be present
-        has_depth_or_ir = (
-            OBSensorType.DEPTH_SENSOR in types
-            or OBSensorType.IR_SENSOR in types
-        )
+        has_depth_or_ir = OBSensorType.DEPTH_SENSOR in types or OBSensorType.IR_SENSOR in types
         assert has_depth_or_ir
 
     def test_imu_sensors(self, device: Device):

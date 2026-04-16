@@ -8,10 +8,8 @@ import os
 import re
 import sys
 import xml.etree.ElementTree as et
-
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence
-
 
 PLATFORM_ALIASES = {
     "win32": "windows_x64",
@@ -72,7 +70,9 @@ def parse_examples_index(index_path: Path) -> Dict[str, Dict[str, Any]]:
     if not index_path.exists():
         return mapping
 
-    line_re = re.compile(r"^\|\s*\[(?P<label>[^\]]+)\]\((?P<link>[^)]+)\)\s*\|\s*`(?P<target>[^`]+)`\s*\|\s*(?P<requires>[^|]+)\|\s*(?P<desc>.+?)\|\s*$")
+    line_re = re.compile(
+        r"^\|\s*\[(?P<label>[^\]]+)\]\((?P<link>[^)]+)\)\s*\|\s*`(?P<target>[^`]+)`\s*\|\s*(?P<requires>[^|]+)\|\s*(?P<desc>.+?)\|\s*$"
+    )
     for line in index_path.read_text(encoding="utf-8").splitlines():
         match = line_re.match(line)
         if not match:
@@ -166,7 +166,12 @@ def infer_case_behavior(case_id: str, requires: Sequence[str], readme_text: str)
     if supports_png_save:
         auto_keys = ["S", "ESC"]
         timeout_sec = 25
-    elif "opencv" in requires or case_id.startswith("beginner/") or case_id.startswith("advanced/") or case_id.startswith("lidar_examples/"):
+    elif (
+        "opencv" in requires
+        or case_id.startswith("beginner/")
+        or case_id.startswith("advanced/")
+        or case_id.startswith("lidar_examples/")
+    ):
         auto_keys = ["ESC"]
 
     if case_id.startswith("lidar_examples/"):
@@ -336,7 +341,7 @@ def pool_match_rank(case: Dict[str, Any], pool: Dict[str, Any]) -> tuple[int, in
 def batch(items: Sequence[str], batch_size: int) -> List[List[str]]:
     result: List[List[str]] = []
     for index in range(0, len(items), batch_size):
-        result.append(list(items[index:index + batch_size]))
+        result.append(list(items[index : index + batch_size]))
     return result
 
 
@@ -359,10 +364,12 @@ def generate_matrix(manifest: Dict[str, Any], runner_pools: Dict[str, Any], batc
 
         missing_platforms = [platform for platform in case["supported_platforms"] if platform not in assigned_platforms]
         if missing_platforms:
-            unassigned.append({
-                "case_id": case["id"],
-                "missing_platforms": missing_platforms,
-            })
+            unassigned.append(
+                {
+                    "case_id": case["id"],
+                    "missing_platforms": missing_platforms,
+                }
+            )
 
     matrix: List[Dict[str, Any]] = []
     for pool_name, payload in sorted(grouped.items()):
@@ -371,15 +378,17 @@ def generate_matrix(manifest: Dict[str, Any], runner_pools: Dict[str, Any], batc
         case_map = {case["id"]: case for case in manifest.get("cases", [])}
         for batch_index, case_chunk in enumerate(batch(case_ids, batch_size), start=1):
             targets = sorted({case_map[case_id]["target"] for case_id in case_chunk})
-            matrix.append({
-                "job_id": f"{pool_name}-{batch_index}",
-                "display_name": f"{pool_name} batch {batch_index}",
-                "pool_name": pool_name,
-                "platform": pool["platform"],
-                "runs_on": json.dumps(pool["runs_on"]),
-                "case_ids": ";".join(case_chunk),
-                "targets": ";".join(targets),
-            })
+            matrix.append(
+                {
+                    "job_id": f"{pool_name}-{batch_index}",
+                    "display_name": f"{pool_name} batch {batch_index}",
+                    "pool_name": pool_name,
+                    "platform": pool["platform"],
+                    "runs_on": json.dumps(pool["runs_on"]),
+                    "case_ids": ";".join(case_chunk),
+                    "targets": ";".join(targets),
+                }
+            )
 
     return {
         "generated_at": utc_now(),
@@ -499,7 +508,9 @@ def render_html_report(results: Sequence[Dict[str, Any]], output_path: Path, tit
             parts = []
             for image_path in result["saved_images"]:
                 rel_path = os.path.relpath(image_path, output_path.parent).replace("\\", "/")
-                parts.append(f'<a href="{html.escape(rel_path)}"><img src="{html.escape(rel_path)}" alt="{html.escape(Path(image_path).name)}"></a>')
+                parts.append(
+                    f'<a href="{html.escape(rel_path)}"><img src="{html.escape(rel_path)}" alt="{html.escape(Path(image_path).name)}"></a>'
+                )
             images_html = "".join(parts)
 
         log_html = "-"

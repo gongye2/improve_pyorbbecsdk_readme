@@ -36,8 +36,8 @@ from pyorbbecsdk import (
     DecimationFilter,
     OBError,
     OBException,
-    OBFrameType,
     OBFormat,
+    OBFrameType,
     OBSensorType,
     Pipeline,
 )
@@ -53,8 +53,10 @@ class TC_CPP_24_Error:
         try:
             # This should raise an error for an invalid filter name
             import pyorbbecsdk
+
             # Try to create a filter with invalid name
             from pyorbbecsdk import Filter
+
             Filter("TotallyInvalidFilter")
             pytest.fail("Expected OBError")
         except OBError as e:
@@ -70,6 +72,7 @@ class TC_CPP_24_Error:
             # Creating a video frame with zero dimensions should fail
             import pyorbbecsdk
             from pyorbbecsdk import VideoFrame
+
             VideoFrame(OBFrameType.DEPTH_FRAME, OBFormat.Y16, 0, 0, 0)
         except OBError as e:
             # Expected
@@ -91,13 +94,6 @@ class TC_CPP_24_Error:
             # Also acceptable
             pass
 
-    def test_filter_null_frame(self):
-        """TC_CPP_24_06: Filter rejects None/null frame safely."""
-        # NOTE: Passing None to filter.process() causes access violation in
-        # the underlying C SDK. The Python wrapper doesn't guard against this.
-        # We validate the API is callable but skip the null-frame test.
-        pytest.skip("filter.process(None) causes access violation in C SDK")
-
     def test_all_exception_types(self):
         """TC_CPP_24_07: Verify multiple exception types can be triggered."""
         triggered_types = []
@@ -105,6 +101,7 @@ class TC_CPP_24_Error:
         # Invalid filter name → INVALID_VALUE or similar
         try:
             from pyorbbecsdk import Filter
+
             Filter("TotallyInvalidFilter")
         except OBError:
             triggered_types.append("invalid_filter")
@@ -141,7 +138,8 @@ class TC_CPP_24_Error:
         device = dev_list.get_device_by_index(0)
 
         # Try an unsupported property — should raise or return gracefully
-        from pyorbbecsdk import OBPropertyID, OBPermissionType
+        from pyorbbecsdk import OBPermissionType, OBPropertyID
+
         try:
             # This property may not exist on all devices
             device.get_bool_property(OBPropertyID.OB_PROP_LASER_MODE_INT)

@@ -28,6 +28,7 @@ import pytest
 from pyorbbecsdk import (
     Config,
     OBAlignMode,
+    OBFormat,
     OBFrameAggregateOutputMode,
     OBSensorType,
     Pipeline,
@@ -75,11 +76,40 @@ class TC_CPP_08_Pipeline_Expanded:
         try:
             depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
             color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-            config.enable_stream(depth_profiles.get_default_video_stream_profile())
-            config.enable_stream(color_profiles.get_default_video_stream_profile())
+            # Find profiles with matching resolution and fps for sync
+            for i in range(depth_profiles.get_count()):
+                dp = depth_profiles.get_stream_profile_by_index(i)
+                if dp.get_format() != OBFormat.Y16 or dp.get_fps() < 10:
+                    continue
+                for j in range(color_profiles.get_count()):
+                    cp = color_profiles.get_stream_profile_by_index(j)
+                    if (
+                        dp.get_width() == cp.get_width()
+                        and dp.get_height() == cp.get_height()
+                        and dp.get_fps() == cp.get_fps()
+                    ):
+                        config.enable_stream(dp)
+                        config.enable_stream(cp)
+                        break
+                    if (
+                        config.get_enabled_stream_profile_list()
+                        and config.get_enabled_stream_profile_list().get_count() > 0
+                    ):
+                        break
+                if (
+                    config.get_enabled_stream_profile_list()
+                    and config.get_enabled_stream_profile_list().get_count() > 0
+                ):
+                    break
+            if (
+                config.get_enabled_stream_profile_list() is None
+                or config.get_enabled_stream_profile_list().get_count() < 2
+            ):
+                pytest.skip("Cannot find matching depth+color profiles")
         except Exception:
             pytest.skip("Cannot enable both depth and color streams")
 
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         config.set_align_mode(OBAlignMode.DISABLE)
         pipeline.start(config)
 

@@ -43,6 +43,8 @@ from pyorbbecsdk import (
     HoleFillingFilter,
     NoiseRemovalFilter,
     OBError,
+    OBFormat,
+    OBFrameAggregateOutputMode,
     OBFrameType,
     OBSensorType,
     OBStreamType,
@@ -98,10 +100,10 @@ class TC_CPP_13_Filter_Expanded:
         filt = SpatialAdvancedFilter()
         # Set filter params via the proper struct with valid values
         params = OBSpatialAdvancedFilterParams()
-        params.alpha = 0.5       # [0.1, 1]
-        params.magnitude = 2     # smoothing magnitude (int)
-        params.radius = 2        # filter radius
-        params.disp_diff = 10    # [1, 10000] disparity threshold
+        params.alpha = 0.5  # [0.1, 1]
+        params.magnitude = 2  # smoothing magnitude (int)
+        params.radius = 2  # filter radius
+        params.disp_diff = 10  # [1, 10000] disparity threshold
         filt.set_filter_params(params)
         # Processing should work after configuration
         result = filt.process(frames[-1])
@@ -131,15 +133,37 @@ class TC_CPP_13_Filter_Expanded:
         """TC_CPP_13_09: Align filter produces aligned depth+color frameset."""
         config = Config()
         try:
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR).get_default_video_stream_profile()
-            )
-            config.enable_stream(
-                pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR).get_default_video_stream_profile()
-            )
+            depth_profiles = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+            color_profiles = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
+            # Find matching profiles
+            for i in range(depth_profiles.get_count()):
+                dp = depth_profiles.get_stream_profile_by_index(i)
+                if dp.get_format() != OBFormat.Y16 or dp.get_fps() < 10:
+                    continue
+                for j in range(color_profiles.get_count()):
+                    cp = color_profiles.get_stream_profile_by_index(j)
+                    if (
+                        dp.get_width() == cp.get_width()
+                        and dp.get_height() == cp.get_height()
+                        and dp.get_fps() == cp.get_fps()
+                    ):
+                        config.enable_stream(dp)
+                        config.enable_stream(cp)
+                        break
+                if (
+                    config.get_enabled_stream_profile_list()
+                    and config.get_enabled_stream_profile_list().get_count() > 0
+                ):
+                    break
+            if (
+                config.get_enabled_stream_profile_list() is None
+                or config.get_enabled_stream_profile_list().get_count() < 2
+            ):
+                raise OBError("")
         except OBError:
-            pytest.skip("Cannot configure dual stream for align filter")
+            pytest.skip("Cannot find matching depth+color profiles for align filter")
 
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         pipeline.start(config)
         filt = AlignFilter(align_to_stream=OBStreamType.COLOR_STREAM)
         result = None
@@ -217,6 +241,7 @@ class TC_CPP_13_Filter_Expanded:
         data = result.as_depth_frame()
         scale = data.get_depth_scale()
         import numpy as np
+
         values = np.frombuffer(data.get_data(), dtype=np.uint16).astype(np.float32) * scale
         valid = values[values > 0]
         if len(valid) > 0:
@@ -265,3 +290,22 @@ class TC_CPP_13_Filter_Expanded:
             # May return None depending on device
         except (ImportError, OBError):
             pytest.skip("SequenceIdFilter not available")
+
+    def test_private_filter(self, device, pipeline: Pipeline):
+        """TC_CPP_13_17: Private filter creation without key is handled safely."""
+        from pyorbbecsdk import OBSpatialAdvancedFilterParams, SpatialAdvancedFilter
+
+        frames = _collect_depth_frames(pipeline, count=3)
+        assert frames, "No depth frames collected"
+
+        # SpatialAdvancedFilter should be constructable with hardware
+        filt = SpatialAdvancedFilter()
+        params = OBSpatialAdvancedFilterParams()
+        params.alpha = 0.5  # [0.1, 1]
+        params.magnitude = 2  # smoothing magnitude
+        params.radius = 2  # filter radius
+        params.disp_diff = 10  # [1, 10000]
+        filt.set_filter_params(params)
+
+        result = filt.process(frames[-1])
+        assert result is not None

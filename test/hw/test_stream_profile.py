@@ -68,12 +68,15 @@ class TC_CPP_07_StreamProfile_Expanded:
 
     def test_accel_profile(self, device: Device, pipeline: Pipeline):
         """TC_CPP_07_03: Accel stream profile has valid intrinsics."""
+        from pyorbbecsdk import AccelStreamProfile
+
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.ACCEL_SENSOR)
             count = profile_list.get_count()
             if count == 0:
                 pytest.skip("No accel profiles available")
-            profile = profile_list.get_video_stream_profile(0)
+            profile = profile_list.get_stream_profile_by_index(0)
+            assert isinstance(profile, AccelStreamProfile)
         except Exception:
             pytest.skip("Accel sensor not available")
 
@@ -83,12 +86,15 @@ class TC_CPP_07_StreamProfile_Expanded:
 
     def test_gyro_profile(self, device: Device, pipeline: Pipeline):
         """TC_CPP_07_04: Gyro stream profile has valid intrinsics."""
+        from pyorbbecsdk import GyroStreamProfile
+
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.GYRO_SENSOR)
             count = profile_list.get_count()
             if count == 0:
                 pytest.skip("No gyro profiles available")
-            profile = profile_list.get_video_stream_profile(0)
+            profile = profile_list.get_stream_profile_by_index(0)
+            assert isinstance(profile, GyroStreamProfile)
         except Exception:
             pytest.skip("Gyro sensor not available")
 

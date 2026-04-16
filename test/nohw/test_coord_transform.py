@@ -141,8 +141,6 @@ class TC_CPP_20_CoordTransform:
         src_px = OBPoint2f()
         src_px.x = 400.0
         src_px.y = 300.0
-        dst_px = transformation2dto2d(
-            src_px, 1000.0, src_intrinsic, src_dist, tgt_intrinsic, tgt_dist, identity
-        )
+        dst_px = transformation2dto2d(src_px, 1000.0, src_intrinsic, src_dist, tgt_intrinsic, tgt_dist, identity)
         assert abs(dst_px.x - src_px.x) < 2.0
         assert abs(dst_px.y - src_px.y) < 2.0

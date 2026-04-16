@@ -58,6 +58,7 @@ class TC_CPP_23_Logger:
     def test_log_to_file(self):
         """TC_CPP_23_02: Log can be directed to a file."""
         import tempfile
+
         tmpdir = tempfile.mkdtemp()
         try:
             ctx = Context()
@@ -108,11 +109,11 @@ class TC_CPP_23_Logger:
         ctx.set_logger_to_callback(OBLogLevel.INFO, log_cb)
         Context.log_external_message(
             OBLogLevel.INFO,
-            "PYORBBEC_TEST",    # tag
+            "PYORBBEC_TEST",  # tag
             "PYORBBEC_TEST_MARKER",  # message
-            __file__,           # file
+            __file__,  # file
             "test_external_message",  # function
-            0,                  # line
+            0,  # line
         )
         time.sleep(0.1)
         assert found[0], "External message not captured"

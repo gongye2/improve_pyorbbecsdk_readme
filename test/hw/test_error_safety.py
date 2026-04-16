@@ -80,3 +80,21 @@ class TC_CPP_24_Error_Safety:
         count = sensor_list.get_count()
         with pytest.raises(OBError):
             sensor_list.get_sensor_by_index(999)
+
+    def test_filter_null_frame(self, device, pipeline: Pipeline):
+        """TC_CPP_24_06: Filter rejects None/null frame safely."""
+        from pyorbbecsdk import TemporalFilter
+
+        # Collect a depth frame first to initialize the filter properly
+        config = Config()
+        profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
+        config.enable_stream(profile_list.get_default_video_stream_profile())
+        pipeline.start(config)
+
+        frames = pipeline.wait_for_frames(3000)
+        pipeline.stop()
+        assert frames is not None
+
+        filt = TemporalFilter()
+        with pytest.raises((ValueError, TypeError)):
+            filt.process(None)

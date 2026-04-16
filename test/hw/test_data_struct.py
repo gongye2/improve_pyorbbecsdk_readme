@@ -47,13 +47,14 @@ class TC_CPP_25_DataStruct_Expanded:
         # Accel intrinsic
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.ACCEL_SENSOR)
-            profile = profile_list.get_default_accel_stream_profile()
-            assert profile is not None
+            count = profile_list.get_count()
+            if count == 0:
+                pytest.skip("No accel profiles available")
+            profile = profile_list.get_stream_profile_by_index(0)
             assert isinstance(profile, AccelStreamProfile)
 
             intrinsic = profile.get_intrinsic()
             assert intrinsic is not None
-            # Intrinsic should have standard IMU fields
             assert hasattr(intrinsic, "noise_density")
             assert hasattr(intrinsic, "random_walk")
             assert hasattr(intrinsic, "bias")
@@ -63,8 +64,10 @@ class TC_CPP_25_DataStruct_Expanded:
         # Gyro intrinsic
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.GYRO_SENSOR)
-            profile = profile_list.get_default_gyro_stream_profile()
-            assert profile is not None
+            count = profile_list.get_count()
+            if count == 0:
+                pytest.skip("No gyro profiles available")
+            profile = profile_list.get_stream_profile_by_index(0)
             assert isinstance(profile, GyroStreamProfile)
 
             intrinsic = profile.get_intrinsic()

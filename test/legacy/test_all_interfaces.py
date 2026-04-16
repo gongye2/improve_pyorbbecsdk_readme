@@ -2559,11 +2559,11 @@ class TestPlaybackDevice:
         import os
 
         bag_dir = os.path.join(os.path.dirname(__file__), "..", "resource", "rosbag")
-        bag_files = [
-            os.path.join(bag_dir, f)
-            for f in os.listdir(bag_dir)
-            if f.endswith(".bag")
-        ] if os.path.isdir(bag_dir) else []
+        bag_files = (
+            [os.path.join(bag_dir, f) for f in os.listdir(bag_dir) if f.endswith(".bag")]
+            if os.path.isdir(bag_dir)
+            else []
+        )
         if not bag_files:
             pytest.skip("No recorded .bag file found in test/resource/rosbag/")
         try:

@@ -241,7 +241,7 @@ class TestDepthStream:
         """Measure depth FPS; requires explicit 30fps profile since default is 10fps."""
         profile = _start_single_stream(pipeline, OBSensorType.DEPTH_SENSOR, fps=TARGET_FPS)
         # If default profile was used and it's not 30fps, skip
-        actual_profile_fps = profile.get_fps() if hasattr(profile, 'get_fps') else TARGET_FPS
+        actual_profile_fps = profile.get_fps() if hasattr(profile, "get_fps") else TARGET_FPS
         if actual_profile_fps != TARGET_FPS:
             # Try to find a 30fps profile explicitly
             config = Config()

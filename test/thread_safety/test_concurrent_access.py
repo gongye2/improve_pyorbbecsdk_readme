@@ -127,6 +127,7 @@ class TC_TS_ThreadSafety:
                     item = device.get_supported_property(i)
                     # Check if it's a read-write int property
                     from pyorbbecsdk import OBPermissionType
+
                     if item.permission == OBPermissionType.PERMISSION_READ_WRITE:
                         rw_props.append(item.id)
                 except Exception:
@@ -154,6 +155,7 @@ class TC_TS_ThreadSafety:
                         break
                     try:
                         from pyorbbecsdk import OBPermissionType
+
                         if device.is_property_supported(prop_id, OBPermissionType.PERMISSION_READ_WRITE):
                             # Try to read property
                             try:

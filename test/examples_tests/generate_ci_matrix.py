@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-
 from pathlib import Path
 
 from examples_test_utils import dump_json, generate_matrix, load_json

@@ -45,9 +45,7 @@ class TC_CPP_09_Config_Expanded:
     def test_enable_video_stream_params(self, device, pipeline: Pipeline):
         """TC_CPP_09_02: Enable video stream with explicit parameters."""
         config = Config()
-        config.enable_video_stream(
-            OBSensorType.COLOR_SENSOR, width=640, height=480, fps=30
-        )
+        config.enable_video_stream(OBSensorType.COLOR_SENSOR, width=640, height=480, fps=30)
         enabled = config.get_enabled_stream_profile_list()
         assert enabled is not None
         assert enabled.get_count() > 0
@@ -99,9 +97,7 @@ class TC_CPP_09_Config_Expanded:
         config = Config()
         profile_list = pipeline.get_stream_profile_list(OBSensorType.DEPTH_SENSOR)
         config.enable_stream(profile_list.get_default_video_stream_profile())
-        config.set_frame_aggregate_output_mode(
-            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-        )
+        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
         pipeline.start(config)
         frames = pipeline.wait_for_frames(3000)
         pipeline.stop()

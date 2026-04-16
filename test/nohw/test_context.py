@@ -57,5 +57,6 @@ class TC_CPP_01_Context:
             # ctx goes out of scope and is garbage collected
 
     def test_free_idle_memory(self, context):
-        """TC_CPP_01_04: freeIdleMemory (not exposed in Python SDK)."""
-        pytest.skip("freeIdleMemory not exposed in pyorbbecsdk")
+        """TC_CPP_01_04: freeIdleMemory releases cached frame memory."""
+        # Call free_idle_memory — should not raise
+        context.free_idle_memory()

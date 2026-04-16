@@ -32,9 +32,9 @@ Usage:
 """
 
 import os
+import tempfile
 import threading
 import time
-import tempfile
 from dataclasses import dataclass, field
 
 import pytest
@@ -150,6 +150,7 @@ class CpuStressor:
     @staticmethod
     def _busy_loop():
         import math
+
         val = 1.0
         while threading.current_thread().name.startswith("cpu_stress"):
             # Check a thread-safe flag via module-level attribute
@@ -187,6 +188,7 @@ class IoStressor:
         # Cleanup temp files
         try:
             import shutil
+
             shutil.rmtree(self._tmpdir, ignore_errors=True)
         except Exception:
             pass
@@ -269,6 +271,7 @@ class ResourceMonitor:
     def _get_cpu_percent() -> float:
         try:
             import psutil
+
             proc = psutil.Process(os.getpid())
             # Use interval=1 for accurate measurement over 1 second window
             return proc.cpu_percent(interval=1)
@@ -279,6 +282,7 @@ class ResourceMonitor:
     def _get_memory_mb() -> float:
         try:
             import psutil
+
             proc = psutil.Process(os.getpid())
             return proc.memory_info().rss / (1024 * 1024)
         except ImportError:
@@ -318,6 +322,7 @@ class PerfStreamTest:
         meta_fn = -1
         try:
             from pyorbbecsdk import OBFrameMetadataType
+
             if frame.has_metadata(OBFrameMetadataType.FRAME_NUMBER):
                 meta_fn = frame.get_metadata_value(OBFrameMetadataType.FRAME_NUMBER)
         except Exception:
