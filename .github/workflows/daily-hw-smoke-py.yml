@@ -127,22 +127,7 @@ jobs:
           echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
       # -----------------------------------------------------------------------
-      # 3. Install test dependencies
-      # -----------------------------------------------------------------------
-      - name: Install test dependencies (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          uv pip install -r test/requirements_test.txt
-
-      - name: Install test dependencies (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          uv pip install -r test/requirements_test.txt
-
-      # -----------------------------------------------------------------------
-      # 4. Build wheel
+      # 3. Build wheel
       # -----------------------------------------------------------------------
       - name: Build wheel (Windows)
         if: runner.os == 'Windows'
