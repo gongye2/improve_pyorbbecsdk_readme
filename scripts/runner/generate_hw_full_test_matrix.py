@@ -19,6 +19,7 @@ def main() -> int:
     parser.add_argument("--runner-pools", default="scripts/runner/runner_pools.json")
     parser.add_argument("--output-matrix", required=True)
     parser.add_argument("--platform", default="linux_x86_64")
+    parser.add_argument("--all-platforms", action="store_true", help="Discover all platforms (ignore --platform)")
     parser.add_argument("--required-capabilities", default="depth,color")
     parser.add_argument("--require-self-hosted", action="store_true", default=True)
     args = parser.parse_args()
@@ -28,7 +29,7 @@ def main() -> int:
 
     matrix = []
     for pool in pools_payload.get("pools", []):
-        if pool.get("platform") != args.platform:
+        if not args.all_platforms and pool.get("platform") != args.platform:
             continue
 
         runs_on = pool.get("runs_on", [])

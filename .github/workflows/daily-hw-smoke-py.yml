@@ -35,11 +35,22 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports/hw_discovery
-          python scripts/runner/generate_hw_full_test_matrix.py \
-            --runner-pools scripts/runner/runner_pools.json \
-            --platform "${{ github.event.inputs.platform || 'windows_x64' }}" \
-            --required-capabilities depth,color \
-            --output-matrix reports/hw_discovery/hw_matrix.json
+          # If manual dispatch specifies a platform, only discover that one
+          PLATFORM="${{ github.event.inputs.platform || '' }}"
+          if [ -n "$PLATFORM" ]; then
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --platform "$PLATFORM" \
+              --required-capabilities depth,color \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          else
+            # Scheduled run: discover all platforms
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --required-capabilities depth,color \
+              --all-platforms \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          fi
 
       - name: Export matrix output
         id: export
