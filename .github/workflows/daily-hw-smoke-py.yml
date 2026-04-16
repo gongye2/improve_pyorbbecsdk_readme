@@ -35,7 +35,6 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports/hw_discovery
-          # If manual dispatch specifies a platform, only discover that one
           PLATFORM="${{ github.event.inputs.platform || '' }}"
           if [ -n "$PLATFORM" ]; then
             python scripts/runner/generate_hw_full_test_matrix.py \
@@ -44,7 +43,6 @@ jobs:
               --required-capabilities depth,color \
               --output-matrix reports/hw_discovery/hw_matrix.json
           else
-            # Scheduled run: discover all platforms
             python scripts/runner/generate_hw_full_test_matrix.py \
               --runner-pools scripts/runner/runner_pools.json \
               --required-capabilities depth,color \
@@ -102,9 +100,15 @@ jobs:
     name: ${{ matrix.display_name }}
     runs-on: ${{ fromJSON(matrix.runs_on) }}
     steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
+      # -----------------------------------------------------------------------
+      # 2. Python + venv setup
+      # -----------------------------------------------------------------------
       - name: Set up Python 3.10 (Windows)
         if: runner.os == 'Windows'
         shell: powershell
@@ -122,49 +126,101 @@ jobs:
           uv venv .venv --python 3.10
           echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
-      - name: Install test dependencies
-        shell: bash
+      # -----------------------------------------------------------------------
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
+      - name: Install test dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
         run: |
-          set -euo pipefail
           uv pip install -r test/requirements_test.txt
 
-      - name: Build wheel
+      - name: Install test dependencies (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
-          set -euo pipefail
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            pwsh -NoProfile -ExecutionPolicy Bypass -File \
-              scripts/build_whl/build-whl-uv.ps1 3.10 --yes --no-clean
-          elif [ "$RUNNER_OS" = "macOS" ]; then
-            chmod +x scripts/build_whl/build-whl-uv-macos.sh
-            bash scripts/build_whl/build-whl-uv-macos.sh 3.10 --yes --no-clean
-          else
-            chmod +x scripts/build_whl/build-whl-uv.sh
-            bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
-          fi
+          uv pip install -r test/requirements_test.txt
 
-      - name: Install wheel
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
+      # -----------------------------------------------------------------------
+      - name: Build wheel (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          & scripts/build_whl/build-whl-uv.ps1 3.10 --yes --no-clean
+
+      - name: Build wheel (Linux)
+        if: runner.os == 'Linux'
         shell: bash
         run: |
-          set -euo pipefail
-          # On Linux there may be two wheels (linux + manylinux), pick the first one
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            WHL_FILE=$(ls wheel/*cp310*win*.whl 2>/dev/null | head -n1)
-          elif [ "$RUNNER_OS" = "macOS" ]; then
-            WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
-          else
-            # Linux: prefer manylinux wheel, fall back to linux wheel
-            WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
-          fi
-          if [ -z "$WHL_FILE" ]; then
-            echo "Error: No wheel found for Python 3.10 in wheel/"
-            ls -la wheel/
-            exit 1
-          fi
+          chmod +x scripts/build_whl/build-whl-uv.sh
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+
+      - name: Build wheel (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv-macos.sh
+          bash scripts/build_whl/build-whl-uv-macos.sh 3.10 --yes --no-clean
+
+      # -----------------------------------------------------------------------
+      # 5. Install wheel
+      # -----------------------------------------------------------------------
+      - name: Install wheel (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $WHL = (Get-ChildItem "wheel/*cp310*win*.whl" | Select-Object -First 1).FullName
+          if (-not $WHL) { Write-Error "No wheel found"; exit 1 }
+          Write-Host "Installing: $WHL"
+          uv pip install $WHL
+
+      - name: Install wheel (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
           echo "Installing: $WHL_FILE"
           uv pip install "$WHL_FILE"
 
-      - name: Device health check
+      - name: Install wheel (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      # -----------------------------------------------------------------------
+      # 6. Device health check
+      # -----------------------------------------------------------------------
+      - name: Device health check (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      - name: Device health check (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           python -c "
@@ -185,41 +241,81 @@ jobs:
               exit(1)
           "
 
-      - name: Run no-hardware tests
+      # -----------------------------------------------------------------------
+      # 7. Run no-hardware tests
+      # -----------------------------------------------------------------------
+      - name: Run no-hardware tests (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -m pytest test/ -m "not hardware" -v --tb=short `
+            --junitxml=reports/nohw_junit.xml 2>&1 | Tee-Object reports/nohw.log
+
+      - name: Run no-hardware tests (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
-          set -euo pipefail
           mkdir -p reports
           python -m pytest test/ -m "not hardware" -v \
             --tb=short \
             --junitxml=reports/nohw_junit.xml \
             2>&1 | tee reports/nohw.log
 
-      - name: Run hardware tests (functional)
+      # -----------------------------------------------------------------------
+      # 8. Run hardware tests (functional)
+      # -----------------------------------------------------------------------
+      - name: Run hardware tests (Windows)
+        if: runner.os == 'Windows'
+        env:
+          HARDWARE_AVAILABLE: "true"
+          DEVICE_TYPE: ${{ matrix.pool_name }}
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -m pytest test/ -m "hardware and not performance" -v --tb=short `
+            --junitxml=reports/hw_junit.xml 2>&1 | Tee-Object reports/hw.log
+
+      - name: Run hardware tests (Linux/macOS)
+        if: runner.os != 'Windows'
         env:
           HARDWARE_AVAILABLE: "true"
           DEVICE_TYPE: ${{ matrix.pool_name }}
         shell: bash
         run: |
-          set -euo pipefail
           mkdir -p reports
           python -m pytest test/ -m "hardware and not performance" -v \
             --tb=short \
             --junitxml=reports/hw_junit.xml \
             2>&1 | tee reports/hw.log
 
-      - name: Run run_tests.py (full suite with HTML report)
+      # -----------------------------------------------------------------------
+      # 9. Run run_tests.py (full suite with HTML report)
+      # -----------------------------------------------------------------------
+      - name: Run run_tests.py (Windows)
+        if: runner.os == 'Windows'
+        env:
+          DEVICE_TYPE: ${{ matrix.pool_name }}
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python test/run_tests.py --output reports --quick
+
+      - name: Run run_tests.py (Linux/macOS)
+        if: runner.os != 'Windows'
         env:
           DEVICE_TYPE: ${{ matrix.pool_name }}
         shell: bash
         run: |
-          set -euo pipefail
           mkdir -p reports
           python test/run_tests.py \
             --output reports \
             --quick \
             || true
 
+      # -----------------------------------------------------------------------
+      # 10. Publish report & upload artifacts
+      # -----------------------------------------------------------------------
       - name: Publish daily test report
         if: always()
         uses: mikepenz/action-junit-report@v5
