@@ -105,21 +105,59 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+      - name: Set up Python 3.10
+        shell: bash
+        run: |
+          uv python find 3.10 || uv python install 3.10
+          uv venv .venv --python 3.10
+          # Add venv to PATH for all subsequent steps
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            echo "$GITHUB_WORKSPACE/.venv/Scripts" >> "$GITHUB_PATH"
+          else
+            echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Install test dependencies
         shell: bash
         run: |
-          python -m pip install --upgrade pip
-          pip install -r test/requirements_test.txt
+          set -euo pipefail
+          uv pip install -r test/requirements_test.txt
 
-      - name: Install pyorbbecsdk
+      - name: Build wheel
         shell: bash
         run: |
-          pip install .
+          set -euo pipefail
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            pwsh -NoProfile -ExecutionPolicy Bypass -File \
+              scripts/build_whl/build-whl-uv.ps1 3.10 --yes --no-clean
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            chmod +x scripts/build_whl/build-whl-uv-macos.sh
+            bash scripts/build_whl/build-whl-uv-macos.sh 3.10 --yes --no-clean
+          else
+            chmod +x scripts/build_whl/build-whl-uv.sh
+            bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+          fi
+
+      - name: Install wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          # On Linux there may be two wheels (linux + manylinux), pick the first one
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            WHL_FILE=$(ls wheel/*cp310*win*.whl 2>/dev/null | head -n1)
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
+          else
+            # Linux: prefer manylinux wheel, fall back to linux wheel
+            WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          fi
+          if [ -z "$WHL_FILE" ]; then
+            echo "Error: No wheel found for Python 3.10 in wheel/"
+            ls -la wheel/
+            exit 1
+          fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
 
       - name: Device health check
         shell: bash
