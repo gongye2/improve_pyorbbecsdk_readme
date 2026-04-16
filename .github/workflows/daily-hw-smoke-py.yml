@@ -107,9 +107,10 @@ jobs:
 
       - name: Set up Python 3.10 (Windows)
         if: runner.os == 'Windows'
-        shell: pwsh
+        shell: powershell
         run: |
-          uv python find 3.10 || uv python install 3.10
+          uv python find 3.10
+          if ($LASTEXITCODE -ne 0) { uv python install 3.10 }
           uv venv .venv --python 3.10
           Add-Content -Path $env:GITHUB_PATH -Value "$env:GITHUB_WORKSPACE/.venv/Scripts"
 
