@@ -127,7 +127,22 @@ jobs:
           echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
       # -----------------------------------------------------------------------
-      # 3. Build wheel
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
+      - name: Install test dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          uv pip install -r test/requirements_test.txt
+
+      - name: Install test dependencies (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          uv pip install -r test/requirements_test.txt
+
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
       # -----------------------------------------------------------------------
       - name: Build wheel (Windows)
         if: runner.os == 'Windows'
@@ -234,7 +249,7 @@ jobs:
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path reports | Out-Null
-          python -m pytest test/ -m "not hardware" -v --tb=short `
+          python -m pytest test/ -m "not hardware" -v --tb=short --self-contained-html `
             --junitxml=reports/nohw_junit.xml 2>&1 | Tee-Object reports/nohw.log
 
       - name: Run no-hardware tests (Linux/macOS)
@@ -244,6 +259,7 @@ jobs:
           mkdir -p reports
           python -m pytest test/ -m "not hardware" -v \
             --tb=short \
+            --self-contained-html \
             --junitxml=reports/nohw_junit.xml \
             2>&1 | tee reports/nohw.log
 
@@ -258,7 +274,7 @@ jobs:
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path reports | Out-Null
-          python -m pytest test/ -m "hardware and not performance" -v --tb=short `
+          python -m pytest test/ -m "hardware and not performance" -v --tb=short --self-contained-html `
             --junitxml=reports/hw_junit.xml 2>&1 | Tee-Object reports/hw.log
 
       - name: Run hardware tests (Linux/macOS)
@@ -271,6 +287,7 @@ jobs:
           mkdir -p reports
           python -m pytest test/ -m "hardware and not performance" -v \
             --tb=short \
+            --self-contained-html \
             --junitxml=reports/hw_junit.xml \
             2>&1 | tee reports/hw.log
 
