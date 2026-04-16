@@ -149,7 +149,8 @@ def _start_single_stream(pipeline, sensor_type, width=0, height=0, fps=30, fmt=N
 
 def _collect_frames(pipeline, frame_type, count, timeout_ms=FRAME_TIMEOUT_MS):
     frames = []
-    deadline = time.time() + count * (1.0 / TARGET_FPS) * 4
+    # Allow at least 2s for stream warmup + per-frame time * 4 safety margin
+    deadline = time.time() + max(2.0, count * (1.0 / TARGET_FPS) * 4)
     while len(frames) < count and time.time() < deadline:
         fs = pipeline.wait_for_frames(timeout_ms)
         if fs is None:

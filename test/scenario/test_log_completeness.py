@@ -87,7 +87,7 @@ class TC_SCENARIO_01_LogCompleteness:
         collector = LogCollector()
 
         # Install log callback before any SDK activity
-        context.set_logger_to_callback(OBLogLevel.DEBUG, lambda level, msg: collector.append(level, msg))
+        context.set_logger_to_callback(OBLogLevel.INFO, lambda level, msg: collector.append(level, msg))
 
         # Phase 1: Context initialization (already done by fixture)
         phase1_start = collector.size()

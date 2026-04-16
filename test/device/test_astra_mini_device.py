@@ -39,7 +39,7 @@ class TestAstraMiniDeviceDiscovery:
     def test_device_found(self, astra_mini_device):
         assert astra_mini_device is not None
 
-    def test_device_name_is_astra_mini(self, device_info):
+    def test_device_name_is_astra_mini(self, astra_mini_device, device_info):
         name = device_info.get_name()
         assert name and len(name) > 0
         assert "Astra Mini" in name or "Astra mini" in name, f"Device name '{name}' is not an Astra Mini camera"

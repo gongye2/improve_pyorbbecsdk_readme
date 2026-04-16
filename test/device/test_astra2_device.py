@@ -41,7 +41,7 @@ class TestAstra2DeviceDiscovery:
     def test_device_found(self, astra2_device):
         assert astra2_device is not None
 
-    def test_device_name_is_astra2(self, device_info):
+    def test_device_name_is_astra2(self, astra2_device, device_info):
         name = device_info.get_name()
         assert name and ("Astra 2" in name or "Astra2" in name), f"Device name '{name}' is not an Astra 2 camera"
 

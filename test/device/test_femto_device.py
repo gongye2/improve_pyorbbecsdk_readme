@@ -39,7 +39,7 @@ class TestFemtoDeviceDiscovery:
     def test_device_found(self, femto_device):
         assert femto_device is not None
 
-    def test_device_name_is_femto(self, device_info):
+    def test_device_name_is_femto(self, femto_device, device_info):
         name = device_info.get_name()
         assert name and len(name) > 0
         assert "Femto" in name or "femto" in name, f"Device name '{name}' is not a Femto family camera"

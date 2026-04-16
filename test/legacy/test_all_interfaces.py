@@ -85,6 +85,8 @@ def pytest_configure(config):
 class TestResultCollector:
     """Collects and summarizes test results."""
 
+    __test__ = False  # prevent pytest from collecting as a test class
+
     def __init__(self):
         self.passed = 0
         self.failed = 0
@@ -2551,15 +2553,21 @@ class TestRecordDevice:
 class TestPlaybackDevice:
     """Test PlaybackDevice class methods."""
 
-    def test_playback_device_creation(self, temp_test_file):
+    def test_playback_device_creation(self):
         """Test PlaybackDevice can be created with file."""
-        # Skip if file doesn't exist (need a recorded file)
+        # Use pre-recorded bag file from test resources
         import os
 
-        if not os.path.exists(temp_test_file):
-            pytest.skip("No recorded file available for playback test")
+        bag_dir = os.path.join(os.path.dirname(__file__), "..", "resource", "rosbag")
+        bag_files = [
+            os.path.join(bag_dir, f)
+            for f in os.listdir(bag_dir)
+            if f.endswith(".bag")
+        ] if os.path.isdir(bag_dir) else []
+        if not bag_files:
+            pytest.skip("No recorded .bag file found in test/resource/rosbag/")
         try:
-            playback = sdk.PlaybackDevice(temp_test_file)
+            playback = sdk.PlaybackDevice(bag_files[0])
             assert playback is not None
         except Exception as e:
             pytest.skip(f"PlaybackDevice creation failed: {e}")

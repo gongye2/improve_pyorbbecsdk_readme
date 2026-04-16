@@ -299,8 +299,11 @@ class TestIRControls:
 class TestLaserControls:
 
     def test_laser_enable_toggle(self, g300_series_device):
-        """Structured-light projector can be toggled."""
-        prop = OBPropertyID.OB_PROP_LASER_BOOL
+        """Structured-light projector can be toggled.
+
+        G300 series uses OB_PROP_LASER_ALWAYS_ON_BOOL, not OB_PROP_LASER_BOOL.
+        """
+        prop = OBPropertyID.OB_PROP_LASER_ALWAYS_ON_BOOL
         _skip_if_unsupported(g300_series_device, prop)
         original = g300_series_device.get_bool_property(prop)
         g300_series_device.set_bool_property(prop, not original)

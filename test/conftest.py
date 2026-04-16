@@ -99,6 +99,10 @@ def pytest_configure(config):
         "markers",
         "performance: long-running benchmark — FPS, latency, throughput (60+ seconds)",
     )
+    config.addinivalue_line(
+        "markers",
+        "static: test does not require device hardware — pure API/structure checks",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +214,12 @@ def pipeline(device):
         pipe.stop()
     except Exception:
         pass
+
+
+@pytest.fixture
+def temp_test_file(tmp_path):
+    """Return a temporary file path for recording tests."""
+    return str(tmp_path / "test_record.bag")
 
 
 # ---------------------------------------------------------------------------
