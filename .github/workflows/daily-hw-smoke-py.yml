@@ -133,13 +133,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          uv pip install -r test/requirements_test.txt
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
 
       - name: Install test dependencies (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          uv pip install -r test/requirements_test.txt
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
 
       # -----------------------------------------------------------------------
       # 4. Build wheel
@@ -174,7 +174,7 @@ jobs:
           $WHL = (Get-ChildItem "wheel/*cp310*win*.whl" | Select-Object -First 1).FullName
           if (-not $WHL) { Write-Error "No wheel found"; exit 1 }
           Write-Host "Installing: $WHL"
-          uv pip install $WHL
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ $WHL
 
       - name: Install wheel (Linux)
         if: runner.os == 'Linux'
@@ -183,7 +183,7 @@ jobs:
           WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
           if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
           echo "Installing: $WHL_FILE"
-          uv pip install "$WHL_FILE"
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ "$WHL_FILE"
 
       - name: Install wheel (macOS)
         if: runner.os == 'macOS'
@@ -192,7 +192,7 @@ jobs:
           WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
           if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
           echo "Installing: $WHL_FILE"
-          uv pip install "$WHL_FILE"
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ "$WHL_FILE"
 
       # -----------------------------------------------------------------------
       # 6. Device health check
