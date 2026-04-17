@@ -178,7 +178,18 @@ jobs:
       # -----------------------------------------------------------------------
       # 6. Run no-hardware regression
       # -----------------------------------------------------------------------
-      - name: Run no-hardware regression
+      - name: Run no-hardware regression (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports/nightly | Out-Null
+          python -m pytest test/nohw/ -v --tb=short `
+            --junitxml=reports/nightly/nohw_junit.xml `
+            2>&1 | Tee-Object -FilePath reports/nightly/nohw.log
+
+      - name: Run no-hardware regression (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p reports/nightly
@@ -199,11 +210,42 @@ jobs:
           include_passed: true
           require_tests: true
 
-      - name: Summarize nightly failed cases
-        if: always()
+      - name: Summarize nightly failed cases (Linux/macOS)
+        if: always() && runner.os != 'Windows'
         shell: bash
         run: |
           python3 -c "
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          xml_path = Path('reports/nightly/nohw_junit.xml')
+          log_path = Path('reports/nightly/nohw.log')
+          summary_path = Path(os.environ['GITHUB_STEP_SUMMARY'])
+
+          with summary_path.open('a', encoding='utf-8') as summary:
+              summary.write('## Nightly NoHW Failures\n')
+              if not xml_path.exists():
+                  summary.write(f'- No JUnit report generated. Check {log_path.as_posix()}\n')
+              else:
+                  failures = []
+                  for testcase in ET.parse(xml_path).getroot().iter('testcase'):
+                      if testcase.find('failure') is not None or testcase.find('error') is not None:
+                          suite = testcase.get('classname') or 'unknown'
+                          name = testcase.get('name') or 'unknown'
+                          failures.append(f'{suite}.{name}')
+                  if failures:
+                      for item in failures:
+                          summary.write(f'- {item} -> {log_path.as_posix()}\n')
+                  else:
+                      summary.write('- No failed test cases.\n')
+          "
+
+      - name: Summarize nightly failed cases (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python -c "
           import os
           import xml.etree.ElementTree as ET
           from pathlib import Path
