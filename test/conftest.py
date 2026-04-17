@@ -31,7 +31,6 @@ Usage:
 
 import atexit
 import gc
-import sys
 import time
 
 import pytest
@@ -62,17 +61,17 @@ def _cleanup_sdk_atexit():
 
     We also force GC to release any lingering SDK objects while the GIL is valid.
     """
-    print("[atexit] SDK cleanup starting", flush=True, file=sys.stderr)
+    print("[atexit] SDK cleanup starting", flush=True)
     try:
         Context.clear_logger_callback()
-        print("[atexit] clear_logger_callback done", flush=True, file=sys.stderr)
+        print("[atexit] clear_logger_callback done", flush=True)
     except Exception as e:
-        print(f"[atexit] clear_logger_callback error: {e}", flush=True, file=sys.stderr)
+        print(f"[atexit] clear_logger_callback error: {e}", flush=True)
     # Force garbage collection while GIL is still valid
     gc.collect()
     gc.collect()
     gc.collect()
-    print("[atexit] GC done, SDK cleanup complete", flush=True, file=sys.stderr)
+    print("[atexit] GC done, SDK cleanup complete", flush=True)
 
 
 atexit.register(_cleanup_sdk_atexit)
