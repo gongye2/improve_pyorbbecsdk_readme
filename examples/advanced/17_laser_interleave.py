@@ -12,6 +12,7 @@
 #  Run:
 #    python examples/advanced/17_laser_interleave.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -81,7 +82,9 @@ def setup_camera():
             continue
 
     # Configure frame aggregation mode
-    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+    config.set_frame_aggregate_output_mode(
+        OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
+    )
 
     # Load and enable frame interleave
     device.loadFrameInterleave("Laser On-Off")
@@ -125,7 +128,9 @@ def process_depth(frame):
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
         depth_data = depth_data.reshape(frame.get_height(), frame.get_width())
-        depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+        depth_image = cv2.normalize(
+            depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
+        )
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
@@ -198,7 +203,9 @@ def input_command_handler():
 
     print("\nAvailable commands:")
     print("  depth all/0/1       - Set sequence id for depth stream")
-    print("  left_ir all/0/1     - Set sequence id for left IR stream or IR stream(Monocular camera)")
+    print(
+        "  left_ir all/0/1     - Set sequence id for left IR stream or IR stream(Monocular camera)"
+    )
     print("  right_ir all/0/1    - Set sequence id for right IR stream")
     print("  q                   - Quit program")
 
@@ -257,6 +264,20 @@ def main():
     global postLeftInfraredFilter
     global postRightInfraredFilter
 
+    parser = argparse.ArgumentParser(description="Laser Interleave Mode Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "laser_interleave_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -270,8 +291,9 @@ def main():
 
     pipeline = setup_camera()
 
-    cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    if not args.test:
+        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
     # Initialize filters to accept all frames
     postDepthFilter.select_sequence_id(-1)
@@ -305,11 +327,18 @@ def main():
                 processed_frames["ir"] = process_ir(ir)
 
         display = create_display(processed_frames, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        cv2.imshow(WINDOW_NAME, display)
+        if args.test:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 30:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                break
+        else:
+            cv2.imshow(WINDOW_NAME, display)
 
-        key = cv2.waitKey(1)
-        if key in [ord("q"), 27]:  # Exit on 'q' or ESC
-            break
+            key = cv2.waitKey(1)
+            if key in [ord("q"), 27]:  # Exit on 'q' or ESC
+                break
 
     cv2.destroyAllWindows()
     pipeline.stop()

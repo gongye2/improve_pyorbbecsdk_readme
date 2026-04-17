@@ -12,6 +12,7 @@
 #  Run:
 #    python examples/advanced/10_hdr.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -84,6 +85,20 @@ def enhance_contrast(image, clip_limit=3.0, tile_grid_size=(8, 8)):
 
 
 def main(argv):
+    parser = argparse.ArgumentParser(description="HDR Depth Merge Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args(argv)
+
+    if args.test:
+        out_dir = "hdr_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -108,13 +123,19 @@ def main(argv):
         config.enable_stream(depth_profile)
 
         # Enable IR streams
-        left_profile_list = pipeline.get_stream_profile_list(OBSensorType.LEFT_IR_SENSOR)
-        right_profile_list = pipeline.get_stream_profile_list(OBSensorType.RIGHT_IR_SENSOR)
+        left_profile_list = pipeline.get_stream_profile_list(
+            OBSensorType.LEFT_IR_SENSOR
+        )
+        right_profile_list = pipeline.get_stream_profile_list(
+            OBSensorType.RIGHT_IR_SENSOR
+        )
         left_ir_profile = left_profile_list.get_default_video_stream_profile()
         right_ir_profile = right_profile_list.get_default_video_stream_profile()
         config.enable_stream(left_ir_profile)
         config.enable_stream(right_ir_profile)
-        config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+        config.set_frame_aggregate_output_mode(
+            OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
+        )
     except Exception as e:
         print(e)
         return
@@ -134,7 +155,9 @@ def main(argv):
 
     if device.isFrameInterleaveSupported():
         device.loadFrameInterleave("Depth from HDR")
-        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, True)
+        device.set_bool_property(
+            OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, True
+        )
     else:
         config = OBHdrConfig()
         config.enable = True
@@ -147,8 +170,9 @@ def main(argv):
     hdr_filter = HDRMergeFilter()
 
     # Create window for visualization
-    cv2.namedWindow("HDR Merge Viewer", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("HDR Merge Viewer", 1280, 960)  # Adjusted for 2x2 layout
+    if not args.test:
+        cv2.namedWindow("HDR Merge Viewer", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("HDR Merge Viewer", 1280, 960)  # Adjusted for 2x2 layout
 
     while True:
         try:
@@ -192,9 +216,15 @@ def main(argv):
 
             # Add text annotations to images
             ir_left_image = add_text_to_image(ir_left_image, "Left IR (HDR)", (10, 30))
-            ir_right_image = add_text_to_image(ir_right_image, "Right IR (HDR)", (10, 30))
-            depth_image = add_text_to_image(depth_image, "Original Depth (HDR)", (10, 30))
-            merged_depth_image = add_text_to_image(merged_depth_image, "HDR Merged Depth", (10, 30))
+            ir_right_image = add_text_to_image(
+                ir_right_image, "Right IR (HDR)", (10, 30)
+            )
+            depth_image = add_text_to_image(
+                depth_image, "Original Depth (HDR)", (10, 30)
+            )
+            merged_depth_image = add_text_to_image(
+                merged_depth_image, "HDR Merged Depth", (10, 30)
+            )
 
             # Create 2x2 layout
             top_row = np.hstack((ir_left_image, ir_right_image))
@@ -202,9 +232,16 @@ def main(argv):
             display_image = np.vstack((top_row, bottom_row))
 
             cv2.imshow("HDR Merge Viewer", display_image)
-            key = cv2.waitKey(1)
-            if key == ord("q") or key == ESC_KEY:
-                break
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display_image)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                key = cv2.waitKey(1)
+                if key == ord("q") or key == ESC_KEY:
+                    break
 
         except KeyboardInterrupt:
             break
@@ -212,7 +249,9 @@ def main(argv):
     cv2.destroyAllWindows()
     pipeline.stop()
     if device.isFrameInterleaveSupported():
-        device.set_bool_property(OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, False)
+        device.set_bool_property(
+            OBPropertyID.OB_PROP_FRAME_INTERLEAVE_ENABLE_BOOL, False
+        )
     else:
         hdr_config = OBHdrConfig()
         hdr_config.enable = False
@@ -228,10 +267,14 @@ def create_depth_image(depth_frame):
     depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
     depth_data = depth_data.reshape((height, width))
     depth_data = depth_data.astype(np.float32) * scale
-    depth_data = np.where((depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0)
+    depth_data = np.where(
+        (depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0
+    )
     depth_data = depth_data.astype(np.uint16)
 
-    depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    depth_image = cv2.normalize(
+        depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
+    )
     return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
 
 

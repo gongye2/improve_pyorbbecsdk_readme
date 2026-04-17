@@ -26,6 +26,7 @@
 #    python examples/applications/ruler.py
 # ******************************************************************************
 
+import argparse
 import os
 import sys
 
@@ -148,7 +149,9 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
         my = (seg_start[1] + seg_end[1]) // 2
         label = f"{dist:.1f} mm" if dist is not None else "no depth"
         # Black outline for readability
-        cv2.putText(out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
+        cv2.putText(
+            out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3
+        )
         cv2.putText(
             out,
             label,
@@ -168,13 +171,29 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
     h = out.shape[0]
     hint = "Drag to measure | C = clear | Q/ESC = quit"
     cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2)
-    cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
+    cv2.putText(
+        out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1
+    )
 
     return out
 
 
 def main():
     global _depth_mm, _cam_param, _segments
+
+    parser = argparse.ArgumentParser(description="Depth Ruler — Drag to measure")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "ruler_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
 
     # Suppress SDK info messages
     ctx = Context()
@@ -222,8 +241,9 @@ def main():
     align_filter = AlignFilter(OBStreamType.COLOR_STREAM)
 
     # --- Step 4: OpenCV window with mouse callback ---
-    cv2.namedWindow(WINDOW_TITLE, cv2.WINDOW_NORMAL)
-    cv2.setMouseCallback(WINDOW_TITLE, _mouse_callback)
+    if not args.test:
+        cv2.namedWindow(WINDOW_TITLE, cv2.WINDOW_NORMAL)
+        cv2.setMouseCallback(WINDOW_TITLE, _mouse_callback)
 
     print("Ready. Drag on the image to measure distance.")
     print("Press 'C' to clear  |  'Q'/ESC to quit.\n")
@@ -261,14 +281,21 @@ def main():
 
             # --- Draw overlay and show ---
             display = _draw_overlay(color_img)
-            cv2.imshow(WINDOW_TITLE, display)
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow(WINDOW_TITLE, display)
 
-            key = cv2.waitKey(1) & 0xFF
-            if key in (ord("q"), ESC_KEY):
-                break
-            elif key == ord("c"):
-                _segments.clear()
-                print("Measurements cleared.")
+                key = cv2.waitKey(1) & 0xFF
+                if key in (ord("q"), ESC_KEY):
+                    break
+                elif key == ord("c"):
+                    _segments.clear()
+                    print("Measurements cleared.")
 
     finally:
         pipeline.stop()

@@ -21,6 +21,7 @@
 #  Run:
 #    python examples/advanced/08_custom_filter_chain.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -68,6 +69,20 @@ def add_label(img, text, color=(0, 255, 0)):
 
 def main():
     global MAX_DEPTH_MM
+
+    parser = argparse.ArgumentParser(description="Custom Filter Chain Demo")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "custom_filter_chain_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
 
     # Check if device is connected
     ctx = Context()
@@ -162,26 +177,34 @@ def main():
             add_label(flt_vis, f"FILTERED: {filter_str}")
 
             display = np.hstack([raw_vis, flt_vis])
-            cv2.imshow("Filter Chain  |  T/S/H/+/- keys", display)
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow("Filter Chain  |  T/S/H/+/- keys", display)
 
-            key = cv2.waitKey(1) & 0xFF
-            if key in (ord("q"), ESC_KEY):
-                break
-            elif key == ord("t"):
-                use_temporal = not use_temporal
-                print(f"Temporal filter: {'ON' if use_temporal else 'OFF'}")
-            elif key == ord("s"):
-                use_spatial = not use_spatial
-                print(f"Spatial filter: {'ON' if use_spatial else 'OFF'}")
-            elif key == ord("h"):
-                use_hole_fill = not use_hole_fill
-                print(f"HoleFill filter: {'ON' if use_hole_fill else 'OFF'}")
-            elif key in (ord("+"), ord("=")):
-                MAX_DEPTH_MM = min(MAX_DEPTH_MM + 500, 10000)
-                print(f"Max depth: {MAX_DEPTH_MM}mm")
-            elif key == ord("-"):
-                MAX_DEPTH_MM = max(MAX_DEPTH_MM - 500, MIN_DEPTH_MM + 500)
-                print(f"Max depth: {MAX_DEPTH_MM}mm")
+            if not args.test:
+                key = cv2.waitKey(1) & 0xFF
+                if key in (ord("q"), ESC_KEY):
+                    break
+                elif key == ord("t"):
+                    use_temporal = not use_temporal
+                    print(f"Temporal filter: {'ON' if use_temporal else 'OFF'}")
+                elif key == ord("s"):
+                    use_spatial = not use_spatial
+                    print(f"Spatial filter: {'ON' if use_spatial else 'OFF'}")
+                elif key == ord("h"):
+                    use_hole_fill = not use_hole_fill
+                    print(f"HoleFill filter: {'ON' if use_hole_fill else 'OFF'}")
+                elif key in (ord("+"), ord("=")):
+                    MAX_DEPTH_MM = min(MAX_DEPTH_MM + 500, 10000)
+                    print(f"Max depth: {MAX_DEPTH_MM}mm")
+                elif key == ord("-"):
+                    MAX_DEPTH_MM = max(MAX_DEPTH_MM - 500, MIN_DEPTH_MM + 500)
+                    print(f"Max depth: {MAX_DEPTH_MM}mm")
 
     finally:
         pipeline.stop()

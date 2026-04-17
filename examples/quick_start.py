@@ -45,6 +45,9 @@
 #    ESC / Q  —  Quit
 # ******************************************************************************
 
+import argparse
+import os
+
 import cv2
 import numpy as np
 from utils import frame_to_bgr_image
@@ -99,6 +102,20 @@ def render_depth_3d(depth_mm: np.ndarray) -> np.ndarray:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Quick Start RGB-D Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "quick_start_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     # ------------------------------------------------------------------
     # Step 1: Create a Pipeline and start with the default configuration.
     #
@@ -116,8 +133,9 @@ def main():
 
     print("Pipeline started (default config). Press 'Q' or ESC to exit.")
 
-    cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT)
+    if not args.test:
+        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     while True:
         try:
@@ -164,9 +182,16 @@ def main():
             depth_resized = cv2.resize(depth_image, (half_w, WINDOW_HEIGHT))
             combined = np.hstack((color_resized, depth_resized))
 
-            cv2.imshow(WINDOW_NAME, combined)
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", combined)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow(WINDOW_NAME, combined)
 
-            if cv2.waitKey(1) in (ord("q"), ord("Q"), ESC_KEY):
+            if not args.test and cv2.waitKey(1) in (ord("q"), ord("Q"), ESC_KEY):
                 break
 
         except KeyboardInterrupt:

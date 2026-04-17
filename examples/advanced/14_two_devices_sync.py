@@ -12,6 +12,7 @@
 #  Run:
 #    python examples/advanced/14_two_devices_sync.py
 # ******************************************************************************
+import argparse
 import json
 import os
 import sys
@@ -92,11 +93,14 @@ def on_new_frame_callback(frames: FrameSet, index: int):
         depth_frames_queue[index].put(depth_frame)
 
 
-def rendering_frames():
+def rendering_frames(test_mode=False, out_dir=None):
     global color_frames_queue, depth_frames_queue
     global curr_device_cnt
     global stop_rendering
     global serial_number_list
+
+    frame_count = 0
+
     while not stop_rendering:
         for i in range(curr_device_cnt):
             color_frame = None
@@ -139,7 +143,9 @@ def rendering_frames():
 
                 depth_data = depth_data.astype(np.float32) * scale
 
-                depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+                depth_image = cv2.normalize(
+                    depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
+                )
                 depth_image = cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
 
             if color_image is not None and depth_image is not None:
@@ -151,10 +157,19 @@ def rendering_frames():
                 image = depth_image
             else:
                 continue
-            cv2.imshow("Device {}".format(i), image)
-            key = cv2.waitKey(1)
-            if key == ord("q") or key == ESC_KEY:
-                return
+
+            if test_mode:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", image)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    stop_rendering = True
+                    return
+            else:
+                cv2.imshow("Device {}".format(i), image)
+                key = cv2.waitKey(1)
+                if key == ord("q") or key == ESC_KEY:
+                    return
 
 
 def start_streams(pipelines: List[Pipeline], configs: List[Config]):
@@ -162,7 +177,9 @@ def start_streams(pipelines: List[Pipeline], configs: List[Config]):
     for pipeline, config in zip(pipelines, configs):
         pipeline.start(
             config,
-            lambda frame_set, curr_index=index: on_new_frame_callback(frame_set, curr_index),
+            lambda frame_set, curr_index=index: on_new_frame_callback(
+                frame_set, curr_index
+            ),
         )
         index += 1
 
@@ -183,6 +200,20 @@ def read_config(config_file: str):
 
 def main():
     global config_file_path
+
+    parser = argparse.ArgumentParser(description="Two-Device Hardware Sync Streaming")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "two_devices_sync_test"
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     read_config(config_file_path)
     ctx = Context()
     device_list = ctx.query_devices()
@@ -208,14 +239,22 @@ def main():
         sync_config.mode = sync_mode_from_str(sync_config_json["config"]["mode"])
         sync_config.color_delay_us = sync_config_json["config"]["color_delay_us"]
         sync_config.depth_delay_us = sync_config_json["config"]["depth_delay_us"]
-        sync_config.trigger_out_enable = sync_config_json["config"]["trigger_out_enable"]
-        sync_config.trigger_out_delay_us = sync_config_json["config"]["trigger_out_delay_us"]
-        sync_config.frames_per_trigger = sync_config_json["config"]["frames_per_trigger"]
+        sync_config.trigger_out_enable = sync_config_json["config"][
+            "trigger_out_enable"
+        ]
+        sync_config.trigger_out_delay_us = sync_config_json["config"][
+            "trigger_out_delay_us"
+        ]
+        sync_config.frames_per_trigger = sync_config_json["config"][
+            "frames_per_trigger"
+        ]
         print(f"Device {serial_number} sync config: {sync_config}")
         device.set_multi_device_sync_config(sync_config)
         try:
             profile_list = pipeline.get_stream_profile_list(OBSensorType.COLOR_SENSOR)
-            color_profile: VideoStreamProfile = profile_list.get_default_video_stream_profile()
+            color_profile: VideoStreamProfile = (
+                profile_list.get_default_video_stream_profile()
+            )
             config.enable_stream(color_profile)
             has_color_sensor[i] = True
         except OBError as e:
@@ -231,7 +270,7 @@ def main():
     start_streams(pipelines, configs)
     ctx.enable_multi_device_sync(60000)
     try:
-        rendering_frames()
+        rendering_frames(test_mode=args.test, out_dir=out_dir if args.test else None)
         stop_streams(pipelines)
     except KeyboardInterrupt:
         stop_rendering = True

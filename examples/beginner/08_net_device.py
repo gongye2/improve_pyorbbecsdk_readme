@@ -12,6 +12,7 @@
 #    python examples/beginner/08_net_device.py
 # ******************************************************************************
 
+import argparse
 import os
 import sys
 
@@ -73,7 +74,9 @@ class FrameProcessor(threading.Thread):
                     color_image = decode_h26x_frame(self.decoder, self.latest_frame)
                     if color_image is not None:
                         # Resize the image to 1080p
-                        resized_image = cv2.resize(color_image, (self.display_width, self.display_height))
+                        resized_image = cv2.resize(
+                            color_image, (self.display_width, self.display_height)
+                        )
                         rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
                         self.processed_frame = rgb_image
                     self.latest_frame = None
@@ -92,8 +95,28 @@ class FrameProcessor(threading.Thread):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Network Camera (Net Device) Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    parser.add_argument(
+        "--ip",
+        type=str,
+        default="192.168.1.10",
+        help="IP address of the network device",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "net_device_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     ctx = Context()
-    ip = input("Enter the IP address of the device (default: 192.168.1.10): ") or "192.168.1.10"
+    ip = args.ip
     device = ctx.create_net_device(ip, 8090)
     if device is None:
         print("Failed to create net device")
@@ -108,10 +131,14 @@ def main():
     if device_info.get_pid() in SUPPORTED_PIDS:
         # Set up 1280*800 capture
         print("Current device is GEMINI 435Le or GEMINI 335Le, use OBFormat.MJPG")
-        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10)
+        color_profile = get_stream_profile(
+            pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10
+        )
     else:
         # Set up 4K capture
-        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25)
+        color_profile = get_stream_profile(
+            pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25
+        )
 
     config.enable_stream(color_profile)
     pipeline.start(config)
@@ -136,23 +163,25 @@ def main():
     frame_processor = FrameProcessor(decoder, display_width, display_height)
     frame_processor.start()
 
-    pygame.init()
-    screen = pygame.display.set_mode((display_width, display_height))
-    pygame.display.set_caption("4K Net Device Viewer (720p Display)")
-    clock = pygame.time.Clock()
+    if not args.test:
+        pygame.init()
+        screen = pygame.display.set_mode((display_width, display_height))
+        pygame.display.set_caption("4K Net Device Viewer (720p Display)")
+        clock = pygame.time.Clock()
 
     running = True
     try:
         while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+            if not args.test:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         running = False
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
 
-            if not running:
-                break
+                if not running:
+                    break
 
             frames = pipeline.wait_for_frames(1000)
             if frames:
@@ -164,11 +193,21 @@ def main():
 
             processed_frame = frame_processor.get_processed_frame()
             if processed_frame is not None:
-                surf = pygame.surfarray.make_surface(processed_frame.swapaxes(0, 1))
-                screen.blit(surf, (0, 0))
-                pygame.display.flip()
+                if args.test:
+                    # Convert RGB to BGR and save
+                    bgr_frame = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
+                    cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", bgr_frame)
+                    frame_count += 1
+                    if frame_count >= 30:
+                        print(f"Saved {frame_count} frames, exiting test mode.")
+                        running = False
+                else:
+                    surf = pygame.surfarray.make_surface(processed_frame.swapaxes(0, 1))
+                    screen.blit(surf, (0, 0))
+                    pygame.display.flip()
 
-            clock.tick(30)  # Limit to 30 FPS
+            if not args.test:
+                clock.tick(30)  # Limit to 30 FPS
 
     finally:
         print("Stopping frame processor...")

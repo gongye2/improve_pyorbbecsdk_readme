@@ -18,6 +18,7 @@
 #  Run:
 #    python examples/advanced/15_high_performance_pipeline.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -109,6 +110,20 @@ class FPSCounter:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="High-Performance Async Pipeline")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "high_performance_pipeline_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -183,9 +198,9 @@ def main():
                 scale = depth_frame.get_depth_scale()
                 raw = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
                 depth_mm = raw.reshape(h, w).astype(np.float32) * scale
-                clipped = np.where((depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM), depth_mm, 0).astype(
-                    np.uint16
-                )
+                clipped = np.where(
+                    (depth_mm >= MIN_DEPTH_MM) & (depth_mm <= MAX_DEPTH_MM), depth_mm, 0
+                ).astype(np.uint16)
                 norm = cv2.normalize(clipped, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
                 panels.append(cv2.applyColorMap(norm, cv2.COLORMAP_JET))
 
@@ -205,8 +220,12 @@ def main():
                 f"Dropped: {depth_q.dropped}d/{color_q.dropped}c"
             )
             # Black outline (draw text slightly offset in black)
-            cv2.putText(display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
-            cv2.putText(display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2)
+            cv2.putText(
+                display, stats, (11, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
+            )
+            cv2.putText(
+                display, stats, (9, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 0), 2
+            )
             cv2.putText(
                 display,
                 stats,
@@ -217,15 +236,24 @@ def main():
                 1,
             )
 
-            cv2.imshow("High-Performance Pipeline  |  Press 'q' to quit", display)
-            if cv2.waitKey(1) in (ord("q"), ESC_KEY):
-                break
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow("High-Performance Pipeline  |  Press 'q' to quit", display)
+                if cv2.waitKey(1) in (ord("q"), ESC_KEY):
+                    break
 
     finally:
         stop_event.set()
         pipeline.stop()
         cv2.destroyAllWindows()
-        print(f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}")
+        print(
+            f"\nStopped. Total frames dropped: depth={depth_q.dropped}, color={color_q.dropped}"
+        )
 
 
 if __name__ == "__main__":

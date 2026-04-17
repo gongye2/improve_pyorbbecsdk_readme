@@ -23,6 +23,8 @@
 #    python examples/beginner/02_depth_visualization.py
 # ******************************************************************************
 
+import argparse
+import os
 import sys
 
 import cv2
@@ -66,7 +68,9 @@ def _render_depth_2d(depth_mm: np.ndarray) -> np.ndarray:
     depth_clipped = np.clip(depth_mm, MIN_DEPTH_MM, MAX_DEPTH_MM)
     depth_clipped = np.where(depth_clipped > MIN_DEPTH_MM, depth_clipped, 0)
 
-    depth_norm = cv2.normalize(depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    depth_norm = cv2.normalize(
+        depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
+    )
 
     # Apply selected colormap
     colormap, cmap_name = COLORMAPS[_cmap_index]
@@ -188,6 +192,20 @@ def main():
         print("Device Not Found! Please connect an Orbbec camera and try again.")
         return
 
+    parser = argparse.ArgumentParser(description="Depth Visualization Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "depth_visualization_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     # Suppress SDK info messages; set DEBUG for diagnostics
     ctx.set_logger_level(OBLogLevel.WARNING)
 
@@ -262,20 +280,27 @@ def main():
                 1,
             )
 
-            cv2.imshow(WINDOW_TITLE, display)
-            key = cv2.waitKey(1)
-            if key in (ord("q"), ord("Q"), ESC_KEY):
-                break
-            elif key in (ord("m"), ord("M")):
-                # Toggle 2D/3D rendering mode
-                _use_3d_mode = not _use_3d_mode
-                mode_str = "3D relief" if _use_3d_mode else "2D simple"
-                print(f"Depth rendering mode → {mode_str}")
-            elif key in (ord("c"), ord("C")):
-                # Cycle to next colormap
-                global _cmap_index
-                _cmap_index = (_cmap_index + 1) % len(COLORMAPS)
-                print(f"Colormap → {COLORMAPS[_cmap_index][1]}")
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow(WINDOW_TITLE, display)
+                key = cv2.waitKey(1)
+                if key in (ord("q"), ord("Q"), ESC_KEY):
+                    break
+                elif key in (ord("m"), ord("M")):
+                    # Toggle 2D/3D rendering mode
+                    _use_3d_mode = not _use_3d_mode
+                    mode_str = "3D relief" if _use_3d_mode else "2D simple"
+                    print(f"Depth rendering mode → {mode_str}")
+                elif key in (ord("c"), ord("C")):
+                    # Cycle to next colormap
+                    global _cmap_index
+                    _cmap_index = (_cmap_index + 1) % len(COLORMAPS)
+                    print(f"Colormap → {COLORMAPS[_cmap_index][1]}")
 
     finally:
         pipeline.stop()

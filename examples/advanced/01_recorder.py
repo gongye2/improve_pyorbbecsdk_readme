@@ -163,7 +163,9 @@ def _process_depth(frame):
     if frame is None:
         return state.cached_frames["depth"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(frame.get_height(), frame.get_width())
+        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(
+            frame.get_height(), frame.get_width()
+        )
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(img, cv2.COLORMAP_JET)
     except ValueError:
@@ -205,7 +207,9 @@ def _process_confidence(frame):
     if frame is None:
         return state.cached_frames["confidence"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(frame.get_height(), frame.get_width())
+        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(
+            frame.get_height(), frame.get_width()
+        )
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     except ValueError:
@@ -331,11 +335,14 @@ def _create_display(blocks, width=1280, height=720):
     return canvas
 
 
-def render_frames():
+def render_frames(test_mode=False, out_dir=None):
     WINDOW = "MultiStream Record Viewer"
     W, H = 1280, 720
-    cv2.namedWindow(WINDOW, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(WINDOW, W, H)
+    if not test_mode:
+        cv2.namedWindow(WINDOW, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(WINDOW, W, H)
+
+    frame_count = 0
 
     KEYS = [
         "color",
@@ -352,25 +359,37 @@ def render_frames():
 
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
-            blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
+            blocks = [
+                state.cached_frames[k]
+                for k in KEYS
+                if state.cached_frames.get(k) is not None
+            ]
 
         if not blocks:
-            if cv2.waitKey(5) & 0xFF in (ord("q"), 27):
+            if not test_mode and cv2.waitKey(5) & 0xFF in (ord("q"), 27):
                 break
             continue
 
-        cv2.imshow(WINDOW, _create_display(blocks, W, H))
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("s"):
-            state.is_paused = not state.is_paused
-            if state.is_paused:
-                state.recorder.pause()
-                print("[PAUSED]")
-            else:
-                state.recorder.resume()
-                print("[RESUMED]")
-        elif key in (ord("q"), 27):
-            break
+        display = _create_display(blocks, W, H)
+        if test_mode:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 30:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                state.stop_rendering = True
+        else:
+            cv2.imshow(WINDOW, display)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("s"):
+                state.is_paused = not state.is_paused
+                if state.is_paused:
+                    state.recorder.pause()
+                    print("[PAUSED]")
+                else:
+                    state.recorder.resume()
+                    print("[RESUMED]")
+            elif key in (ord("q"), 27):
+                break
 
 
 # ---------------------------------------------------------------------------
@@ -392,9 +411,21 @@ def main():
         action="store_true",
         help="Headless mode: record without display, print FPS every 2 s",
     )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
     args = parser.parse_args()
 
-    file_path = input("Enter output filename (.bag) and press Enter to start recording: ")
+    if args.test:
+        out_dir = "recorder_test"
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
+    file_path = input(
+        "Enter output filename (.bag) and press Enter to start recording: "
+    )
 
     try:
         if args.no_gui:
@@ -440,7 +471,9 @@ def main():
             pipeline = setup_camera(file_path)
             imu_pipeline = setup_imu()
             try:
-                render_frames()
+                render_frames(
+                    test_mode=args.test, out_dir=out_dir if args.test else None
+                )
             except KeyboardInterrupt:
                 state.stop_rendering = True
             if imu_pipeline:

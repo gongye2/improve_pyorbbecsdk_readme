@@ -76,7 +76,9 @@ def get_hw_stream_config(pipeline: Pipeline):
             color_profile = profile_list[i]
             if color_profile.get_format() != OBFormat.RGB:
                 continue
-            hw_depth_list = pipeline.get_d2c_depth_profile_list(color_profile, OBAlignMode.HW_MODE)
+            hw_depth_list = pipeline.get_d2c_depth_profile_list(
+                color_profile, OBAlignMode.HW_MODE
+            )
             if len(hw_depth_list) == 0:
                 continue
             config.enable_stream(hw_depth_list[0])
@@ -116,11 +118,23 @@ def main():
         action="store_true",
         help="Use hardware D2C alignment instead of software AlignFilter",
     )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
     args = parser.parse_args()
 
+    if args.test:
+        out_dir = "color_depth_aligned_test"
+        os.makedirs(out_dir, exist_ok=True)
+        frame_count = 0
+        print(f"Test mode: saving frames to '{out_dir}/'")
+
     window_name = "Color + Depth Aligned  |  Q/ESC = quit"
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(window_name, 1280, 720)
+    if not args.test:
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(window_name, 1280, 720)
 
     pipeline = Pipeline()
     config = None
@@ -137,7 +151,9 @@ def main():
 
         config = get_hw_stream_config(pipeline)
         if config is None:
-            print("ERROR: Hardware D2C is not supported on this device. Try without --hw.")
+            print(
+                "ERROR: Hardware D2C is not supported on this device. Try without --hw."
+            )
             return
 
         enable_hw_d2c = True
@@ -165,7 +181,9 @@ def main():
             depth_profile = profile_list.get_default_video_stream_profile()
             config.enable_stream(depth_profile)
 
-            config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
+            config.set_frame_aggregate_output_mode(
+                OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
+            )
         except Exception as e:
             print(f"Stream configuration error: {e}")
             return
@@ -217,9 +235,9 @@ def main():
 
             # -- Convert depth frame --
             try:
-                depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16).reshape(
-                    (depth_frame.get_height(), depth_frame.get_width())
-                )
+                depth_data = np.frombuffer(
+                    depth_frame.get_data(), dtype=np.uint16
+                ).reshape((depth_frame.get_height(), depth_frame.get_width()))
             except ValueError:
                 continue
 
@@ -228,25 +246,37 @@ def main():
             if args.hw:
                 depth_data = np.clip(depth_data, MIN_DEPTH, MAX_DEPTH)
             else:
-                depth_data = np.where((depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0)
+                depth_data = np.where(
+                    (depth_data > MIN_DEPTH) & (depth_data < MAX_DEPTH), depth_data, 0
+                )
 
             depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX)
-            depth_image = cv2.applyColorMap(depth_image.astype(np.uint8), cv2.COLORMAP_JET)
+            depth_image = cv2.applyColorMap(
+                depth_image.astype(np.uint8), cv2.COLORMAP_JET
+            )
 
             # Resize depth to match color dimensions (needed when HW D2C is disabled)
             h, w = color_image.shape[:2]
             if depth_image.shape[:2] != (h, w):
-                depth_image = cv2.resize(depth_image, (w, h), interpolation=cv2.INTER_NEAREST)
+                depth_image = cv2.resize(
+                    depth_image, (w, h), interpolation=cv2.INTER_NEAREST
+                )
 
             # -- Blend and display --
             blend_alpha = alpha if args.hw else 0.5
-            overlay = cv2.addWeighted(color_image, 1 - blend_alpha, depth_image, blend_alpha, 0)
+            overlay = cv2.addWeighted(
+                color_image, 1 - blend_alpha, depth_image, blend_alpha, 0
+            )
 
             # Status text
             if args.hw:
                 status = f"HW D2C: {'ON' if enable_hw_d2c else 'OFF'}  alpha={blend_alpha:.1f}"
             else:
-                mode_str = "D2C (Depth To Color)" if align_mode == 0 else "C2D (Color To Depth)"
+                mode_str = (
+                    "D2C (Depth To Color)"
+                    if align_mode == 0
+                    else "C2D (Color To Depth)"
+                )
                 sync_str = "Sync: ON" if enable_sync else "Sync: OFF"
                 status = f"{mode_str} | {sync_str}"
 
@@ -259,40 +289,52 @@ def main():
                 (255, 255, 255),
                 2,
             )
-            cv2.imshow(window_name, overlay)
+            if args.test:
+                cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", overlay)
+                frame_count += 1
+                if frame_count >= 30:
+                    print(f"Saved {frame_count} frames, exiting test mode.")
+                    break
+            else:
+                cv2.imshow(window_name, overlay)
 
             # -- Keyboard input --
-            key = cv2.waitKey(1) & 0xFF
-            if key in (ord("q"), ESC_KEY):
-                break
+            if not args.test:
+                key = cv2.waitKey(1) & 0xFF
+                if key in (ord("q"), ESC_KEY):
+                    break
 
-            if args.hw:
-                if key in (ord("t"), ord("T")):
-                    enable_hw_d2c = not enable_hw_d2c
-                    switch_hw_d2c(pipeline, config, enable_hw_d2c)
-                elif key in (ord("+"), ord("=")):
-                    alpha = min(1.0, alpha + alpha_step)
-                    print(f"Alpha: {alpha:.2f}")
-                elif key in (ord("-"), ord("_")):
-                    alpha = max(0.0, alpha - alpha_step)
-                    print(f"Alpha: {alpha:.2f}")
-            else:
-                if key in (ord("t"), ord("T")):
-                    align_mode = (align_mode + 1) % 2
-                    if align_mode == 0:
-                        align_filter = AlignFilter(align_to_stream=OBStreamType.COLOR_STREAM)
-                        print("Mode: Depth To Color")
-                    else:
-                        align_filter = AlignFilter(align_to_stream=OBStreamType.DEPTH_STREAM)
-                        print("Mode: Color To Depth")
-                elif key in (ord("f"), ord("F")):
-                    enable_sync = not enable_sync
-                    if enable_sync:
-                        pipeline.enable_frame_sync()
-                        print("Frame sync: ON")
-                    else:
-                        pipeline.disable_frame_sync()
-                        print("Frame sync: OFF")
+                if args.hw:
+                    if key in (ord("t"), ord("T")):
+                        enable_hw_d2c = not enable_hw_d2c
+                        switch_hw_d2c(pipeline, config, enable_hw_d2c)
+                    elif key in (ord("+"), ord("=")):
+                        alpha = min(1.0, alpha + alpha_step)
+                        print(f"Alpha: {alpha:.2f}")
+                    elif key in (ord("-"), ord("_")):
+                        alpha = max(0.0, alpha - alpha_step)
+                        print(f"Alpha: {alpha:.2f}")
+                else:
+                    if key in (ord("t"), ord("T")):
+                        align_mode = (align_mode + 1) % 2
+                        if align_mode == 0:
+                            align_filter = AlignFilter(
+                                align_to_stream=OBStreamType.COLOR_STREAM
+                            )
+                            print("Mode: Depth To Color")
+                        else:
+                            align_filter = AlignFilter(
+                                align_to_stream=OBStreamType.DEPTH_STREAM
+                            )
+                            print("Mode: Color To Depth")
+                    elif key in (ord("f"), ord("F")):
+                        enable_sync = not enable_sync
+                        if enable_sync:
+                            pipeline.enable_frame_sync()
+                            print("Frame sync: ON")
+                        else:
+                            pipeline.disable_frame_sync()
+                            print("Frame sync: OFF")
 
         except KeyboardInterrupt:
             break
