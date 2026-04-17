@@ -82,7 +82,16 @@ jobs:
     name: ${{ matrix.display_name }}
     runs-on: ${{ fromJSON(matrix.runs_on) }}
     steps:
-      - name: List reports
+      - name: List reports (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          Write-Host "=== reports/ contents ==="
+          Get-ChildItem -Recurse -Path reports/ -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+          Get-Location
+
+      - name: List reports (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           echo "=== reports/ contents ==="
