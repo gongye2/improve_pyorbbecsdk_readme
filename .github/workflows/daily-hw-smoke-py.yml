@@ -199,7 +199,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Device health check
         run: |
-          mkdir -p reports
+          python -c "import os; os.makedirs('reports', exist_ok=True)"
           python -c "
           from pyorbbecsdk import Context, OBLogLevel
           ctx = Context()
@@ -223,7 +223,6 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Run no-hardware tests
         run: |
-          mkdir -p reports
           python -m pytest test/ -m "not hardware" -v --tb=short --self-contained-html --junitxml=reports/nohw_junit.xml
 
       # -----------------------------------------------------------------------
@@ -233,7 +232,6 @@ jobs:
         env:
           DEVICE_TYPE: ${{ matrix.pool_name }}
         run: |
-          mkdir -p reports
           python test/run_tests.py --output reports --quick
 
       # -----------------------------------------------------------------------
