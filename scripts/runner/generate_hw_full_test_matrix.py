@@ -15,7 +15,7 @@ def normalize(values: list[str]) -> set[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate matrix for hw_full_test from global runner pools")
+    parser = argparse.ArgumentParser(description="Generate HW test matrix from global runner pools")
     parser.add_argument("--runner-pools", default="scripts/runner/runner_pools.json")
     parser.add_argument("--output-matrix", required=True)
     parser.add_argument("--platform", default="linux_x86_64")
@@ -42,8 +42,8 @@ def main() -> int:
 
         matrix.append(
             {
-                "job_id": f"hw-full-{pool['name']}",
-                "display_name": f"hw_full_test @ {pool['name']}",
+                "job_id": f"hw-smoke-{pool['name']}",
+                "display_name": f"py-hw-smoke @ {pool['name']}",
                 "pool_name": pool["name"],
                 "platform": pool["platform"],
                 "runs_on": json.dumps(runs_on),
