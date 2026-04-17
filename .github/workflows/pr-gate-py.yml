@@ -12,6 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # -----------------------------------------------------------------------
+  # 1. Lint check
+  # -----------------------------------------------------------------------
   lint:
     runs-on: ubuntu-22.04
     steps:
@@ -34,36 +37,71 @@ jobs:
       - name: Ruff format check
         run: ruff format --check pyorbbecsdk/ test/ samples/ scripts/
 
+  # -----------------------------------------------------------------------
+  # 2. Build + test on Linux
+  # -----------------------------------------------------------------------
   build-linux:
     runs-on: ubuntu-22.04
     steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install pyorbbecsdk
+      # -----------------------------------------------------------------------
+      # 2. Python + venv setup
+      # -----------------------------------------------------------------------
+      - name: Set up Python 3.10
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          pip install .
+          uv python find 3.10 || uv python install 3.10
+          uv venv .venv --python 3.10
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
+      # -----------------------------------------------------------------------
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
       - name: Install test dependencies
+        shell: bash
         run: |
-          pip install -r test/requirements_test.txt
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
 
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
+      # -----------------------------------------------------------------------
+      - name: Build wheel
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv.sh
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+
+      # -----------------------------------------------------------------------
+      # 5. Install wheel
+      # -----------------------------------------------------------------------
+      - name: Install wheel
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      # -----------------------------------------------------------------------
+      # 6. Run no-hardware tests
+      # -----------------------------------------------------------------------
       - name: Run no-hardware tests
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p reports
-          python -m pytest test/ -m "not hardware" -v \
-            --tb=short \
+          python -m pytest test/nohw/ -v --tb=short \
             --junitxml=reports/nohw_junit.xml \
             2>&1 | tee reports/nohw_linux.log
 
+      # -----------------------------------------------------------------------
+      # 7. Import smoke test
+      # -----------------------------------------------------------------------
       - name: Import smoke test
         shell: bash
         run: |
@@ -77,6 +115,9 @@ jobs:
           print(f'Connected devices: {dev_list.get_count()}')
           "
 
+      # -----------------------------------------------------------------------
+      # 8. Publish report & upload artifacts
+      # -----------------------------------------------------------------------
       - name: Publish nohw test report
         if: always()
         uses: mikepenz/action-junit-report@v5
@@ -97,37 +138,72 @@ jobs:
             reports/nohw_linux.log
           retention-days: 14
 
+  # -----------------------------------------------------------------------
+  # 3. Build + test on Windows
+  # -----------------------------------------------------------------------
   build-windows:
     runs-on: windows-2022
     steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install pyorbbecsdk
+      # -----------------------------------------------------------------------
+      # 2. Python + venv setup
+      # -----------------------------------------------------------------------
+      - name: Set up Python 3.10
+        shell: powershell
         run: |
-          python -m pip install --upgrade pip
-          pip install .
+          uv python find 3.10
+          if ($LASTEXITCODE -ne 0) { uv python install 3.10 }
+          uv venv .venv --python 3.10
+          Add-Content -Path $env:GITHUB_PATH -Value "$env:GITHUB_WORKSPACE/.venv/Scripts"
 
+      # -----------------------------------------------------------------------
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
       - name: Install test dependencies
+        shell: powershell
         run: |
-          pip install -r test/requirements_test.txt
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
 
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
+      # -----------------------------------------------------------------------
+      - name: Build wheel
+        shell: powershell
+        run: |
+          & scripts\build_whl\build-whl-uv.ps1 3.10 --yes --no-clean
+
+      # -----------------------------------------------------------------------
+      # 5. Install wheel
+      # -----------------------------------------------------------------------
+      - name: Install wheel
+        shell: powershell
+        run: |
+          $WHL = (Get-ChildItem "wheel/*cp310*win*.whl" | Select-Object -First 1).FullName
+          if (-not $WHL) { Write-Error "No wheel found"; exit 1 }
+          Write-Host "Installing: $WHL"
+          uv pip install $WHL
+
+      # -----------------------------------------------------------------------
+      # 6. Run no-hardware tests
+      # -----------------------------------------------------------------------
       - name: Run no-hardware tests
-        shell: pwsh
+        shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path reports | Out-Null
-          python -m pytest test/ -m "not hardware" -v `
-            --tb=short `
+          python -m pytest test/nohw/ -v --tb=short `
             --junitxml=reports/nohw_junit.xml `
             2>&1 | Tee-Object -FilePath reports/nohw_windows.log
 
+      # -----------------------------------------------------------------------
+      # 7. Import smoke test
+      # -----------------------------------------------------------------------
       - name: Import smoke test
-        shell: pwsh
+        shell: powershell
         run: |
           python -c "
           import pyorbbecsdk
@@ -139,6 +215,9 @@ jobs:
           print(f'Connected devices: {dev_list.get_count()}')
           "
 
+      # -----------------------------------------------------------------------
+      # 8. Publish report & upload artifacts
+      # -----------------------------------------------------------------------
       - name: Publish nohw test report
         if: always()
         uses: mikepenz/action-junit-report@v5

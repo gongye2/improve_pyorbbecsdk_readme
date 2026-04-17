@@ -1,0 +1,191 @@
+name: Performance & Thread-Safety Test (Python)
+
+on:
+  schedule:
+    - cron: "0 3 * * 6"  # Saturday 03:00 UTC (11:00 CST)
+  workflow_dispatch:
+
+jobs:
+  # ----------------------------------------------------------------
+  # 1. Device health gate
+  # ----------------------------------------------------------------
+  device-health:
+    runs-on: [self-hosted, linux, sdk, usb, gemini-335]
+    outputs:
+      healthy: ${{ steps.health.outputs.healthy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Device health check
+        id: health
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          if count == 0:
+              print('No device detected')
+              exit(1)
+          dev = dev_list.get_device_by_index(0)
+          info = dev.get_device_info()
+          print(f'Device: {info.get_name()}')
+          print(f'Serial: {info.get_serial_number()}')
+          print(f'Firmware: {info.get_firmware_version()}')
+          "
+          echo "healthy=true" >> "$GITHUB_OUTPUT"
+
+  # ----------------------------------------------------------------
+  # 2. Build & run performance / thread-safety tests
+  # ----------------------------------------------------------------
+  perf-tests:
+    needs: device-health
+    if: ${{ needs.device-health.outputs.healthy == 'true' }}
+    runs-on: [self-hosted, linux, sdk, usb, gemini-335]
+    env:
+      DEVICE_TYPE: gemini-335
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. Python + venv setup
+      # -----------------------------------------------------------------------
+      - name: Set up Python 3.10
+        shell: bash
+        run: |
+          uv python find 3.10 || uv python install 3.10
+          uv venv .venv --python 3.10
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
+      # -----------------------------------------------------------------------
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
+      - name: Install test dependencies
+        shell: bash
+        run: |
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
+
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
+      # -----------------------------------------------------------------------
+      - name: Build wheel
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv.sh
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+
+      # -----------------------------------------------------------------------
+      # 5. Install wheel
+      # -----------------------------------------------------------------------
+      - name: Install wheel
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      # -----------------------------------------------------------------------
+      # 6. Run performance & thread-safety tests
+      # -----------------------------------------------------------------------
+      - name: Run performance & thread-safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -m pytest test/perf/ test/thread_safety/ -v --tb=short \
+            --junitxml=reports/perf_junit.xml \
+            2>&1 | tee reports/perf.log
+
+      # -----------------------------------------------------------------------
+      # 7. Publish report & upload artifacts
+      # -----------------------------------------------------------------------
+      - name: Publish perf test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: reports/perf_junit.xml
+          check_name: Performance & Thread-Safety Test Report (Python)
+          detailed_summary: true
+          include_passed: true
+          require_tests: true
+
+      - name: Summarize failures
+        if: always()
+        shell: bash
+        run: |
+          python3 -c "
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          xml_path = Path('reports/perf_junit.xml')
+          summary_path = Path(os.environ['GITHUB_STEP_SUMMARY'])
+
+          with summary_path.open('a', encoding='utf-8') as summary:
+              summary.write('## Performance & Thread-Safety Test Results\n')
+              if not xml_path.exists():
+                  summary.write('- No JUnit report generated. Check reports/perf.log\n')
+              else:
+                  root = ET.parse(xml_path).getroot()
+                  total = int(root.get('tests', 0))
+                  failures_count = int(root.get('failures', 0))
+                  errors_count = int(root.get('errors', 0))
+                  skipped = int(root.get('skipped', root.get('disabled', 0)))
+                  passed = total - failures_count - errors_count - skipped
+                  summary.write(f'| Total | Passed | Failed | Errors | Skipped |\n')
+                  summary.write(f'|-------|--------|--------|--------|---------|\n')
+                  summary.write(f'| {total} | {passed} | {failures_count} | {errors_count} | {skipped} |\n\n')
+
+                  failures = []
+                  for tc in root.iter('testcase'):
+                      if tc.find('failure') is not None or tc.find('error') is not None:
+                          suite = tc.get('classname') or 'unknown'
+                          name = tc.get('name') or 'unknown'
+                          msg = ''
+                          fail_el = tc.find('failure')
+                          if fail_el is not None:
+                              msg = (fail_el.get('message') or '')[:200]
+                          failures.append((f'{suite}.{name}', msg))
+                  if failures:
+                      summary.write('### Failed Cases\n')
+                      for case_name, msg in failures:
+                          summary.write(f'- **{case_name}**')
+                          if msg:
+                              summary.write(f': {msg}')
+                          summary.write('\n')
+                  else:
+                      summary.write('All test cases passed.\n')
+          "
+
+      - name: Upload test reports & logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-perf-reports-${{ github.run_id }}
+          path: |
+            reports/*.xml
+            reports/*.log
+          retention-days: 30
+
+  # ----------------------------------------------------------------
+  # 3. Infra failure summary (when device is unhealthy)
+  # ----------------------------------------------------------------
+  infra-summary:
+    needs: device-health
+    if: ${{ needs.device-health.outputs.healthy != 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Report infra failure
+        run: |
+          echo "[HEALTH FAIL] Device infrastructure not ready." >> "$GITHUB_STEP_SUMMARY"
+          echo "[HEALTH FAIL] This is an INFRASTRUCTURE failure, not a test failure." >> "$GITHUB_STEP_SUMMARY"
+          echo "[HEALTH FAIL] Check device connections, power, and runner configuration." >> "$GITHUB_STEP_SUMMARY"

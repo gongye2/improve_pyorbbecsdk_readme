@@ -174,7 +174,7 @@ jobs:
           $WHL = (Get-ChildItem "wheel/*cp310*win*.whl" | Select-Object -First 1).FullName
           if (-not $WHL) { Write-Error "No wheel found"; exit 1 }
           Write-Host "Installing: $WHL"
-          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ $WHL
+          uv pip install $WHL
 
       - name: Install wheel (Linux)
         if: runner.os == 'Linux'
@@ -183,7 +183,7 @@ jobs:
           WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
           if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
           echo "Installing: $WHL_FILE"
-          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ "$WHL_FILE"
+          uv pip install "$WHL_FILE"
 
       - name: Install wheel (macOS)
         if: runner.os == 'macOS'
@@ -192,7 +192,7 @@ jobs:
           WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
           if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
           echo "Installing: $WHL_FILE"
-          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ "$WHL_FILE"
+          uv pip install "$WHL_FILE"
 
       # -----------------------------------------------------------------------
       # 6. Device health check
@@ -223,16 +223,14 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Run no-hardware tests
         run: |
-          python -m pytest test/ -m "not hardware" -v --tb=short --self-contained-html --junitxml=reports/nohw_junit.xml
+          python -m pytest test/nohw/ -v --tb=short --self-contained-html --junitxml=reports/nohw_junit.xml
 
       # -----------------------------------------------------------------------
-      # 8. Run full test suite (device-specific via run_tests.py)
+      # 8. Run hardware tests (hw/ + device/ + thread_safety/)
       # -----------------------------------------------------------------------
-      - name: Run full test suite
-        env:
-          DEVICE_TYPE: ${{ matrix.pool_name }}
+      - name: Run hardware tests
         run: |
-          python test/run_tests.py --output reports --quick
+          python -m pytest test/hw/ test/device/ test/thread_safety/ -m hardware -v --tb=short --junitxml=reports/hw_junit.xml
 
       # -----------------------------------------------------------------------
       # 9. Publish report & upload artifacts
@@ -241,7 +239,9 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
-          report_paths: reports/nohw_junit.xml
+          report_paths: |
+            reports/nohw_junit.xml
+            reports/hw_junit.xml
           check_name: Daily HW Smoke Test Report (${{ matrix.pool_name }})
           detailed_summary: true
           include_passed: true

@@ -1,0 +1,120 @@
+name: Nightly Regression (Python)
+
+on:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+jobs:
+  nightly-nohw-regression:
+    runs-on: ubuntu-22.04
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. Python + venv setup
+      # -----------------------------------------------------------------------
+      - name: Set up Python 3.10
+        shell: bash
+        run: |
+          uv python find 3.10 || uv python install 3.10
+          uv venv .venv --python 3.10
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
+      # -----------------------------------------------------------------------
+      # 3. Install test dependencies
+      # -----------------------------------------------------------------------
+      - name: Install test dependencies
+        shell: bash
+        run: |
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
+
+      # -----------------------------------------------------------------------
+      # 4. Build wheel
+      # -----------------------------------------------------------------------
+      - name: Build wheel
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv.sh
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+
+      # -----------------------------------------------------------------------
+      # 5. Install wheel
+      # -----------------------------------------------------------------------
+      - name: Install wheel
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      # -----------------------------------------------------------------------
+      # 6. Run no-hardware regression
+      # -----------------------------------------------------------------------
+      - name: Run no-hardware regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/nightly
+          python -m pytest test/nohw/ -v --tb=short \
+            --junitxml=reports/nightly/nohw_junit.xml \
+            2>&1 | tee reports/nightly/nohw.log
+
+      # -----------------------------------------------------------------------
+      # 7. Publish report & upload artifacts
+      # -----------------------------------------------------------------------
+      - name: Publish nightly nohw report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: reports/nightly/nohw_junit.xml
+          check_name: Nightly NoHW Report (Python)
+          detailed_summary: true
+          include_passed: true
+          require_tests: true
+
+      - name: Summarize nightly failed cases
+        if: always()
+        shell: bash
+        run: |
+          python3 -c "
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          xml_path = Path('reports/nightly/nohw_junit.xml')
+          log_path = Path('reports/nightly/nohw.log')
+          summary_path = Path(os.environ['GITHUB_STEP_SUMMARY'])
+
+          with summary_path.open('a', encoding='utf-8') as summary:
+              summary.write('## Nightly NoHW Failures\n')
+              if not xml_path.exists():
+                  summary.write(f'- No JUnit report generated. Check {log_path.as_posix()}\n')
+              else:
+                  failures = []
+                  for testcase in ET.parse(xml_path).getroot().iter('testcase'):
+                      if testcase.find('failure') is not None or testcase.find('error') is not None:
+                          suite = testcase.get('classname') or 'unknown'
+                          name = testcase.get('name') or 'unknown'
+                          failures.append(f'{suite}.{name}')
+                  if failures:
+                      for item in failures:
+                          summary.write(f'- {item} -> {log_path.as_posix()}\n')
+                  else:
+                      summary.write('- No failed test cases.\n')
+          "
+
+      - name: Upload nightly artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: py-nightly-summary-${{ github.run_id }}
+          path: |
+            reports/nightly/nohw_junit.xml
+            reports/nightly/nohw.log
+          retention-days: 30

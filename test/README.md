@@ -27,51 +27,6 @@ Tests cover device discovery, sensor controls, stream validation, post-processin
 
 ---
 
-## One-Click Test Runner
-
-`run_tests.py` auto-detects the connected camera and runs the matching test suite with a single command.
-
-```bash
-# Auto-detect device and run all its tests
-python test/run_tests.py
-
-# Specify device family explicitly
-python test/run_tests.py --device g300
-python test/run_tests.py --device femto
-python test/run_tests.py --device astra_mini
-python test/run_tests.py --device astra2
-
-# Filter by test category
-python test/run_tests.py --category functional
-python test/run_tests.py --category stability
-python test/run_tests.py --category performance
-
-# Combine filters — G300 functional tests only
-python test/run_tests.py --device g300 --category functional
-
-# Skip long performance benchmarks
-python test/run_tests.py --quick
-
-# No camera needed
-python test/run_tests.py --no-hardware
-
-# Save report to a custom directory
-python test/run_tests.py --output my_reports/
-```
-
-**`--device` accepted values:**
-
-| Alias | Device family |
-|-------|---------------|
-| `g300`, `gemini`, `gemini335`, `gemini336`, … | G300 Series |
-| `femto`, `femto_bolt`, `femto_mega` | Femto Bolt / Mega |
-| `astra_mini`, `astra_mini_pro` | Astra Mini |
-| `astra2`, `astra_2` | Astra 2 |
-
-Reports are saved to `reports/` and a copy is written to `reports/test_report_latest.html`.
-
----
-
 ## Running Tests Manually
 
 All commands are run from the **repository root**.
@@ -79,29 +34,24 @@ All commands are run from the **repository root**.
 ### Quick check — no camera needed
 
 ```bash
+pytest test/nohw/ -v
+# or equivalently:
 pytest test/ -m "not hardware" -v
 ```
 
-### Run all tests for a specific device family
+### Run hardware tests
 
 ```bash
-# G300 series (Gemini 330 / 335 / 336 / 305 / 345 and variants)
-pytest test/test_g300_series_*.py -v
-
-# Femto Bolt / Femto Mega
-pytest test/test_femto_*.py -v
-
-# Astra Mini Pro / S Pro
-pytest test/test_astra_mini_*.py -v
-
-# Astra 2
-pytest test/test_astra2_*.py -v
+pytest test/hw/ -m hardware -v          # Generic hardware tests
+pytest test/device/ -m hardware -v      # Device-specific tests
+pytest test/thread_safety/ -v           # Thread safety tests
+pytest test/perf/ -v                    # Performance benchmarks
 ```
 
 ### Run by device marker
 
 ```bash
-pytest test/ -m g300_series -v   # G300 series
+pytest test/ -m g300_series -v   # G300 series (Gemini 330/335/336/305/345)
 pytest test/ -m femto       -v   # Femto Bolt/Mega
 pytest test/ -m astra_mini  -v   # Astra Mini
 pytest test/ -m astra2      -v   # Astra 2
@@ -122,16 +72,6 @@ pytest test/ -m performance  -v   # Benchmarks only
 pytest test/ -m "g300_series and functional"  -v
 pytest test/ -m "femto and stability"         -v
 pytest test/ -m "not performance"             -v   # skip benchmarks
-```
-
-### Core tests only (~2 min with camera)
-
-```bash
-pytest test/test_g300_series_device.py \
-       test/test_g300_series_controls.py \
-       test/test_g300_series_calib.py \
-       test/test_context.py \
-       test/test_device.py -v
 ```
 
 ### Full test session
@@ -173,90 +113,110 @@ pytest test/ -m "not performance"           -v
 
 ---
 
-## Test File Map
+## Test Directory Map
 
 ### Category key: `F` = functional · `S` = stability · `P` = performance
 
-### Basic tests (no camera needed)
-
-| File | Category | What it tests |
-|------|----------|---------------|
-| `test_basic_import.py` | F | Basic module import and attributes |
-| `test_basic_device.py` | F | Context creation and device enumeration (without hardware) |
-| `test_basic_capture.py` | F | Pipeline creation and frame capture basics |
-
-### Generic tests (any Orbbec camera)
+### nohw/ (no camera needed)
 
 | File | Category | What it tests |
 |------|----------|---------------|
 | `test_context.py` | F | Context API: device enumeration, logging, callbacks |
-| `test_device.py` | F | Generic device info, sensor list, depth work mode, temperature |
-| `test_pipeline.py` | F | Pipeline camera parameter API |
+| `test_logger.py` | F | Logger severity, file, console, callback |
+| `test_filter.py` | F | Filter parameters, factory |
+| `test_frame.py` | F | Frame types, factory |
+| `test_data_struct.py` | F | Data structures (Rect, Intrinsics, etc.) |
+| `test_coord_transform.py` | F | Coordinate transform utilities |
+| `test_error.py` | F | Error handling and exception types |
+| `test_version.py` | F | SDK version info |
+| `test_playback.py` | F | BAG file playback (deviceless) |
 
-### G300 Series (Gemini 330 / 335 / 336 / 305 / 345 variants)
-
-| File | Category | What it tests |
-|------|----------|---------------|
-| `test_g300_series_device.py` | F | Device identity, all G300 sensor requirements |
-| `test_g300_series_controls.py` | F | Depth/Color/IR/Laser/HDR property read-write |
-| `test_g300_series_filters.py` | F | Full post-processing filter pipeline |
-| `test_g300_series_calib.py` | F | Intrinsics, distortion, extrinsic orthogonality |
-| `test_g300_series_streams.py` | F + S | Stream validity, FPS, multi-stream sync, timestamp monotonicity |
-| `test_g300_series_performance.py` | P | Startup latency, 60 s FPS stability, restart time, throughput |
-
-### Femto Bolt / Femto Mega
+### hw/ (any Orbbec camera)
 
 | File | Category | What it tests |
 |------|----------|---------------|
-| `test_femto_device.py` | F | Identity, ToF sensors (Depth, Color, Left/Right IR, IMU) |
-| `test_femto_controls.py` | F | Depth/Color/Laser property read-write |
-| `test_femto_calib.py` | F | Intrinsics, distortion, extrinsic orthogonality |
-| `test_femto_streams.py` | F + S | Depth (ToF range 300–8000 mm), Color, IR, IMU, sync |
+| `test_pipeline.py` | F | Pipeline start/stop, frame capture |
+| `test_sensor.py` | F | Sensor enumeration and properties |
+| `test_device_access.py` | F | Device access modes, state |
+| `test_device_list.py` | F | Device list enumeration |
+| `test_firmware.py` | F | Firmware version, upgrade checks |
+| `test_property.py` | F | Property get/set across sensor types |
+| `test_preset.py` | F | Preset configurations |
+| `test_config.py` | F | Stream configuration |
+| `test_stream_profile.py` | F | Stream profile validation |
+| `test_depth_mode.py` | F | Depth work modes |
+| `test_filter.py` | F | Post-processing filters on live frames |
+| `test_frame_metadata.py` | F | Frame metadata fields |
+| `test_frame_factory.py` | F | Frame factory methods |
+| `test_frame_interleave.py` | F | Frame interleaving |
+| `test_record_playback.py` | F | Record to BAG, playback |
+| `test_error_safety.py` | F | Error safety with hardware |
+| `test_data_struct.py` | F | Data structures with device |
+| `test_discovery.py` | F | Device discovery |
 
-### Astra Mini Pro / S Pro
+### device/ (device-specific, marked with device family)
+
+| File | Marker | What it tests |
+|------|--------|---------------|
+| `test_g300_series_device.py` | g300_series | Device identity, all G300 sensor requirements |
+| `test_g300_series_controls.py` | g300_series | Depth/Color/IR/Laser/HDR property read-write |
+| `test_g300_series_filters.py` | g300_series | Full post-processing filter pipeline |
+| `test_g300_series_calib.py` | g300_series | Intrinsics, distortion, extrinsic orthogonality |
+| `test_g300_series_streams.py` | g300_series | Stream validity, FPS, multi-stream sync, timestamps |
+| `test_g300_series_performance.py` | g300_series | Startup latency, 60 s FPS stability, restart time |
+| `test_femto_device.py` | femto | Identity, ToF sensors (Depth, Color, Left/Right IR, IMU) |
+| `test_femto_controls.py` | femto | Depth/Color/Laser property read-write |
+| `test_femto_calib.py` | femto | Intrinsics, distortion, extrinsic orthogonality |
+| `test_femto_streams.py` | femto | Depth (ToF range 300–8000 mm), Color, IR, IMU, sync |
+| `test_astra_mini_device.py` | astra_mini | Device identity, sensors, calibration |
+| `test_astra_mini_streams.py` | astra_mini | Depth, Color, IR, controls, timestamps |
+| `test_astra2_device.py` | astra2 | Device identity, sensors, depth work mode |
+| `test_astra2_streams.py` | astra2 | Depth, Color, IR, sync, controls |
+
+### perf/ (performance benchmarks)
 
 | File | Category | What it tests |
 |------|----------|---------------|
-| `test_astra_mini_device.py` | F | Device identity, sensors, calibration |
-| `test_astra_mini_streams.py` | F + S | Depth (300–8000 mm), Color, IR, controls, timestamps |
+| `test_frame_drop.py` | P | Frame drop rate under sustained streaming |
 
-### Astra 2
+### thread_safety/ (concurrent access)
 
 | File | Category | What it tests |
 |------|----------|---------------|
-| `test_astra2_device.py` | F | Device identity, sensors, depth work mode |
-| `test_astra2_streams.py` | F + S | Depth (300–10000 mm), Color, IR, sync, controls |
+| `test_concurrent_access.py` | F + S | Thread-safe SDK API usage from multiple threads |
+
+### scenario/ (end-to-end scenarios)
+
+| File | What it tests |
+|------|---------------|
+| `test_log_completeness.py` | Logger completeness in real-world scenarios |
+
+### examples_tests/ (example validation infrastructure)
+
+| File | What it does |
+|------|--------------|
+| `generate_examples_manifest.py` | Discovers and catalogs all SDK examples |
+| `generate_ci_matrix.py` | Generates CI matrix from manifest + runner pools |
+| `run_examples_suite.py` | Runs examples and collects results |
+| `merge_example_results.py` | Merges multiple example result files |
+| `examples_test_utils.py` | Shared utilities for example tests |
 
 ---
 
 ## Generating HTML Test Reports
 
 ```bash
-# One-click runner (auto-detects device, saves to reports/)
-python test/run_tests.py
+# No-hardware tests
+pytest test/nohw/ -v --html=reports/nohw_report.html --self-contained-html
 
-# Quick suite via generate_report.py (skips performance benchmarks)
-python test/generate_report.py --quick
+# Hardware tests
+pytest test/hw/ test/device/ -m hardware -v --html=reports/hw_report.html --self-contained-html
 
-# Full suite via generate_report.py
-python test/generate_report.py
+# Full suite
+pytest test/ -v --html=reports/full_report.html --self-contained-html
 ```
 
-Reports are saved to `reports/test_report_latest.html`.
-
-To view: open the HTML file in any browser.
-
----
-
-## Known Teardown Behavior
-
-After the test session completes, the Orbbec SDK may print:
-
-```
-Fatal Python error: Aborted
-```
-
-This is a **known SDK threading cleanup issue** that occurs during Python interpreter shutdown. It does **not** indicate test failures — all test results logged before this message are valid.
+Reports are saved to `reports/`. Open the HTML file in any browser to view.
 
 ---
 
@@ -308,4 +268,4 @@ To add tests for a new device family:
                  pytest.mark.functional, pytest.mark.stability]
    ```
 
-5. **Register the device alias** in `run_tests.py` under `_DEVICE_ALIASES` and `_DEVICE_NAME_PATTERNS`.
+5. **Register the device name prefix** in `conftest.py` under `_DEVICE_NAME_PATTERNS` so the `device` fixture can auto-detect it.
