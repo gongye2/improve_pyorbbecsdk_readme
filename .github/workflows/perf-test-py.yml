@@ -91,79 +91,12 @@ jobs:
                   summary.write(f'- {item[\"pool_name\"]} -> {item[\"platform\"]}\n')
           "
 
-  # ----------------------------------------------------------------
-  # 1. Device health gate
-  # ----------------------------------------------------------------
-  device-health:
+  # -----------------------------------------------------------------------
+  # Build & run performance / thread-safety tests
+  # -----------------------------------------------------------------------
+  perf-tests:
     needs: discover-hw-runners
     if: ${{ needs.discover-hw-runners.outputs.has_matrix == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.discover-hw-runners.outputs.matrix) }}
-    name: ${{ matrix.display_name }}
-    runs-on: ${{ fromJSON(matrix.runs_on) }}
-    outputs:
-      healthy: ${{ steps.health.outputs.healthy }}
-      runs_on: ${{ toJSON(matrix.runs_on) }}
-      pool_name: ${{ matrix.pool_name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Device health check (Windows)
-        if: runner.os == 'Windows'
-        id: health
-        shell: powershell
-        run: |
-          python -c "
-          from pyorbbecsdk import Context, OBLogLevel
-          ctx = Context()
-          ctx.set_logger_level(OBLogLevel.NONE)
-          dev_list = ctx.query_devices()
-          count = dev_list.get_count()
-          if count == 0:
-              print('No device detected')
-              exit(1)
-          dev = dev_list.get_device_by_index(0)
-          info = dev.get_device_info()
-          print(f'Device: {info.get_name()}')
-          print(f'Serial: {info.get_serial_number()}')
-          print(f'Firmware: {info.get_firmware_version()}')
-          "
-          echo "healthy=true" >> "$GITHUB_OUTPUT"
-
-      - name: Device health check (Linux/macOS)
-        if: runner.os != 'Windows'
-        id: health
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -c "
-          from pyorbbecsdk import Context, OBLogLevel
-          ctx = Context()
-          ctx.set_logger_level(OBLogLevel.NONE)
-          dev_list = ctx.query_devices()
-          count = dev_list.get_count()
-          if count == 0:
-              print('No device detected')
-              exit(1)
-          dev = dev_list.get_device_by_index(0)
-          info = dev.get_device_info()
-          print(f'Device: {info.get_name()}')
-          print(f'Serial: {info.get_serial_number()}')
-          print(f'Firmware: {info.get_firmware_version()}')
-          "
-          echo "healthy=true" >> "$GITHUB_OUTPUT"
-
-  # ----------------------------------------------------------------
-  # 2. Build & run performance / thread-safety tests
-  # ----------------------------------------------------------------
-  perf-tests:
-    needs:
-      - discover-hw-runners
-      - device-health
-    if: ${{ needs.device-health.outputs.healthy == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -266,13 +199,62 @@ jobs:
           uv pip install "$WHL_FILE"
 
       # -----------------------------------------------------------------------
-      # 6. Run performance & thread-safety tests
+      # 6. Device health check
+      # -----------------------------------------------------------------------
+      - name: Device health check (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      - name: Device health check (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      # -----------------------------------------------------------------------
+      # 7. Run performance & thread-safety tests
       # -----------------------------------------------------------------------
       - name: Run performance & thread-safety tests (Windows)
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          New-Item -ItemType Directory -Force -Path reports | Out-Null
           python -m pytest test/perf/ test/thread_safety/ -v --tb=short `
             --junitxml=reports/perf_junit.xml `
             2>&1 | Tee-Object -FilePath reports/perf.log
@@ -281,14 +263,12 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          set -euo pipefail
-          mkdir -p reports
           python -m pytest test/perf/ test/thread_safety/ -v --tb=short \
             --junitxml=reports/perf_junit.xml \
             2>&1 | tee reports/perf.log
 
       # -----------------------------------------------------------------------
-      # 7. Publish report & upload artifacts
+      # 8. Publish report & upload artifacts
       # -----------------------------------------------------------------------
       - name: Publish perf test report
         if: always()
@@ -405,25 +385,6 @@ jobs:
             reports/*.xml
             reports/*.log
           retention-days: 30
-
-  # ----------------------------------------------------------------
-  # 3. Infra failure summary (when device is unhealthy)
-  # ----------------------------------------------------------------
-  infra-summary:
-    needs:
-      - discover-hw-runners
-      - device-health
-    if: ${{ needs.device-health.outputs.healthy != 'true' }}
-    strategy:
-      matrix:
-        include: ${{ fromJSON(needs.discover-hw-runners.outputs.matrix) }}
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Report infra failure
-        run: |
-          echo "[HEALTH FAIL] Device infrastructure not ready on ${{ matrix.pool_name }}." >> "$GITHUB_STEP_SUMMARY"
-          echo "[HEALTH FAIL] This is an INFRASTRUCTURE failure, not a test failure." >> "$GITHUB_STEP_SUMMARY"
-          echo "[HEALTH FAIL] Check device connections, power, and runner configuration." >> "$GITHUB_STEP_SUMMARY"
 
   no-runner-summary:
     needs: discover-hw-runners
