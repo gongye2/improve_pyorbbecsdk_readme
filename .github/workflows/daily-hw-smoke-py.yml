@@ -223,14 +223,14 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Run no-hardware tests
         run: |
-          python -m pytest test/nohw/ -v --tb=short --self-contained-html --junitxml=reports/nohw_junit.xml
+          python -m pytest test/nohw/ -v --tb=short --junitxml=reports/nohw_junit.xml 2>&1 | tee reports/nohw.log
 
       # -----------------------------------------------------------------------
       # 8. Run hardware tests (hw/ + device/ + thread_safety/)
       # -----------------------------------------------------------------------
       - name: Run hardware tests
         run: |
-          python -m pytest test/hw/ test/device/ test/thread_safety/ -m hardware -v --tb=short --junitxml=reports/hw_junit.xml
+          python -m pytest test/hw/ test/device/ test/thread_safety/ -m hardware -v --tb=short --junitxml=reports/hw_junit.xml 2>&1 | tee reports/hw.log
 
       # -----------------------------------------------------------------------
       # 9. Publish report & upload artifacts
@@ -255,7 +255,6 @@ jobs:
           path: |
             reports/*.xml
             reports/*.log
-            reports/*.html
           retention-days: 30
 
   no-runner-summary:

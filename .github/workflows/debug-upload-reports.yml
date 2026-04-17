@@ -2,78 +2,189 @@ name: Debug Upload Reports
 
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: false
+        default: "windows_x64"
+        type: choice
+        options:
+          - windows_x64
+          - linux_x86_64
+          - linux_arm64
 
 jobs:
-  upload:
-    runs-on: python-windows-gemini-330-AA-24001226-1776173016 # change to your self-hosted runner label
+  discover-hw-runners:
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.export.outputs.matrix }}
+      has_matrix: ${{ steps.export.outputs.has_matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # -----------------------------------------------------------------------
-      # 1. Inspect what's in the reports directory
-      # -----------------------------------------------------------------------
-      - name: List reports
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Generate hw_full_test matrix from global runner pools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/hw_discovery
+          PLATFORM="${{ github.event.inputs.platform || '' }}"
+          if [ -n "$PLATFORM" ]; then
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --platform "$PLATFORM" \
+              --required-capabilities depth,color \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          else
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --required-capabilities depth,color \
+              --all-platforms \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          fi
+
+      - name: Export matrix output
+        id: export
+        shell: bash
+        run: |
+          set -euo pipefail
+          MATRIX_JSON=$(python -c "
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
+          print(json.dumps(payload, separators=(',', ':')))
+          ")
+          MATRIX_COUNT=$(python -c "
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
+          print(len(payload))
+          ")
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+          if [ "$MATRIX_COUNT" -gt 0 ]; then
+            echo "has_matrix=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_matrix=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  py-tests:
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.discover-hw-runners.outputs.matrix) }}
+    name: ${{ matrix.display_name }}
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10 (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          uv python find 3.10
+          if ($LASTEXITCODE -ne 0) { uv python install 3.10 }
+          uv venv .venv --python 3.10
+          Add-Content -Path $env:GITHUB_PATH -Value "$env:GITHUB_WORKSPACE/.venv/Scripts"
+
+      - name: Set up Python 3.10 (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          uv python find 3.10 || uv python install 3.10
+          uv venv .venv --python 3.10
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Install test dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
+
+      - name: Install test dependencies (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          uv pip install --index-url https://mirrors.aliyun.com/pypi/simple/ -r test/requirements_test.txt
+
+      - name: Build wheel (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          & scripts/build_whl/build-whl-uv.ps1 3.10 --yes --no-clean
+
+      - name: Build wheel (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv.sh
+          bash scripts/build_whl/build-whl-uv.sh 3.10 --yes --no-clean
+
+      - name: Build wheel (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          chmod +x scripts/build_whl/build-whl-uv-macos.sh
+          bash scripts/build_whl/build-whl-uv-macos.sh 3.10 --yes --no-clean
+
+      - name: Install wheel (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $WHL = (Get-ChildItem "wheel/*cp310*win*.whl" | Select-Object -First 1).FullName
+          if (-not $WHL) { Write-Error "No wheel found"; exit 1 }
+          Write-Host "Installing: $WHL"
+          uv pip install $WHL
+
+      - name: Install wheel (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*manylinux*.whl 2>/dev/null | head -n1 || ls wheel/*cp310*linux*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      - name: Install wheel (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          WHL_FILE=$(ls wheel/*cp310*macosx*.whl 2>/dev/null | head -n1)
+          if [ -z "$WHL_FILE" ]; then echo "No wheel found"; ls -la wheel/; exit 1; fi
+          echo "Installing: $WHL_FILE"
+          uv pip install "$WHL_FILE"
+
+      - name: Inspect reports directory
         shell: bash
         run: |
           echo "=== reports/ contents ==="
-          ls -lR reports/ 2>/dev/null || echo "reports/ not found"
-          echo "=== pwd ==="
+          find reports/ -type f 2>/dev/null || echo "reports/ not found"
           pwd
 
-      # -----------------------------------------------------------------------
-      # 2. Upload with actions/upload-artifact@v4
-      # -----------------------------------------------------------------------
-      - name: Upload test reports (upload-artifact)
+      - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: debug-reports-${{ github.run_id }}
+          name: debug-reports-${{ matrix.pool_name }}-${{ github.run_id }}
           path: |
-            reports/*.xml
-            reports/*.log
-            reports/*.html
+            reports/**/*.xml
+            reports/**/*.log
             reports/**/*
           retention-days: 14
           if-no-files-found: warn
 
-      # -----------------------------------------------------------------------
-      # 3. Alternative: upload with a simple archive + download-artifact test
-      # -----------------------------------------------------------------------
-      - name: Archive reports as tar.gz
-        if: always()
-        shell: bash
+  no-runner-summary:
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix != 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Report missing runner mapping
         run: |
-          if [ -d reports ] && [ "$(ls reports/ 2>/dev/null)" ]; then
-            tar czf reports_archive.tar.gz reports/
-            echo "Archived reports/ into reports_archive.tar.gz"
-            ls -lh reports_archive.tar.gz
-          else
-            echo "No reports to archive"
-          fi
-
-      - name: Upload archive (upload-artifact)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-reports-archive-${{ github.run_id }}
-          path: reports_archive.tar.gz
-          retention-days: 14
-          if-no-files-found: warn
-
-      # -----------------------------------------------------------------------
-      # 4. Verify upload by downloading back
-      # -----------------------------------------------------------------------
-      - name: Download artifact back (download-artifact)
-        if: always()
-        uses: actions/download-artifact@v4
-        with:
-          name: debug-reports-archive-${{ github.run_id }}
-          path: downloaded_artifact
-
-      - name: Verify downloaded
-        if: always()
-        shell: bash
-        run: |
-          echo "=== downloaded_artifact/ contents ==="
-          ls -lR downloaded_artifact/ 2>/dev/null || echo "nothing downloaded"
+          echo "No eligible runner pool found for hw_full_test in scripts/runner/runner_pools.json" >> "$GITHUB_STEP_SUMMARY"
