@@ -1,0 +1,79 @@
+name: Debug Upload Reports
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: python-windows-gemini-330-AA-24001226-1776173016 # change to your self-hosted runner label
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 1. Inspect what's in the reports directory
+      # -----------------------------------------------------------------------
+      - name: List reports
+        shell: bash
+        run: |
+          echo "=== reports/ contents ==="
+          ls -lR reports/ 2>/dev/null || echo "reports/ not found"
+          echo "=== pwd ==="
+          pwd
+
+      # -----------------------------------------------------------------------
+      # 2. Upload with actions/upload-artifact@v4
+      # -----------------------------------------------------------------------
+      - name: Upload test reports (upload-artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-reports-${{ github.run_id }}
+          path: |
+            reports/*.xml
+            reports/*.log
+            reports/*.html
+            reports/**/*
+          retention-days: 14
+          if-no-files-found: warn
+
+      # -----------------------------------------------------------------------
+      # 3. Alternative: upload with a simple archive + download-artifact test
+      # -----------------------------------------------------------------------
+      - name: Archive reports as tar.gz
+        if: always()
+        shell: bash
+        run: |
+          if [ -d reports ] && [ "$(ls reports/ 2>/dev/null)" ]; then
+            tar czf reports_archive.tar.gz reports/
+            echo "Archived reports/ into reports_archive.tar.gz"
+            ls -lh reports_archive.tar.gz
+          else
+            echo "No reports to archive"
+          fi
+
+      - name: Upload archive (upload-artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-reports-archive-${{ github.run_id }}
+          path: reports_archive.tar.gz
+          retention-days: 14
+          if-no-files-found: warn
+
+      # -----------------------------------------------------------------------
+      # 4. Verify upload by downloading back
+      # -----------------------------------------------------------------------
+      - name: Download artifact back (download-artifact)
+        if: always()
+        uses: actions/download-artifact@v4
+        with:
+          name: debug-reports-archive-${{ github.run_id }}
+          path: downloaded_artifact
+
+      - name: Verify downloaded
+        if: always()
+        shell: bash
+        run: |
+          echo "=== downloaded_artifact/ contents ==="
+          ls -lR downloaded_artifact/ 2>/dev/null || echo "nothing downloaded"
