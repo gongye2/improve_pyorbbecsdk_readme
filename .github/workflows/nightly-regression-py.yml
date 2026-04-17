@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: "0 18 * * *"
   workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - windows_x64
+          - linux_x86_64
+          - linux_arm64
 
 jobs:
   discover-hw-runners:
@@ -25,11 +36,20 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports/hw_discovery
-          python scripts/runner/generate_hw_full_test_matrix.py \
-            --runner-pools scripts/runner/runner_pools.json \
-            --required-capabilities depth,color \
-            --all-platforms \
-            --output-matrix reports/hw_discovery/hw_matrix.json
+          PLATFORM="${{ github.event.inputs.platform || 'all' }}"
+          if [ "$PLATFORM" = "all" ]; then
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --required-capabilities depth,color \
+              --all-platforms \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          else
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --platform "$PLATFORM" \
+              --required-capabilities depth,color \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          fi
 
       - name: Export matrix output
         id: export
