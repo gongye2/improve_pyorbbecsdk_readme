@@ -1,4 +1,4 @@
-name: Performance & Thread-Safety Test (Python)
+name: 'Performance & Thread-Safety Test (Python)'
 
 on:
   schedule:
