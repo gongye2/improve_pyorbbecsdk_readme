@@ -242,13 +242,15 @@ jobs:
           report_paths: |
             reports/nohw_junit.xml
             reports/hw_junit.xml
-          check_name: Daily HW Smoke Test Report (${{ matrix.pool_name }})
+          check_name: |
+            Daily HW Smoke Test Report (nohw) (${{ matrix.pool_name }})
+            Daily HW Smoke Test Report (hw) (${{ matrix.pool_name }})
           detailed_summary: true
           include_passed: true
           require_tests: true
 
-      - name: Verify reports exist
-        if: always()
+      - name: Verify reports exist (Linux/macOS)
+        if: always() && runner.os != 'Windows'
         shell: bash
         run: |
           echo "=== reports/ directory ==="
@@ -261,10 +263,17 @@ jobs:
           for f in reports/*.log; do
             [ -f "$f" ] && echo "  $f ($(wc -c < "$f") bytes)"
           done
-          echo "=== file locks check (Windows) ==="
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            powershell -Command "Get-ChildItem reports/ | ForEach-Object { $_.FullName }" 2>/dev/null || true
-          fi
+
+      - name: Verify reports exist (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          Write-Host "=== reports/ directory ==="
+          Get-ChildItem reports/ -ErrorAction SilentlyContinue
+          Write-Host "=== XML files ==="
+          Get-ChildItem reports/*.xml -ErrorAction SilentlyContinue | ForEach-Object { "  $($_.FullName) ($($_.Length) bytes)" }
+          Write-Host "=== LOG files ==="
+          Get-ChildItem reports/*.log -ErrorAction SilentlyContinue | ForEach-Object { "  $($_.FullName) ($($_.Length) bytes)" }
 
       - name: Upload test reports
         if: always()
