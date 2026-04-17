@@ -8,9 +8,10 @@ on:
       platform:
         description: "Target platform"
         required: false
-        default: "windows_x64"
+        default: "all"
         type: choice
         options:
+          - all
           - windows_x64
           - linux_x86_64
           - linux_arm64
@@ -36,17 +37,17 @@ jobs:
           set -euo pipefail
           mkdir -p reports/hw_discovery
           PLATFORM="${{ github.event.inputs.platform || '' }}"
-          if [ -n "$PLATFORM" ]; then
-            python scripts/runner/generate_hw_full_test_matrix.py \
-              --runner-pools scripts/runner/runner_pools.json \
-              --platform "$PLATFORM" \
-              --required-capabilities depth,color \
-              --output-matrix reports/hw_discovery/hw_matrix.json
-          else
+          if [ "$PLATFORM" = "all" ] || [ -z "$PLATFORM" ]; then
             python scripts/runner/generate_hw_full_test_matrix.py \
               --runner-pools scripts/runner/runner_pools.json \
               --required-capabilities depth,color \
               --all-platforms \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          else
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --platform "$PLATFORM" \
+              --required-capabilities depth,color \
               --output-matrix reports/hw_discovery/hw_matrix.json
           fi
 
