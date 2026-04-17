@@ -247,6 +247,25 @@ jobs:
           include_passed: true
           require_tests: true
 
+      - name: Verify reports exist
+        if: always()
+        shell: bash
+        run: |
+          echo "=== reports/ directory ==="
+          ls -lh reports/ 2>/dev/null || echo "reports/ not found"
+          echo "=== XML files ==="
+          for f in reports/*.xml; do
+            [ -f "$f" ] && echo "  $f ($(wc -c < "$f") bytes)"
+          done
+          echo "=== LOG files ==="
+          for f in reports/*.log; do
+            [ -f "$f" ] && echo "  $f ($(wc -c < "$f") bytes)"
+          done
+          echo "=== file locks check (Windows) ==="
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            powershell -Command "Get-ChildItem reports/ | ForEach-Object { $_.FullName }" 2>/dev/null || true
+          fi
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -256,6 +275,7 @@ jobs:
             reports/*.xml
             reports/*.log
           retention-days: 30
+          if-no-files-found: error
 
   no-runner-summary:
     needs: discover-hw-runners
