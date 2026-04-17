@@ -29,6 +29,9 @@ Usage:
     pytest test/ -m "not performance" -v         # Skip long benchmarks
 """
 
+import atexit
+import gc
+import sys
 import time
 
 import pytest
@@ -42,6 +45,37 @@ from pyorbbecsdk import (
     OBSensorType,
     Pipeline,
 )
+
+
+# ---------------------------------------------------------------------------
+# Global SDK cleanup at Python exit
+# ---------------------------------------------------------------------------
+
+def _cleanup_sdk_atexit():
+    """
+    Called by atexit before Python interpreter finalization.
+
+    The SDK's global logger callback (set via set_logger_to_callback) holds
+    references to Python functions. If not cleared before interpreter shutdown,
+    the SDK's C callback may invoke the Python function after the GIL is destroyed,
+    causing: Fatal Python error: PyThreadState_Get
+
+    We also force GC to release any lingering SDK objects while the GIL is valid.
+    """
+    print("[atexit] SDK cleanup starting", flush=True, file=sys.stderr)
+    try:
+        Context.clear_logger_callback()
+        print("[atexit] clear_logger_callback done", flush=True, file=sys.stderr)
+    except Exception as e:
+        print(f"[atexit] clear_logger_callback error: {e}", flush=True, file=sys.stderr)
+    # Force garbage collection while GIL is still valid
+    gc.collect()
+    gc.collect()
+    gc.collect()
+    print("[atexit] GC done, SDK cleanup complete", flush=True, file=sys.stderr)
+
+
+atexit.register(_cleanup_sdk_atexit)
 
 # ---------------------------------------------------------------------------
 # Device name sets used for fixture matching

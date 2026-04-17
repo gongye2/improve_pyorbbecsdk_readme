@@ -272,7 +272,13 @@ void define_device(const py::object &m) {
       .def("set_device_state_changed_callback",
            [](const std::shared_ptr<ob::Device> &self,
               const py::function &callback) {
-             OB_TRY_CATCH({ self->setDeviceStateChangedCallback(callback); });
+             OB_TRY_CATCH({
+               self->setDeviceStateChangedCallback(
+                   [callback](OBDeviceState state, const char *message) {
+                     py::gil_scoped_acquire acquire;
+                     callback(state, message);
+                   });
+             });
            })
       .def("get_calibration_camera_param_list",
            [](const std::shared_ptr<ob::Device> &self) {
@@ -281,6 +287,10 @@ void define_device(const py::object &m) {
       .def("get_depth_work_mode",
            [](const std::shared_ptr<ob::Device> &self) {
              OB_TRY_CATCH({ return self->getCurrentDepthWorkMode(); });
+           })
+      .def("get_current_depth_mode_name",
+           [](const std::shared_ptr<ob::Device> &self) {
+             OB_TRY_CATCH({ return std::string(self->getCurrentDepthModeName()); });
            })
       .def("set_depth_work_mode",
            [](const std::shared_ptr<ob::Device> &self, OBDepthWorkMode mode) {

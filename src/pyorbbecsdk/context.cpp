@@ -18,6 +18,58 @@
 #include "utils.hpp"
 
 namespace pyorbbecsdk {
+
+// Global flag to signal that Python is shutting down.
+// The logger callback checks this BEFORE attempting GIL acquisition.
+static std::atomic<bool> g_python_shutting_down{false};
+
+// Wrapper struct: holds the Python callback and an atomic "active" flag.
+// The lambda captures this shared_ptr, and checks the flag before invoking.
+// The shared_ptr is intentionally LEAKED (via no-op custom deleter) so that
+// the py::function destructor never runs during C++ static destruction,
+// when the GIL is no longer available.
+struct LoggerCallbackWrapper {
+  std::atomic<bool> active{true};
+  py::function callback;
+};
+
+static void noop_deleter(LoggerCallbackWrapper *) {
+  // Intentionally does nothing — the wrapper and its py::function are leaked.
+  // This prevents the py::function destructor from running during C++ static
+  // destruction when the GIL is unavailable.
+}
+
+// Helper: invoke the Python callback safely.
+static void safe_invoke_logger_callback(
+    LoggerCallbackWrapper *wrapper, OBLogSeverity level,
+    const std::string &log_msg) {
+  // Fast-path: if inactive or shutdown, bail out immediately.
+  if (!wrapper->active.load(std::memory_order_relaxed)) {
+    return;
+  }
+  if (g_python_shutting_down.load(std::memory_order_relaxed)) {
+    return;
+  }
+  if (!Py_IsInitialized()) {
+    return;
+  }
+  // Try to acquire the GIL using the C API.
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  // Double-check after GIL acquisition (race window existed between
+  // Py_IsInitialized and GIL acquisition).
+  if (!wrapper->active.load(std::memory_order_relaxed)) {
+    PyGILState_Release(gstate);
+    return;
+  }
+  // Invoke the Python callback.
+  try {
+    wrapper->callback(level, log_msg.c_str());
+  } catch (...) {
+    // Swallow any exception — interpreter is shutting down.
+  }
+  PyGILState_Release(gstate);
+}
+
 Context::Context() noexcept { impl_ = std::make_shared<ob::Context>(); }
 
 Context::Context(const std::string &config_file_path) noexcept {
@@ -90,12 +142,27 @@ void Context::set_logger_to_file(OBLogSeverity level,
 void Context::set_logger_to_callback(OBLogSeverity level,
                                      const py::function &callback) {
   OB_TRY_CATCH({
+    // Use a leaked shared_ptr (noop custom deleter) so the py::function
+    // is NEVER destroyed, avoiding GIL-dependent destruction during
+    // C++ static teardown.
+    auto wrapper = new LoggerCallbackWrapper();
+    wrapper->callback = callback;
+    wrapper->active.store(true, std::memory_order_relaxed);
+    auto leaked_wrapper = std::shared_ptr<LoggerCallbackWrapper>(
+        wrapper, noop_deleter);
     ob::Context::setLoggerToCallback(
-        level, [callback](OBLogSeverity level, const std::string log_msg) {
-          py::gil_scoped_acquire acquire;
-          callback(level, log_msg.c_str());
+        level, [leaked_wrapper](OBLogSeverity level, const std::string log_msg) {
+          safe_invoke_logger_callback(leaked_wrapper.get(), level, log_msg);
         });
   });
+}
+
+void Context::clear_logger_callback() {
+  // Signal to all SDK threads that Python is shutting down.
+  g_python_shutting_down.store(true, std::memory_order_relaxed);
+  Context::set_logger_level(OB_LOG_SEVERITY_NONE);
+  // The wrapper is leaked (noop deleter), so nothing to clean up here.
+  // The active flag and shutdown flag prevent any future invocations.
 }
 
 void Context::set_logger_file_name(const std::string &file_name) {
@@ -232,6 +299,11 @@ void define_context(py::object &m) {
                      const std::string &func, int line) {
                     Context::log_external_message(level, module, message, file,
                                                   func, line);
-                  });
+                  })
+      .def_static(
+          "clear_logger_callback",
+          []() { Context::clear_logger_callback(); },
+          "Clear the global logger callback to release Python references "
+          "before interpreter finalization");
 }
 }  // namespace pyorbbecsdk

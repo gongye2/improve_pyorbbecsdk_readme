@@ -72,6 +72,12 @@ class Context {
 
   void free_idle_memory() const;
 
+  /**
+   * Clear the logger callback to release the Python callback reference
+   * while the GIL is still valid. Must be called before Python finalization.
+   */
+  static void clear_logger_callback();
+
  private:
   std::shared_ptr<ob::Context> impl_;
 };
