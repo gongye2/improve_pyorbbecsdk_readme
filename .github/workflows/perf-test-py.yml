@@ -111,7 +111,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Device health check
+      - name: Device health check (Windows)
+        if: runner.os == 'Windows'
+        id: health
+        shell: powershell
+        run: |
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          if count == 0:
+              print('No device detected')
+              exit(1)
+          dev = dev_list.get_device_by_index(0)
+          info = dev.get_device_info()
+          print(f'Device: {info.get_name()}')
+          print(f'Serial: {info.get_serial_number()}')
+          print(f'Firmware: {info.get_firmware_version()}')
+          "
+          echo "healthy=true" >> "$GITHUB_OUTPUT"
+
+      - name: Device health check (Linux/macOS)
+        if: runner.os != 'Windows'
         id: health
         shell: bash
         run: |

@@ -198,9 +198,35 @@ jobs:
       # -----------------------------------------------------------------------
       # 6. Device health check
       # -----------------------------------------------------------------------
-      - name: Device health check
+      - name: Device health check (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
         run: |
-          python -c "import os; os.makedirs('reports', exist_ok=True)"
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      - name: Device health check (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
           python -c "
           from pyorbbecsdk import Context, OBLogLevel
           ctx = Context()
@@ -222,14 +248,30 @@ jobs:
       # -----------------------------------------------------------------------
       # 7. Run no-hardware tests
       # -----------------------------------------------------------------------
-      - name: Run no-hardware tests
+      - name: Run no-hardware tests (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python -m pytest test/nohw/ -v --tb=short --junitxml=reports/nohw_junit.xml 2>&1 | Tee-Object -FilePath reports/nohw.log
+
+      - name: Run no-hardware tests (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           python -m pytest test/nohw/ -v --tb=short --junitxml=reports/nohw_junit.xml 2>&1 | tee reports/nohw.log
 
       # -----------------------------------------------------------------------
       # 8. Run hardware tests (hw/ + device/ + thread_safety/)
       # -----------------------------------------------------------------------
-      - name: Run hardware tests
+      - name: Run hardware tests (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python -m pytest test/hw/ test/device/ test/thread_safety/ -m hardware -v --tb=short --junitxml=reports/hw_junit.xml 2>&1 | Tee-Object -FilePath reports/hw.log
+
+      - name: Run hardware tests (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           python -m pytest test/hw/ test/device/ test/thread_safety/ -m hardware -v --tb=short --junitxml=reports/hw_junit.xml 2>&1 | tee reports/hw.log
 
