@@ -197,32 +197,9 @@ jobs:
       # -----------------------------------------------------------------------
       # 6. Device health check
       # -----------------------------------------------------------------------
-      - name: Device health check (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
+      - name: Device health check
         run: |
-          python -c "
-          from pyorbbecsdk import Context, OBLogLevel
-          ctx = Context()
-          ctx.set_logger_level(OBLogLevel.NONE)
-          dev_list = ctx.query_devices()
-          count = dev_list.get_count()
-          print(f'Connected devices: {count}')
-          if count > 0:
-              dev = dev_list.get_device_by_index(0)
-              info = dev.get_device_info()
-              print(f'Device: {info.get_name()}')
-              print(f'Serial: {info.get_serial_number()}')
-              print(f'Firmware: {info.get_firmware_version()}')
-          else:
-              print('WARNING: No Orbbec device detected')
-              exit(1)
-          "
-
-      - name: Device health check (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
+          mkdir -p reports
           python -c "
           from pyorbbecsdk import Context, OBLogLevel
           ctx = Context()
@@ -244,85 +221,29 @@ jobs:
       # -----------------------------------------------------------------------
       # 7. Run no-hardware tests
       # -----------------------------------------------------------------------
-      - name: Run no-hardware tests (Windows)
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force -Path reports | Out-Null
-          python -m pytest test/ -m "not hardware" -v --tb=short --self-contained-html `
-            --junitxml=reports/nohw_junit.xml 2>&1 | Tee-Object reports/nohw.log
-
-      - name: Run no-hardware tests (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
+      - name: Run no-hardware tests
         run: |
           mkdir -p reports
-          python -m pytest test/ -m "not hardware" -v \
-            --tb=short \
-            --self-contained-html \
-            --junitxml=reports/nohw_junit.xml \
-            2>&1 | tee reports/nohw.log
+          python -m pytest test/ -m "not hardware" -v --tb=short --self-contained-html --junitxml=reports/nohw_junit.xml
 
       # -----------------------------------------------------------------------
-      # 8. Run hardware tests (functional)
+      # 8. Run full test suite (device-specific via run_tests.py)
       # -----------------------------------------------------------------------
-      - name: Run hardware tests (Windows)
-        if: runner.os == 'Windows'
+      - name: Run full test suite
         env:
-          HARDWARE_AVAILABLE: "true"
           DEVICE_TYPE: ${{ matrix.pool_name }}
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force -Path reports | Out-Null
-          python -m pytest test/ -m "hardware and not performance" -v --tb=short --self-contained-html `
-            --junitxml=reports/hw_junit.xml 2>&1 | Tee-Object reports/hw.log
-
-      - name: Run hardware tests (Linux/macOS)
-        if: runner.os != 'Windows'
-        env:
-          HARDWARE_AVAILABLE: "true"
-          DEVICE_TYPE: ${{ matrix.pool_name }}
-        shell: bash
         run: |
           mkdir -p reports
-          python -m pytest test/ -m "hardware and not performance" -v \
-            --tb=short \
-            --self-contained-html \
-            --junitxml=reports/hw_junit.xml \
-            2>&1 | tee reports/hw.log
-
-      # -----------------------------------------------------------------------
-      # 9. Run run_tests.py (full suite with HTML report)
-      # -----------------------------------------------------------------------
-      - name: Run run_tests.py (Windows)
-        if: runner.os == 'Windows'
-        env:
-          DEVICE_TYPE: ${{ matrix.pool_name }}
-        shell: powershell
-        run: |
-          New-Item -ItemType Directory -Force -Path reports | Out-Null
           python test/run_tests.py --output reports --quick
 
-      - name: Run run_tests.py (Linux/macOS)
-        if: runner.os != 'Windows'
-        env:
-          DEVICE_TYPE: ${{ matrix.pool_name }}
-        shell: bash
-        run: |
-          mkdir -p reports
-          python test/run_tests.py \
-            --output reports \
-            --quick \
-            || true
-
       # -----------------------------------------------------------------------
-      # 10. Publish report & upload artifacts
+      # 9. Publish report & upload artifacts
       # -----------------------------------------------------------------------
       - name: Publish daily test report
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
-          report_paths: reports/*_junit.xml
+          report_paths: reports/nohw_junit.xml
           check_name: Daily HW Smoke Test Report (${{ matrix.pool_name }})
           detailed_summary: true
           include_passed: true
