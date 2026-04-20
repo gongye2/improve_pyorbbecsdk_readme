@@ -11,11 +11,12 @@
 #  Run:
 #    python examples/advanced/03_save_image_to_disk.py
 # ******************************************************************************
+import argparse
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import os
 
 import cv2
 import numpy as np
@@ -78,6 +79,14 @@ def save_color_frame(frame: ColorFrame, index):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Save Frames to Disk")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -114,24 +123,51 @@ def main():
     for _ in range(15):
         pipeline.wait_for_frames(1000)
 
+    if args.test:
+        out_dir = "test_outputs/save_image_to_disk"
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+        loop_start = time.monotonic()
+
     frame_index = 0
     try:
         while True:
             frames = pipeline.wait_for_frames(1000)
             if frames is None:
+                if args.test and time.monotonic() - loop_start > 30:
+                    print("Timeout: no frames received after 30 seconds")
+                    break
                 continue
-            frame_index += 1
-            if frame_index >= 5:
-                print("The demo is over!")
-                break
 
             color_frame = frames.get_color_frame()
             depth_frame = frames.get_depth_frame()
 
             if color_frame:
-                save_color_frame(color_frame, frame_index)
+                if args.test:
+                    image = frame_to_bgr_image(color_frame)
+                    if image is not None:
+                        cv2.imwrite(f"{out_dir}/color_{frame_index:04d}.png", image)
+                        print(f"Color saved: {out_dir}/color_{frame_index:04d}.png")
+                else:
+                    save_color_frame(color_frame, frame_index)
             if depth_frame:
-                save_depth_frame(depth_frame, frame_index)
+                if args.test:
+                    width = depth_frame.get_width()
+                    height = depth_frame.get_height()
+                    data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
+                    data = data.reshape((height, width)).astype(np.uint16)
+                    cv2.imwrite(f"{out_dir}/depth_{frame_index:04d}.png", data)
+                    print(f"Depth saved: {out_dir}/depth_{frame_index:04d}.png")
+                else:
+                    save_depth_frame(depth_frame, frame_index)
+
+            frame_index += 1
+            if frame_index >= 5:
+                if args.test:
+                    print(f"Saved {frame_index} frames, exiting test mode.")
+                    break
+                print("The demo is over!")
+                break
     except KeyboardInterrupt:
         pass
     except OBError as e:
