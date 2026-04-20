@@ -165,7 +165,7 @@ def main():
                 filtered = out
 
             # ---- Build display panels ----
-            if not hasattr(filtered, 'get_data'):
+            if not hasattr(filtered, "get_data"):
                 print(f"[WARN] filter chain returned invalid type: {type(filtered)}")
                 continue
 

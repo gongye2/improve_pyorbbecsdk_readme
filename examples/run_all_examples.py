@@ -275,6 +275,7 @@ def copy_artifacts_to_unified_dir(results, unified_dir):
 def _copy_file(src, dst):
     """Simple file copy using shutil."""
     import shutil
+
     shutil.copy2(src, dst)
 
 
@@ -319,9 +320,7 @@ def render_html_report(results, output_dir):
             summary += f", {failed} failed"
         if skipped:
             summary += f", {skipped} skipped"
-        row_parts.append(
-            f'<tr class="category"><td colspan="6">{html.escape(cat)} — {html.escape(summary)}</td></tr>'
-        )
+        row_parts.append(f'<tr class="category"><td colspan="6">{html.escape(cat)} — {html.escape(summary)}</td></tr>')
 
         for r in items:
             label = r["label"]
@@ -379,7 +378,7 @@ def render_html_report(results, output_dir):
             row_parts.append(
                 "<tr>"
                 f"<td>{html.escape(label)}</td>"
-                f"<td><span class=\"status\" style=\"background:{status_bg};color:{status_color};\">{html.escape(display_status)}</span></td>"
+                f'<td><span class="status" style="background:{status_bg};color:{status_color};">{html.escape(display_status)}</span></td>'
                 f"<td>{elapsed:.2f}s</td>"
                 f"<td>{html.escape(display_message)}</td>"
                 f"<td>{log_html}</td>"
@@ -495,15 +494,17 @@ def main():
         if INTER_TEST_DELAY > 0:
             time.sleep(INTER_TEST_DELAY)
 
-        results.append({
-            "label": label,
-            "script": script,
-            "status": status,
-            "duration": elapsed,
-            "log_path": log_path,
-            "artifacts": artifacts,
-            "message": message,
-        })
+        results.append(
+            {
+                "label": label,
+                "script": script,
+                "status": status,
+                "duration": elapsed,
+                "log_path": log_path,
+                "artifacts": artifacts,
+                "message": message,
+            }
+        )
 
     # Generate HTML report
     report_dir = os.path.join(REPO, REPORT_DIR)

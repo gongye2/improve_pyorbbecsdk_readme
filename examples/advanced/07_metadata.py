@@ -70,8 +70,7 @@ def main():
                 metadata_types = [
                     getattr(OBFrameMetadataType, attr)
                     for attr in dir(OBFrameMetadataType)
-                    if not attr.startswith("__")
-                    and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
+                    if not attr.startswith("__") and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
                 ]
 
                 for metadata_type in metadata_types:

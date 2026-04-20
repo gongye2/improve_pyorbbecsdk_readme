@@ -83,9 +83,7 @@ def setup_camera():
             continue
 
     # Configure frame aggregation mode
-    config.set_frame_aggregate_output_mode(
-        OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE
-    )
+    config.set_frame_aggregate_output_mode(OBFrameAggregateOutputMode.FULL_FRAME_REQUIRE)
 
     # Load and enable frame interleave
     device.loadFrameInterleave("Laser On-Off")
@@ -129,9 +127,7 @@ def process_depth(frame):
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
         depth_data = depth_data.reshape(frame.get_height(), frame.get_width())
-        depth_image = cv2.normalize(
-            depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
@@ -204,9 +200,7 @@ def input_command_handler():
 
     print("\nAvailable commands:")
     print("  depth all/0/1       - Set sequence id for depth stream")
-    print(
-        "  left_ir all/0/1     - Set sequence id for left IR stream or IR stream(Monocular camera)"
-    )
+    print("  left_ir all/0/1     - Set sequence id for left IR stream or IR stream(Monocular camera)")
     print("  right_ir all/0/1    - Set sequence id for right IR stream")
     print("  q                   - Quit program")
 

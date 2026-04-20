@@ -68,9 +68,7 @@ def _render_depth_2d(depth_mm: np.ndarray) -> np.ndarray:
     depth_clipped = np.clip(depth_mm, MIN_DEPTH_MM, MAX_DEPTH_MM)
     depth_clipped = np.where(depth_clipped > MIN_DEPTH_MM, depth_clipped, 0)
 
-    depth_norm = cv2.normalize(
-        depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-    )
+    depth_norm = cv2.normalize(depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
     # Apply selected colormap
     colormap, cmap_name = COLORMAPS[_cmap_index]

@@ -124,9 +124,7 @@ def filter_control(filter_list):
                     print(f"Success: Filter {found_filter.get_name()} is now {status}")
                 elif len(tokens) == 1:
                     status = "enabled" if found_filter.is_enabled() else "disabled"
-                    print(
-                        f" - {found_filter.get_name()}: {status} (config schema API not available)"
-                    )
+                    print(f" - {found_filter.get_name()}: {status} (config schema API not available)")
                 else:
                     print(
                         f"Error: Config schema API not available for this build. Only on/off is supported.",
@@ -152,9 +150,7 @@ def filter_control(filter_list):
                 print(f"Config schema for {found_filter.get_name()}:")
                 schema_vec = found_filter.get_config_schema_vec()
                 for s in schema_vec:
-                    print(
-                        f" - {{{s.name}, {s.type}, {s.min}, {s.max}, {s.step}, {s.default}, {s.desc}}}"
-                    )
+                    print(f" - {{{s.name}, {s.type}, {s.min}, {s.max}, {s.step}, {s.default}, {s.desc}}}")
 
             # Case 4: [Filter] [Config Name] -> Get specific parameter value
             elif len(tokens) == 2:
@@ -164,9 +160,7 @@ def filter_control(filter_list):
                 for s in schema_vec:
                     if s.name == target_config:
                         val = found_filter.get_config_value(s.name)
-                        print(
-                            f"Config values for {found_filter.get_name()}@{s.name}: {val}"
-                        )
+                        print(f"Config values for {found_filter.get_name()}@{s.name}: {val}")
                         found_config = True
                         break
                 if not found_config:
@@ -185,9 +179,7 @@ def filter_control(filter_list):
                         f"Success: Config value of {config_name} for filter {target_filter_name} is set to {tokens[2]}"
                     )
                 except ValueError:
-                    print(
-                        f"Error: '{tokens[2]}' is not a valid number", file=sys.stderr
-                    )
+                    print(f"Error: '{tokens[2]}' is not a valid number", file=sys.stderr)
                 except Exception as e:
                     print(f"Error: {e}", file=sys.stderr)
         else:
@@ -276,23 +268,15 @@ def main():
 
             # --- Process Original Frame for Display ---
             depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
-            depth_data = depth_data.reshape(
-                depth_frame.get_height(), depth_frame.get_width()
-            )
+            depth_data = depth_data.reshape(depth_frame.get_height(), depth_frame.get_width())
             # Normalize 16-bit depth to 8-bit for visualization
-            depth_image = cv2.normalize(
-                depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-            )
+            depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             depth_image = cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
 
             # --- Process Filtered Frame for Display ---
             processed_data = np.frombuffer(processed_frame.get_data(), dtype=np.uint16)
-            processed_data = processed_data.reshape(
-                processed_frame.get_height(), processed_frame.get_width()
-            )
-            processed_image = cv2.normalize(
-                processed_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-            )
+            processed_data = processed_data.reshape(processed_frame.get_height(), processed_frame.get_width())
+            processed_image = cv2.normalize(processed_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             processed_image = cv2.applyColorMap(processed_image, cv2.COLORMAP_JET)
 
             # --- Render Side-by-Side View ---

@@ -19,7 +19,6 @@
 #    python examples/beginner/05_point_cloud.py
 # ******************************************************************************
 import argparse
-
 import os
 
 import numpy as np

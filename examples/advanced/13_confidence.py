@@ -99,18 +99,12 @@ def main():
 
             try:
                 # Convert raw frame data into a NumPy buffer (unsigned 8-bit integers)
-                confidence_data = np.frombuffer(
-                    confidence_frame.get_data(), dtype=np.uint8
-                )
+                confidence_data = np.frombuffer(confidence_frame.get_data(), dtype=np.uint8)
                 # Reshape the 1D buffer into a 2D image based on frame dimensions
-                confidence_data = confidence_data.reshape(
-                    confidence_frame.get_height(), confidence_frame.get_width()
-                )
+                confidence_data = confidence_data.reshape(confidence_frame.get_height(), confidence_frame.get_width())
 
                 # Normalize the data values to the 0-255 range for visualization
-                confidence_image = cv2.normalize(
-                    confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-                )
+                confidence_image = cv2.normalize(confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
                 # Convert the grayscale normalized image to RGB for display purposes
                 confidence_image = cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
             except ValueError:

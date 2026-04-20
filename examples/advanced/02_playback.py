@@ -102,9 +102,7 @@ def setup_camera(playback_device):
 
     # Set frame aggregate output mode if available - reduces latency
     try:
-        config.set_frame_aggregate_output_mode(
-            ob.OBFrameAggregateOutputMode.OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION
-        )
+        config.set_frame_aggregate_output_mode(ob.OBFrameAggregateOutputMode.OB_FRAME_AGGREGATE_OUTPUT_ANY_SITUATION)
     except AttributeError:
         # OBFrameAggregateOutputMode not available in this SDK version
         pass
@@ -126,9 +124,7 @@ def process_depth(frame):
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
         depth_data = depth_data.reshape(frame.get_height(), frame.get_width())
-        depth_image = cv2.normalize(
-            depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
@@ -176,9 +172,7 @@ def process_confidence(frame):
     try:
         confidence_data = np.frombuffer(frame.get_data(), dtype=np.uint8)
         confidence_data = confidence_data.reshape(frame.get_height(), frame.get_width())
-        confidence_image = cv2.normalize(
-            confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        confidence_image = cv2.normalize(confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
     except ValueError:
         return None
@@ -212,9 +206,7 @@ def create_single_imu_panel(imu_frame, title, w=480, h=240):
         text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
         text_x = (w - text_size[0]) // 2
         text_y = start_y + i * line_height + text_size[1]
-        cv2.putText(
-            p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA
-        )
+        cv2.putText(p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA)
     return p
 
 
@@ -393,9 +385,7 @@ def create_display(width=1280, height=720):
                 display = resized
             else:
                 resized = cv2.resize(frame, (cell_w, cell_h))
-                display[y_start : y_start + cell_h, x_start : x_start + cell_w] = (
-                    resized
-                )
+                display[y_start : y_start + cell_h, x_start : x_start + cell_w] = resized
 
     # Render IMU panels
     for i, (key, img) in enumerate(imu_frames.items()):
@@ -467,9 +457,7 @@ def main():
             print("In test mode, set PLAYBACK_FILE env var or pass via stdin")
             return
     else:
-        file_path = input(
-            "Enter output filename (.bag) and press Enter to start playbacking: "
-        )
+        file_path = input("Enter output filename (.bag) and press Enter to start playbacking: ")
 
     try:
         # Initialize playback

@@ -163,9 +163,7 @@ def _process_depth(frame):
     if frame is None:
         return state.cached_frames["depth"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(img, cv2.COLORMAP_JET)
     except ValueError:
@@ -207,9 +205,7 @@ def _process_confidence(frame):
     if frame is None:
         return state.cached_frames["confidence"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     except ValueError:
@@ -359,11 +355,7 @@ def render_frames(test_mode=False, out_dir=None):
 
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
-            blocks = [
-                state.cached_frames[k]
-                for k in KEYS
-                if state.cached_frames.get(k) is not None
-            ]
+            blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in (ord("q"), 27):
@@ -423,9 +415,7 @@ def main():
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 
-    file_path = input(
-        "Enter output filename (.bag) and press Enter to start recording: "
-    )
+    file_path = input("Enter output filename (.bag) and press Enter to start recording: ")
 
     try:
         if args.no_gui:
@@ -471,9 +461,7 @@ def main():
             pipeline = setup_camera(file_path)
             imu_pipeline = setup_imu()
             try:
-                render_frames(
-                    test_mode=args.test, out_dir=out_dir if args.test else None
-                )
+                render_frames(test_mode=args.test, out_dir=out_dir if args.test else None)
             except KeyboardInterrupt:
                 state.stop_rendering = True
             if imu_pipeline:

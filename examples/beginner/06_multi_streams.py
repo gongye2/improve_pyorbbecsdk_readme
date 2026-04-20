@@ -142,9 +142,7 @@ def process_depth(frame):
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
         depth_data = depth_data.reshape(frame.get_height(), frame.get_width())
-        depth_image = cv2.normalize(
-            depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
@@ -192,9 +190,7 @@ def process_confidence(frame):
     try:
         confidence_data = np.frombuffer(frame.get_data(), dtype=np.uint8)
         confidence_data = confidence_data.reshape(frame.get_height(), frame.get_width())
-        confidence_image = cv2.normalize(
-            confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        confidence_image = cv2.normalize(confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
     except ValueError:
         return None
@@ -227,9 +223,7 @@ def create_single_imu_panel(imu_frame, title, w=480, h=240):
         text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
         text_x = (w - text_size[0]) // 2
         text_y = start_y + i * line_height + text_size[1]
-        cv2.putText(
-            p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA
-        )
+        cv2.putText(p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA)
     return p
 
 
