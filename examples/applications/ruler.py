@@ -190,7 +190,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "ruler_test"
+        out_dir = "test_outputs/ruler"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")
@@ -284,7 +284,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:

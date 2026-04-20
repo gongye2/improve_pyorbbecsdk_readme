@@ -15,6 +15,7 @@
 import argparse
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import sys
@@ -94,10 +95,8 @@ def main(argv):
     args = parser.parse_args(argv)
 
     if args.test:
-        out_dir = "hdr_test"
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = "test_outputs/hdr"
         frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
 
     # Check if device is connected
     ctx = Context()
@@ -174,11 +173,18 @@ def main(argv):
         cv2.namedWindow("HDR Merge Viewer", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("HDR Merge Viewer", 1280, 960)  # Adjusted for 2x2 layout
 
+    if args.test:
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+        loop_start = time.monotonic()
+
     while True:
         try:
             frames = pipeline.wait_for_frames(1000)
             if not frames:
-                print("No frames received")
+                if args.test and time.monotonic() - loop_start > 15:
+                    print("Timeout: no frames received after 15 seconds")
+                    return
                 continue
 
             # Get all frames
@@ -231,14 +237,14 @@ def main(argv):
             bottom_row = np.hstack((depth_image, merged_depth_image))
             display_image = np.vstack((top_row, bottom_row))
 
-            cv2.imshow("HDR Merge Viewer", display_image)
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display_image)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:
+                cv2.imshow("HDR Merge Viewer", display_image)
                 key = cv2.waitKey(1)
                 if key == ord("q") or key == ESC_KEY:
                     break

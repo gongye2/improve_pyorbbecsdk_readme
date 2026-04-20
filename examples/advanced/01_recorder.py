@@ -374,7 +374,7 @@ def render_frames(test_mode=False, out_dir=None):
         if test_mode:
             cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
             frame_count += 1
-            if frame_count >= 30:
+            if frame_count >= 3:
                 print(f"Saved {frame_count} frames, exiting test mode.")
                 state.stop_rendering = True
         else:
@@ -419,7 +419,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "recorder_test"
+        out_dir = "test_outputs/recorder"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 

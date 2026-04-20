@@ -28,6 +28,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -79,10 +80,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "custom_filter_chain_test"
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = "test_outputs/custom_filter_chain"
         frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
 
     # Check if device is connected
     ctx = Context()
@@ -124,10 +123,18 @@ def main():
     print("  +/- = adjust max depth")
     print("  q/ESC = quit\n")
 
+    if args.test:
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+        loop_start = time.monotonic()
+
     try:
         while True:
             frame_set = pipeline.wait_for_frames(1000)
             if frame_set is None:
+                if args.test and time.monotonic() - loop_start > 15:
+                    print("Timeout: no frames received after 15 seconds")
+                    return
                 continue
 
             raw_frame = frame_set.get_depth_frame()
@@ -158,9 +165,13 @@ def main():
                 filtered = out
 
             # ---- Build display panels ----
+            if not hasattr(filtered, 'get_data'):
+                print(f"[WARN] filter chain returned invalid type: {type(filtered)}")
+                continue
+
+            filtered_depth = filtered.as_depth_frame()
             raw_vis = depth_to_colormap(raw_frame, MIN_DEPTH_MM, MAX_DEPTH_MM)
-            filtered = filtered.as_depth_frame()
-            flt_vis = depth_to_colormap(filtered, MIN_DEPTH_MM, MAX_DEPTH_MM)
+            flt_vis = depth_to_colormap(filtered_depth, MIN_DEPTH_MM, MAX_DEPTH_MM)
 
             # Active filter labels
             active = []
@@ -173,20 +184,20 @@ def main():
             active.append(f"Threshold(<{MAX_DEPTH_MM}mm)")
             filter_str = "+".join(active) if active else "None"
 
-            add_label(raw_vis.copy(), "RAW DEPTH")
-            add_label(flt_vis, f"FILTERED: {filter_str}")
+            raw_vis = add_label(raw_vis, "RAW DEPTH")
+            flt_vis = add_label(flt_vis, f"FILTERED: {filter_str}")
 
             display = np.hstack([raw_vis, flt_vis])
+            display = np.ascontiguousarray(display)
+
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:
                 cv2.imshow("Filter Chain  |  T/S/H/+/- keys", display)
-
-            if not args.test:
                 key = cv2.waitKey(1) & 0xFF
                 if key in (ord("q"), ESC_KEY):
                     break
@@ -206,6 +217,10 @@ def main():
                     MAX_DEPTH_MM = max(MAX_DEPTH_MM - 500, MIN_DEPTH_MM + 500)
                     print(f"Max depth: {MAX_DEPTH_MM}mm")
 
+    except KeyboardInterrupt:
+        print("\nInterrupted by user.")
+    except OBError as e:
+        print(f"SDK Error: {e}")
     finally:
         pipeline.stop()
         cv2.destroyAllWindows()

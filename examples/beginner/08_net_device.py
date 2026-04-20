@@ -110,7 +110,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "net_device_test"
+        out_dir = "test_outputs/net_device"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")
@@ -198,7 +198,7 @@ def main():
                     bgr_frame = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
                     cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", bgr_frame)
                     frame_count += 1
-                    if frame_count >= 30:
+                    if frame_count >= 3:
                         print(f"Saved {frame_count} frames, exiting test mode.")
                         running = False
                 else:

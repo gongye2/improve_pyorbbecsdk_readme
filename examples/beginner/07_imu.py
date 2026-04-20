@@ -13,6 +13,8 @@
 #  Run:
 #    python examples/beginner/07_imu.py
 # ******************************************************************************
+import argparse
+
 import cv2
 
 from pyorbbecsdk import OBError  # type: ignore
@@ -45,6 +47,14 @@ def print_imu_value(value, frame_index, timestamp_us, temperature, frame_type, u
 
 
 def main():
+    parser = argparse.ArgumentParser(description="IMU Data Stream")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: print a few IMU frames and exit",
+    )
+    args = parser.parse_args()
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -76,47 +86,83 @@ def main():
     accel_count = 0
     gyro_count = 0
 
-    print("IMU stream started. Press 'q' or ESC to exit.")
-    print()
-
-    while True:
-        try:
-            key = cv2.waitKey(1)
-            if key == ord("q") or key == ESC_KEY:
-                break
-
+    if args.test:
+        print("IMU stream started (test mode).")
+        print()
+        while True:
             frames = pipeline.wait_for_frames(100)
             if frames is None:
                 continue
 
             accel_frame = frames.get_accel_frame()
             if accel_frame is not None:
-                if accel_count % 50 == 0:  # Print every 50 frames
-                    print_imu_value(
-                        accel_frame.get_value(),
-                        accel_frame.get_index(),
-                        accel_frame.get_timestamp_us(),
-                        accel_frame.get_temperature(),
-                        accel_frame.get_type(),
-                        "m/s^2",
-                    )
+                print_imu_value(
+                    accel_frame.get_value(),
+                    accel_frame.get_index(),
+                    accel_frame.get_timestamp_us(),
+                    accel_frame.get_temperature(),
+                    accel_frame.get_type(),
+                    "m/s^2",
+                )
                 accel_count += 1
 
             gyro_frame = frames.get_gyro_frame()
             if gyro_frame is not None:
-                if gyro_count % 50 == 0:  # Print every 50 frames
-                    print_imu_value(
-                        gyro_frame.get_value(),
-                        gyro_frame.get_index(),
-                        gyro_frame.get_timestamp_us(),
-                        gyro_frame.get_temperature(),
-                        gyro_frame.get_type(),
-                        "rad/s",
-                    )
+                print_imu_value(
+                    gyro_frame.get_value(),
+                    gyro_frame.get_index(),
+                    gyro_frame.get_timestamp_us(),
+                    gyro_frame.get_temperature(),
+                    gyro_frame.get_type(),
+                    "rad/s",
+                )
                 gyro_count += 1
 
-        except KeyboardInterrupt:
-            break
+            if accel_count >= 5 and gyro_count >= 5:
+                print(f"IMU test passed: {accel_count} accel + {gyro_count} gyro frames")
+                break
+    else:
+        print("IMU stream started. Press 'q' or ESC to exit.")
+        print()
+
+        while True:
+            try:
+                key = cv2.waitKey(1)
+                if key == ord("q") or key == ESC_KEY:
+                    break
+
+                frames = pipeline.wait_for_frames(100)
+                if frames is None:
+                    continue
+
+                accel_frame = frames.get_accel_frame()
+                if accel_frame is not None:
+                    if accel_count % 50 == 0:  # Print every 50 frames
+                        print_imu_value(
+                            accel_frame.get_value(),
+                            accel_frame.get_index(),
+                            accel_frame.get_timestamp_us(),
+                            accel_frame.get_temperature(),
+                            accel_frame.get_type(),
+                            "m/s^2",
+                        )
+                    accel_count += 1
+
+                gyro_frame = frames.get_gyro_frame()
+                if gyro_frame is not None:
+                    if gyro_count % 50 == 0:  # Print every 50 frames
+                        print_imu_value(
+                            gyro_frame.get_value(),
+                            gyro_frame.get_index(),
+                            gyro_frame.get_timestamp_us(),
+                            gyro_frame.get_temperature(),
+                            gyro_frame.get_type(),
+                            "rad/s",
+                        )
+                    gyro_count += 1
+
+            except KeyboardInterrupt:
+                break
 
     pipeline.stop()
 

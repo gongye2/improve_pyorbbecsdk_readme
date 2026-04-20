@@ -19,6 +19,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import sys
 import threading
+import time
 
 import cv2
 import numpy as np
@@ -273,10 +274,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "laser_interleave_test"
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = "test_outputs/laser_interleave"
         frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
 
     # Check if device is connected
     ctx = Context()
@@ -300,14 +299,23 @@ def main():
     postLeftInfraredFilter.select_sequence_id(-1)
     postRightInfraredFilter.select_sequence_id(-1)
 
-    # Start command input thread
-    input_thread = threading.Thread(target=input_command_handler)
-    input_thread.daemon = True
-    input_thread.start()
+    # Start command input thread (skip in test mode to avoid stdin lock issue)
+    if not args.test:
+        input_thread = threading.Thread(target=input_command_handler)
+        input_thread.daemon = True
+        input_thread.start()
+
+    if args.test:
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving frames to '{out_dir}/'")
+        loop_start = time.monotonic()
 
     while running:
         frames = pipeline.wait_for_frames(1000)
         if frames is None:
+            if args.test and time.monotonic() - loop_start > 15:
+                print("Timeout: no frames received after 15 seconds")
+                return
             continue
 
         depth = process_depth(frames.get_depth_frame())
@@ -330,7 +338,7 @@ def main():
         if args.test:
             cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
             frame_count += 1
-            if frame_count >= 30:
+            if frame_count >= 3:
                 print(f"Saved {frame_count} frames, exiting test mode.")
                 break
         else:

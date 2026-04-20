@@ -15,6 +15,7 @@ PLATFORM_ALIASES = {
     "win32": "windows_x64",
     "cygwin": "windows_x64",
     "linux": "linux_x86_64",
+    "darwin": "macos_arm64",
 }
 
 
@@ -150,7 +151,7 @@ def infer_platforms(case_id: str, readme_text: str) -> List[str]:
     lowered = readme_text.lower()
     if "linux / gmsl" in lowered or "gmsl" in case_id:
         return ["linux_x86_64", "linux_arm64"]
-    return ["windows_x64", "linux_x86_64", "linux_arm64"]
+    return ["windows_x64", "linux_x86_64", "linux_arm64", "macos_arm64"]
 
 
 def infer_case_behavior(case_id: str, requires: Sequence[str], readme_text: str) -> Dict[str, Any]:

@@ -209,10 +209,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "post_processing_test"
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = "test_outputs/post_processing"
         frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
 
     try:
         # Check if device is connected
@@ -238,10 +236,11 @@ def main():
         config.enable_stream(OBStreamType.DEPTH_STREAM)
         pipeline.start(config)
 
-        # Start the background control thread for terminal input
-        control_thread = Thread(target=filter_control, args=(filters,))
-        control_thread.daemon = True
-        control_thread.start()
+        # Start the background control thread for terminal input (skip in test mode)
+        if not args.test:
+            control_thread = Thread(target=filter_control, args=(filters,))
+            control_thread.daemon = True
+            control_thread.start()
 
         print("Press 'ESC' on the window to exit.")
 
@@ -249,10 +248,18 @@ def main():
         cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         window_initialized = False
 
+        if args.test:
+            os.makedirs(out_dir, exist_ok=True)
+            print(f"Test mode: saving frames to '{out_dir}/'")
+            loop_start = time.monotonic()
+
         while not quit_program:
             # Wait for frameset from the pipeline
             frames = pipeline.wait_for_frames(1000)
             if frames is None:
+                if args.test and time.monotonic() - loop_start > 15:
+                    print("Timeout: no frames received after 15 seconds")
+                    return
                 continue
             depth_frame = frames.get_depth_frame()
             if depth_frame is None:
@@ -304,7 +311,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", combined_view)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     quit_program = True
                     break
