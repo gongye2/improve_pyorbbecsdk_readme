@@ -58,8 +58,8 @@ def main():
         # Verify if the connected device supports a confidence sensor
         device.get_sensor(OBSensorType.CONFIDENCE_SENSOR)
     except:
-        print("This sample requires a device with a confidence sensor.")
-        return
+        print("This sample requires a device with a confidence sensor. SKIPPED.")
+        sys.exit(77)
 
     # Enable the Depth stream first as it is often tied to confidence data
     config.enable_video_stream(OBStreamType.DEPTH_STREAM)

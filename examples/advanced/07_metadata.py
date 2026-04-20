@@ -11,6 +11,7 @@
 #  Run:
 #    python examples/advanced/07_metadata.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -22,6 +23,17 @@ ESC_KEY = 27
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Per-Frame Metadata")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: collect a few frames of metadata and exit",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        print("Test mode: collecting metadata for 5 frames then exiting")
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -34,13 +46,14 @@ def main():
     # Start Pipeline
     try:
         pipeline.start()
-        print("Pipeline started. Press Ctrl+C to exit.")
+        print("Pipeline started.")
     except OBError as e:
         print(f"Error: {e}")
         print("Please connect an Orbbec camera and try again.")
         return
 
-    frame_counter = 0  # Add frame counter
+    frame_counter = 0
+    metadata_frames = 0
 
     while True:
         try:
@@ -49,26 +62,28 @@ def main():
             if frame_set is None:
                 continue
 
-            frame_counter += 1  # Increment counter
+            frame_counter += 1
 
-            # Only print metadata every 30 frames
-            if frame_counter % 30 == 0:
-                for i in range(len(frame_set)):
-                    frame = frame_set[i]
+            for i in range(len(frame_set)):
+                frame = frame_set[i]
+                print(f"Frame #{frame_counter}, type: {frame.get_type()}")
+                metadata_types = [
+                    getattr(OBFrameMetadataType, attr)
+                    for attr in dir(OBFrameMetadataType)
+                    if not attr.startswith("__")
+                    and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
+                ]
 
-                    # Print frame metadata
-                    print(f"Frame type: {frame.get_type()}")
-                    metadata_types = [
-                        getattr(OBFrameMetadataType, attr)
-                        for attr in dir(OBFrameMetadataType)
-                        if not attr.startswith("__")
-                        and isinstance(getattr(OBFrameMetadataType, attr), OBFrameMetadataType)
-                    ]
+                for metadata_type in metadata_types:
+                    if frame.has_metadata(metadata_type):
+                        metadata_value = frame.get_metadata_value(metadata_type)
+                        print(f"  Metadata type: {metadata_type.name}, value: {metadata_value}")
 
-                    for metadata_type in metadata_types:
-                        if frame.has_metadata(metadata_type):
-                            metadata_value = frame.get_metadata_value(metadata_type)
-                            print(f"  Metadata type: {metadata_type.name}, value: {metadata_value}")
+            metadata_frames += 1
+
+            if args.test and metadata_frames >= 5:
+                print(f"Collected metadata for {metadata_frames} frames, exiting test mode.")
+                break
 
         except KeyboardInterrupt:
             break

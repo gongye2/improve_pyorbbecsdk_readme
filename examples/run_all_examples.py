@@ -87,7 +87,7 @@ TESTS = [
     ("adv04 enumerate", "examples/advanced/04_enumerate.py", [], b"q\n", None),
     ("adv05 hot_plug (--test)", "examples/advanced/05_hot_plug.py", ["--test"], None, None),
     ("adv06 control", "examples/advanced/06_control.py", [], None, None),
-    ("adv07 metadata", "examples/advanced/07_metadata.py", [], None, None),
+    ("adv07 metadata (--test)", "examples/advanced/07_metadata.py", ["--test"], None, None),
     (
         "adv08 custom_filter_chain (--test)",
         "examples/advanced/08_custom_filter_chain.py",
@@ -136,7 +136,7 @@ RESET = "\033[0m"
 LOG_DIR = "test_logs"
 
 
-INTER_TEST_DELAY = 1  # seconds between tests for device recovery on macOS
+INTER_TEST_DELAY = 3  # seconds between tests for device recovery
 
 
 def run_one(label, script, extra_args, stdin_input, env_override=None):
@@ -170,7 +170,12 @@ def run_one(label, script, extra_args, stdin_input, env_override=None):
 
         elapsed = time.time() - t0
         retcode = proc.returncode
-        return ("PASS" if retcode == 0 else "FAIL"), elapsed, stdout, stderr
+        if retcode == 0:
+            return "PASS", elapsed, stdout, stderr
+        elif retcode == 77:
+            return "SKIP", elapsed, stdout, stderr
+        else:
+            return "FAIL", elapsed, stdout, stderr
 
     except Exception as e:
         return "ERROR", time.time() - t0, b"", str(e).encode()
@@ -209,6 +214,8 @@ def main():
 
         if status in ("PASS", "TIMEOUT"):
             color = GREEN
+        elif status == "SKIP":
+            color = YELLOW
         else:
             color = RED
 
@@ -229,6 +236,7 @@ def main():
     passed = sum(1 for _, s, *_ in results if s in ("PASS", "TIMEOUT"))
     failed = sum(1 for _, s, *_ in results if s == "FAIL")
     errors = sum(1 for _, s, *_ in results if s == "ERROR")
+    skipped = sum(1 for _, s, *_ in results if s == "SKIP")
     total = len(results)
 
     print(f"\n{'='*72}")
@@ -237,6 +245,8 @@ def main():
         print(f"  |  {RED}{failed} FAILED{RESET}", end="")
     if errors:
         print(f"  |  {RED}{errors} ERRORS{RESET}", end="")
+    if skipped:
+        print(f"  |  {YELLOW}{skipped} SKIPPED{RESET}", end="")
     print(f"\n{'='*72}\n")
 
     # Cleanup test bag files

@@ -72,10 +72,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/hot_plug"
-        os.makedirs(out_dir, exist_ok=True)
-        log_path = os.path.join(out_dir, "hot_plug.log")
-        print(f"Test mode: saving log to '{log_path}'")
+        print("Test mode: output captured by runner")
 
     print("Create Context")
     ctx = Context()
@@ -88,31 +85,10 @@ def main():
     print_device_list("connected", current_list)
 
     if args.test:
-        # Save the initial device list and exit after a short wait
+        # Query the initial device list and exit after a short wait.
+        # Output is captured by the runner's log file.
         print(f"Hot-plug detection initialized, monitoring for 5 seconds...")
         time.sleep(5)
-        # Save log file with the output
-        with open(log_path, "w") as f:
-            f.write("=== Hot-Plug Detection Test Log ===\n")
-            f.write(f"Connected devices: {current_list.get_count()}\n")
-            for i in range(current_list.get_count()):
-                try:
-                    uid = current_list.get_device_uid_by_index(i)
-                    vid = current_list.get_device_vid_by_index(i)
-                    pid = current_list.get_device_pid_by_index(i)
-                    sn = current_list.get_device_serial_number_by_index(i)
-                    conn = current_list.get_device_connection_type_by_index(i)
-                    f.write(
-                        f" - uid: {uid}, "
-                        f"vid: 0x{vid:04x}, "
-                        f"pid: 0x{pid:04x}, "
-                        f"serial number: {sn}, "
-                        f"connection: {conn}\n"
-                    )
-                except Exception as e:
-                    f.write(f" - failed to read device info: {e}\n")
-            f.write(f"\nLog saved after 5s monitoring.\n")
-        print(f"Saved log to {log_path}")
         return
 
     print("Press Ctrl+C to exit.")
