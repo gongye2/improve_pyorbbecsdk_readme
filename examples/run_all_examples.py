@@ -134,7 +134,7 @@ TESTS = [
         None,
         None,
     ),
-    ("adv16 coordinate_transform", "examples/advanced/16_coordinate_transform.py", [], None, None),
+    ("adv16 coordinate_transform (--test)", "examples/advanced/16_coordinate_transform.py", ["--test"], None, None),
     ("adv17 laser_interleave (--test)", "examples/advanced/17_laser_interleave.py", ["--test"], None, None),
     ("adv18 forceip (SKIPPED)", "examples/advanced/18_forceip.py", ["--test"], None, None),
     ("adv19 depth_presets_update (SKIPPED)", "examples/advanced/19_device_optional_depth_presets_update.py", ["--test"], None, None),
