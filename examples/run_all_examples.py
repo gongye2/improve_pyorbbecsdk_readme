@@ -478,8 +478,13 @@ def main():
     parser.add_argument("--lidar", action="store_true", help="Include LiDAR examples in the test run")
     args = parser.parse_args()
 
-    # Prepare report directory
+    # Prepare report directory — clean previous run artifacts
     report_dir = os.path.join(REPO, REPORT_DIR)
+    outputs_dir = os.path.join(report_dir, "outputs")
+    logs_dir = os.path.join(report_dir, "logs")
+    for d in [outputs_dir, logs_dir]:
+        if os.path.isdir(d):
+            shutil.rmtree(d)
     os.makedirs(report_dir, exist_ok=True)
 
     results = []
