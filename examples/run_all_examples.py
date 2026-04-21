@@ -36,6 +36,7 @@ TIMEOUT_SEC = 30  # seconds per example before we send SIGTERM
 BAG_FILE = "test_recording.bag"  # shared bag file for GUI recorder
 NOGUI_BAG_FILE = "test_recording_nogui.bag"  # bag file for no-gui recorder
 LIDAR_BAG_FILE = "test_lidar_recording.bag"  # bag file for lidar record/playback
+FIRMWARE_FILE = "test/resource/firmware/Gemini330_Release_1.6.00.bin"  # firmware for update test
 
 # Directories for outputs
 REPORT_DIR = "reports/examples-smoke"
@@ -73,7 +74,6 @@ TESTS = [
     ("07 imu (--test)", "examples/beginner/07_imu.py", ["--test"], None, None),
     ("10 logger (--test)", "examples/beginner/10_logger.py", ["--test"], None, None),
     ("08 net_device (SKIPPED)", "examples/beginner/08_net_device.py", ["--test"], None, None),
-    ("09 device_firmware_update (SKIPPED)", "examples/beginner/09_device_firmware_update.py", ["--test"], None, None),
     # ---- Advanced ----
     (
         "adv01 recorder (--test)",
@@ -146,6 +146,14 @@ TESTS = [
     ),
     # ---- Applications ----
     ("app ruler (--test)", "examples/applications/ruler.py", ["--test"], None, None),
+    # ---- Firmware update (runs last — destructive) ----
+    (
+        "firmware_update (--test)",
+        "examples/beginner/09_device_firmware_update.py",
+        ["--test"],
+        None,
+        {"FIRMWARE_FILE": FIRMWARE_FILE},
+    ),
 ]
 
 HARDCODED_SKIP = [

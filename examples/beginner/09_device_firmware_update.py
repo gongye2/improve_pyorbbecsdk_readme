@@ -115,11 +115,31 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--test", action="store_true", help="Test mode: mark as skipped and exit")
+    parser.add_argument(
+        "--test", action="store_true", help="Test mode: perform firmware update with provided firmware path"
+    )
     args = parser.parse_args()
     if args.test:
-        print("Test mode: device_firmware_update is destructive, skipping.")
-        sys.exit(77)
+        firmware_path = os.environ.get("FIRMWARE_FILE", "")
+        if not firmware_path or not os.path.isfile(firmware_path):
+            print(f"Test mode: firmware file not found at FIRMWARE_FILE={firmware_path}")
+            sys.exit(1)
+        print(f"Test mode: updating firmware from {firmware_path}")
+        context = Context()
+        device_list = context.query_devices()
+        if device_list.get_count() == 0:
+            print("Test mode: no device found")
+            sys.exit(1)
+        device = device_list[0]
+        info = device.get_device_info()
+        print(f"Current firmware version: {info.get_firmware_version()}")
+        try:
+            device.update_firmware(firmware_path, firmware_update_callback, async_update=False)
+            print("Test mode: firmware update completed successfully!")
+        except Exception as e:
+            print(f"Test mode: firmware update failed: {e}")
+            sys.exit(1)
+        return
     try:
         context = Context()
         device_list = context.query_devices()
