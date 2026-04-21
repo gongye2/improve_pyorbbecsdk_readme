@@ -4,7 +4,7 @@ Automated smoke-tester for all pyorbbecsdk examples.
 Each example is launched in a subprocess with:
   - A wall-clock timeout (TIMEOUT_SEC seconds)
   - stdin piped (for interactive input()) or /dev/null (for --test)
-  - stdout/stderr captured and saved to test_logs/<label>.log
+  - stdout/stderr captured and saved to reports/examples-smoke/logs/<label>.log
 
 Exit codes interpreted:
   0        -> PASS
@@ -12,12 +12,15 @@ Exit codes interpreted:
   timeout  -> PASS (example ran, just hit the time limit — normal for GUI loops)
   non-zero -> FAIL (import error, AttributeError, etc.)
 
-After all tests, an HTML report is generated in reports/examples-smoke/
-containing pass/fail table, log links, and saved image thumbnails.
+After all tests, a self-contained HTML report is generated in reports/examples-smoke/
+with all logs, images, and point cloud files stored alongside the report using relative
+paths — the entire folder can be zipped and opened on any machine.
 
 Run from repo root:
     python examples/run_all_examples.py
 """
+
+import shutil
 
 import datetime as dt
 import html
@@ -32,7 +35,6 @@ TIMEOUT_SEC = 30  # seconds per example before we send SIGTERM
 BAG_FILE = "test_recording.bag"  # shared bag file between recorder and playback
 
 # Directories for outputs
-LOG_DIR = "test_logs"
 REPORT_DIR = "reports/examples-smoke"
 
 # ---------------------------------------------------------------------------
@@ -194,26 +196,26 @@ def run_one(label, script, extra_args, stdin_input, env_override=None):
         return "ERROR", time.time() - t0, b"", str(e).encode()
 
 
-def save_log(label, stdout, stderr):
-    """Save test console output to test_logs/<label>.log."""
-    os.makedirs(os.path.join(REPO, LOG_DIR), exist_ok=True)
+def save_log(label, stdout, stderr, report_dir):
+    """Save test console output to <report_dir>/logs/<label>.log. Returns relative path."""
+    log_dir = os.path.join(report_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
     label_id = safe_label(label)
-    log_path = os.path.join(REPO, LOG_DIR, f"{label_id}.log")
+    log_path = os.path.join(log_dir, f"{label_id}.log")
     with open(log_path, "w") as f:
         f.write(f"=== {label} ===\n")
         f.write("stdout:\n")
         f.write(stdout.decode(errors="replace"))
         f.write("\nstderr:\n")
         f.write(stderr.decode(errors="replace"))
-    return log_path
+    return f"logs/{label_id}.log"
 
 
-def collect_artifacts(label, script) -> list[dict]:
-    """Collect images (PNG) and point cloud files (PLY) saved by --test examples."""
+def copy_artifacts(label, script, report_dir) -> list[dict]:
+    """Copy images (PNG) and point cloud files (PLY) from test_outputs/ into report_dir/outputs/<label>/."""
     base = os.path.basename(script)
     name_no_ext = os.path.splitext(base)[0]
 
-    # Map script base name to its test_outputs subdirectory
     dir_map = {
         "02_depth_visualization": "depth_visualization",
         "03_color_and_depth_aligned": "color_depth_aligned",
@@ -236,47 +238,24 @@ def collect_artifacts(label, script) -> list[dict]:
     if not out_dir_name:
         return []
 
-    out_dir = os.path.join(REPO, "test_outputs", out_dir_name)
-    if not os.path.isdir(out_dir):
+    src_dir = os.path.join(REPO, "test_outputs", out_dir_name)
+    if not os.path.isdir(src_dir):
         return []
 
+    label_id = safe_label(label)
+    dst_dir = os.path.join(report_dir, "outputs", label_id)
+    os.makedirs(dst_dir, exist_ok=True)
+
     artifacts = []
-    for f in sorted(os.listdir(out_dir)):
+    for f in sorted(os.listdir(src_dir)):
         lower = f.lower()
         if lower.endswith(".png"):
-            artifacts.append({"path": os.path.join(out_dir, f), "type": "image"})
+            shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
+            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "image"})
         elif lower.endswith(".ply"):
-            artifacts.append({"path": os.path.join(out_dir, f), "type": "pointcloud"})
+            shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
+            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "pointcloud"})
     return artifacts
-
-
-def copy_artifacts_to_unified_dir(results, unified_dir):
-    """Copy all test artifacts (logs, images, PLY) into a single directory for packaging."""
-    os.makedirs(unified_dir, exist_ok=True)
-
-    # Copy logs
-    log_dir = os.path.join(unified_dir, "logs")
-    os.makedirs(log_dir, exist_ok=True)
-    for r in results:
-        if r.get("log_path") and os.path.exists(r["log_path"]):
-            dest = os.path.join(log_dir, os.path.basename(r["log_path"]))
-            _copy_file(r["log_path"], dest)
-
-    # Copy images and point clouds per test
-    for r in results:
-        label_id = safe_label(r["label"])
-        test_dir = os.path.join(unified_dir, "outputs", label_id)
-        for artifact in r.get("artifacts", []):
-            os.makedirs(test_dir, exist_ok=True)
-            dest = os.path.join(test_dir, os.path.basename(artifact["path"]))
-            _copy_file(artifact["path"], dest)
-
-
-def _copy_file(src, dst):
-    """Simple file copy using shutil."""
-    import shutil
-
-    shutil.copy2(src, dst)
 
 
 def _category_from_script(script: str) -> str:
@@ -350,24 +329,22 @@ def render_html_report(results, output_dir):
             # Log link
             log_html = "-"
             if log_path:
-                rel_log = os.path.relpath(log_path, output_dir).replace("\\", "/")
-                log_html = f'<a href="{html.escape(rel_log)}">log</a>'
+                log_html = f'<a href="{html.escape(log_path)}">log</a>'
 
             # Artifacts
             artifacts_html = ""
             if artifacts:
                 parts = []
                 for art in artifacts:
-                    rel_path = os.path.relpath(art["path"], output_dir).replace("\\", "/")
                     if art["type"] == "image":
                         parts.append(
-                            f'<a href="{html.escape(rel_path)}">'
-                            f'<img src="{html.escape(rel_path)}" alt="{html.escape(os.path.basename(art["path"]))}">'
+                            f'<a href="{html.escape(art["path"])}">'
+                            f'<img src="{html.escape(art["path"])}" alt="{html.escape(os.path.basename(art["path"]))}">'
                             f"</a>"
                         )
                     elif art["type"] == "pointcloud":
                         parts.append(
-                            f'<a href="{html.escape(rel_path)}" class="ply-link">'
+                            f'<a href="{html.escape(art["path"])}" class="ply-link">'
                             f'{html.escape(os.path.basename(art["path"]))}'
                             f"</a>"
                         )
@@ -448,11 +425,15 @@ def render_html_report(results, output_dir):
 
 
 def main():
+    # Prepare report directory
+    report_dir = os.path.join(REPO, REPORT_DIR)
+    os.makedirs(report_dir, exist_ok=True)
+
     results = []
     print(f"\n{'='*72}")
     print(f"  pyorbbecsdk Example Smoke Tests")
     print(f"  Timeout per example: {TIMEOUT_SEC}s")
-    print(f"  Logs: {LOG_DIR}/")
+    print(f"  Report: {REPORT_DIR}/")
     print(f"{'='*72}\n")
 
     for label, script, extra_args, stdin_input, env_override in TESTS:
@@ -461,11 +442,11 @@ def main():
         print(f"  Running  {label:<45}", end="", flush=True)
         status, elapsed, stdout, stderr = run_one(label, script, extra_args, stdin_input, env_override)
 
-        # Save log for every test
-        log_path = save_log(label, stdout, stderr)
+        # Save log directly into report_dir/logs/
+        log_path = save_log(label, stdout, stderr, report_dir)
 
-        # Collect test artifacts (images, PLY files) from test_outputs/
-        artifacts = collect_artifacts(label, script)
+        # Copy test artifacts into report_dir/outputs/
+        artifacts = copy_artifacts(label, script, report_dir)
 
         message = ""
         if status == "FAIL":
@@ -507,14 +488,8 @@ def main():
         )
 
     # Generate HTML report
-    report_dir = os.path.join(REPO, REPORT_DIR)
     report_path = render_html_report(results, report_dir)
-    print(f"\n  Report: {os.path.relpath(report_path, REPO)}")
-
-    # Copy all artifacts to a unified directory for packaging/upload
-    unified_dir = os.path.join(REPO, REPORT_DIR, "artifacts")
-    copy_artifacts_to_unified_dir(results, unified_dir)
-    print(f"  Artifacts: {os.path.relpath(unified_dir, REPO)}/")
+    print(f"\n  Report: {REPORT_DIR}/report.html")
 
     # Summary
     passed = sum(1 for r in results if r["status"] in ("PASS", "TIMEOUT"))
