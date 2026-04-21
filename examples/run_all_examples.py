@@ -83,6 +83,13 @@ TESTS = [
         None,
     ),
     (
+        "adv01 recorder --no-gui (--test)",
+        "examples/advanced/01_recorder.py",
+        ["--test", "--no-gui"],
+        f"{BAG_FILE}\n".encode(),
+        None,
+    ),
+    (
         "adv02 playback (--test)",
         "examples/advanced/02_playback.py",
         ["--test"],
@@ -245,6 +252,11 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
             out_dir_name = "color_depth_aligned_hw"
         else:
             out_dir_name = "color_depth_aligned_sw"
+    elif name_no_ext == "01_recorder":
+        if "NO-GUI" in label.upper() or "NO_GUI" in label.upper():
+            out_dir_name = "recorder_no_gui"
+        else:
+            out_dir_name = "recorder"
     else:
         dir_map = {
             "02_depth_visualization": "depth_visualization",

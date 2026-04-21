@@ -411,7 +411,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/recorder"
+        suffix = "_no_gui" if args.no_gui else ""
+        out_dir = f"test_outputs/recorder{suffix}"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 
