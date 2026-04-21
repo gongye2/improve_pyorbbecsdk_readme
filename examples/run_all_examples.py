@@ -239,32 +239,37 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
     base = os.path.basename(script)
     name_no_ext = os.path.splitext(base)[0]
 
-    dir_map = {
-        "02_depth_visualization": "depth_visualization",
-        "03_color_and_depth_aligned": "color_depth_aligned",
-        "05_point_cloud": "point_cloud",
-        "06_multi_streams": "multi_streams",
-        "01_recorder": "recorder",
-        "02_playback": "playback",
-        "03_save_image_to_disk": "save_image_to_disk",
-        "08_custom_filter_chain": "custom_filter_chain",
-        "09_post_processing": "post_processing",
-        "10_hdr": "hdr",
-        "13_confidence": "confidence",
-        "15_high_performance_pipeline": "high_performance_pipeline",
-        "17_laser_interleave": "laser_interleave",
-        "quick_start": "quick_start",
-        "ruler": "ruler",
-        "lidar_quick_start": "lidar_quick_start",
-        "lidar_record": "lidar_record",
-        "lidar_playback": "lidar_playback",
-        "lidar_stream": "lidar_stream",
-        "lidar_device_control": "lidar_device_control",
-    }
-
-    out_dir_name = dir_map.get(name_no_ext)
-    if not out_dir_name:
-        return []
+    # For scripts with multiple modes, pick the output dir based on the label
+    if name_no_ext == "03_color_and_depth_aligned":
+        if "HW" in label.upper():
+            out_dir_name = "color_depth_aligned_hw"
+        else:
+            out_dir_name = "color_depth_aligned_sw"
+    else:
+        dir_map = {
+            "02_depth_visualization": "depth_visualization",
+            "05_point_cloud": "point_cloud",
+            "06_multi_streams": "multi_streams",
+            "01_recorder": "recorder",
+            "02_playback": "playback",
+            "03_save_image_to_disk": "save_image_to_disk",
+            "08_custom_filter_chain": "custom_filter_chain",
+            "09_post_processing": "post_processing",
+            "10_hdr": "hdr",
+            "13_confidence": "confidence",
+            "15_high_performance_pipeline": "high_performance_pipeline",
+            "17_laser_interleave": "laser_interleave",
+            "quick_start": "quick_start",
+            "ruler": "ruler",
+            "lidar_quick_start": "lidar_quick_start",
+            "lidar_record": "lidar_record",
+            "lidar_playback": "lidar_playback",
+            "lidar_stream": "lidar_stream",
+            "lidar_device_control": "lidar_device_control",
+        }
+        out_dir_name = dir_map.get(name_no_ext)
+        if not out_dir_name:
+            return []
 
     src_dir = os.path.join(REPO, "test_outputs", out_dir_name)
     if not os.path.isdir(src_dir):

@@ -124,7 +124,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/color_depth_aligned"
+        suffix = "_hw" if args.hw else "_sw"
+        out_dir = f"test_outputs/color_depth_aligned{suffix}"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")

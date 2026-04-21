@@ -17,7 +17,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import sys
 import time
 from threading import Thread
 
@@ -236,8 +235,9 @@ def main():
 
         print("Press 'ESC' on the window to exit.")
 
-        # Create window once outside the loop
-        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        # Create window once outside the loop (skip in test mode)
+        if not args.test:
+            cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         window_initialized = False
 
         if args.test:
