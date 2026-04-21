@@ -70,9 +70,23 @@ class GlobalState:
             "left_color": None,
             "right_color": None,
         }
+        self.enabled_frame_keys = set()
 
 
 state = GlobalState()
+
+# Map sensor types to the cached frame keys used in render_frames
+_SENSOR_TO_FRAME_KEY = {
+    OBSensorType.COLOR_SENSOR: "color",
+    OBSensorType.DEPTH_SENSOR: "depth",
+    OBSensorType.IR_SENSOR: "ir",
+    OBSensorType.LEFT_IR_SENSOR: "left_ir",
+    OBSensorType.RIGHT_IR_SENSOR: "right_ir",
+    OBSensorType.CONFIDENCE_SENSOR: "confidence",
+    OBSensorType.LEFT_COLOR_SENSOR: "left_color",
+    OBSensorType.RIGHT_COLOR_SENSOR: "right_color",
+}
+
 
 # --- Headless mode globals ---
 _frame_mutex = Lock()
@@ -129,6 +143,9 @@ def setup_camera(file_path: str):
                 continue
         try:
             config.enable_stream(sensor_type)
+            key = _SENSOR_TO_FRAME_KEY.get(sensor_type)
+            if key:
+                state.enabled_frame_keys.add(key)
         except Exception:
             continue
 
@@ -144,6 +161,7 @@ def setup_imu():
     config = Config()
     config.enable_accel_stream()
     config.enable_gyro_stream()
+    state.enabled_frame_keys.update({"accel", "gyro"})
     pipeline.start(config, _imu_frame_callback)
     return pipeline
 
@@ -332,18 +350,8 @@ def _create_display(blocks, width=1280, height=720):
 
 
 def _build_expected_keys():
-    """Compute the set of frame types we expect based on device sensor capabilities."""
-    expected = {"color", "depth"}
-    if state.support_dual_ir:
-        expected.update({"left_ir", "right_ir"})
-    else:
-        expected.add("ir")
-    expected.add("confidence")
-    if state.support_imu:
-        expected.update({"accel", "gyro"})
-    if state.support_dual_rgb:
-        expected.update({"left_color", "right_color"})
-    return expected
+    """Return the set of frame keys for all successfully enabled streams."""
+    return state.enabled_frame_keys.copy()
 
 
 def render_frames(test_mode=False, out_dir=None):
