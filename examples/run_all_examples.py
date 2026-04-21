@@ -290,18 +290,16 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
         return []
 
     label_id = safe_label(label)
-    dst_dir = os.path.join(report_dir, "outputs", label_id)
-    os.makedirs(dst_dir, exist_ok=True)
-
     artifacts = []
+    dst_dir = None
     for f in sorted(os.listdir(src_dir)):
         lower = f.lower()
-        if lower.endswith(".png"):
+        if lower.endswith((".png", ".ply")):
+            if dst_dir is None:
+                dst_dir = os.path.join(report_dir, "outputs", label_id)
+                os.makedirs(dst_dir, exist_ok=True)
             shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
-            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "image"})
-        elif lower.endswith(".ply"):
-            shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
-            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "pointcloud"})
+            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "image" if lower.endswith(".png") else "pointcloud"})
     return artifacts
 
 
