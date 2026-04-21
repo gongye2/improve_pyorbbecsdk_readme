@@ -354,6 +354,10 @@ def _build_expected_keys():
     return state.enabled_frame_keys.copy()
 
 
+# Video stream keys that must arrive before saving test images
+VIDEO_KEYS = {"color", "depth", "left_ir", "right_ir", "ir", "confidence", "left_color", "right_color"}
+
+
 def render_frames(test_mode=False, out_dir=None):
     WINDOW = "MultiStream Record Viewer"
     W, H = 1280, 720
@@ -365,6 +369,11 @@ def render_frames(test_mode=False, out_dir=None):
     seen_keys = set()
     all_detected = False
     expected_keys = _build_expected_keys()
+
+    if test_mode and not (expected_keys & VIDEO_KEYS):
+        print(f"Error: no video streams enabled. Enabled: {sorted(expected_keys)}")
+        state.stop_rendering = True
+        sys.exit(1)
 
     KEYS = [
         "color",
