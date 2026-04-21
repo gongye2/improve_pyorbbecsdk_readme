@@ -77,6 +77,14 @@ def get_preset_paths():
 
 # Main loop to simulate device selection, preset update, and handling
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true", help="Test mode: mark as skipped and exit")
+    args = parser.parse_args()
+    if args.test:
+        print("Test mode: depth_presets_update requires Gemini 330, skipping.")
+        sys.exit(77)
     # Assuming `devices` is a list of `Device` objects that you've already gathered
     devices = []
     context = Context()

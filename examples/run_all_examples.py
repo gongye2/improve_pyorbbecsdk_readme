@@ -72,7 +72,7 @@ TESTS = [
     ("07 imu (--test)", "examples/beginner/07_imu.py", ["--test"], None, None),
     ("10 logger (--test)", "examples/beginner/10_logger.py", ["--test"], None, None),
     ("08 net_device (SKIPPED)", "examples/beginner/08_net_device.py", ["--test"], None, None),
-    # 09 firmware_update — destructive; skip
+    ("09 device_firmware_update (SKIPPED)", "examples/beginner/09_device_firmware_update.py", ["--test"], None, None),
     # ---- Advanced ----
     (
         "adv01 recorder (--test)",
@@ -128,11 +128,11 @@ TESTS = [
     ),
     ("adv16 coordinate_transform", "examples/advanced/16_coordinate_transform.py", [], None, None),
     ("adv17 laser_interleave (--test)", "examples/advanced/17_laser_interleave.py", ["--test"], None, None),
-    # adv18 forceip — needs network camera; skip
-    # adv19 device_optional_depth_presets_update — needs Gemini 330; skip on 335L
+    ("adv18 forceip (SKIPPED)", "examples/advanced/18_forceip.py", ["--test"], None, None),
+    ("adv19 depth_presets_update (SKIPPED)", "examples/advanced/19_device_optional_depth_presets_update.py", ["--test"], None, None),
     # ---- Applications ----
     ("app ruler (--test)", "examples/applications/ruler.py", ["--test"], None, None),
-    # app object_detection — needs ONNX model file; skip
+    ("app object_detection (SKIPPED)", "examples/applications/object_detection/object_detection.py", ["--test"], None, None),
 ]
 
 # ---------------------------------------------------------------------------
@@ -157,14 +157,6 @@ LIDAR_TESTS = [
     ),
     ("lidar device_control (--test)", "examples/lidar_examples/lidar_device_control.py", ["--test"], None, None),
 ]
-
-SKIP_SET = {
-    "examples/beginner/09_device_firmware_update.py",
-    "examples/advanced/18_forceip.py",
-    "examples/advanced/19_device_optional_depth_presets_update.py",
-    "examples/advanced/16_coordinate_transform.py",  # requires pynput module
-    "examples/applications/object_detection/object_detection.py",
-}
 
 # ---------------------------------------------------------------------------
 
@@ -489,8 +481,6 @@ def main():
     all_tests = TESTS + (LIDAR_TESTS if args.lidar else [])
 
     for label, script, extra_args, stdin_input, env_override in all_tests:
-        if script in SKIP_SET:
-            continue
         print(f"  Running  {label:<45}", end="", flush=True)
         status, elapsed, stdout, stderr = run_one(label, script, extra_args, stdin_input, env_override)
 

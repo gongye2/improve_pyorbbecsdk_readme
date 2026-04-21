@@ -324,10 +324,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/object_detection"
-        os.makedirs(out_dir, exist_ok=True)
-        frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
+        print("Test mode: object_detection requires ONNX model, skipping.")
+        sys.exit(77)
 
     # ---- Validate model & labels ----
     if not os.path.isfile(args.model):

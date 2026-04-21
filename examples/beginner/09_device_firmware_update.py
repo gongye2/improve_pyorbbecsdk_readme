@@ -112,6 +112,14 @@ def firmware_update_callback(state, message, percent):
 
 def main():
     global first_call
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true", help="Test mode: mark as skipped and exit")
+    args = parser.parse_args()
+    if args.test:
+        print("Test mode: device_firmware_update is destructive, skipping.")
+        sys.exit(77)
     try:
         context = Context()
         device_list = context.query_devices()
