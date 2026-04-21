@@ -147,7 +147,7 @@ YELLOW = "\033[93m"
 RESET = "\033[0m"
 
 
-INTER_TEST_DELAY = 3  # seconds between tests for device recovery
+INTER_TEST_DELAY = 5  # seconds between tests for device recovery
 
 
 def safe_label(label: str) -> str:
