@@ -182,7 +182,11 @@ def main():
     if args.test:
         # Test mode: run all 4 transforms programmatically
         try:
-            frames = pipeline.wait_for_frames(5000)
+            frames = None
+            for _ in range(10):
+                frames = pipeline.wait_for_frames(1000)
+                if frames and frames.get_depth_frame() and frames.get_color_frame():
+                    break
             if frames and frames.get_depth_frame() and frames.get_color_frame():
                 for key in ["1", "2", "3", "4"]:
                     transform_func, dimension = transform_functions[key]
