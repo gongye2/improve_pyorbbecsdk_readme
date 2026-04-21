@@ -108,10 +108,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/net_device"
-        os.makedirs(out_dir, exist_ok=True)
-        frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
+        print("Test mode: net_device requires a network camera, skipping.")
+        sys.exit(77)
 
     ctx = Context()
     ip = args.ip

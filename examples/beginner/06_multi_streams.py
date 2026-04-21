@@ -326,6 +326,8 @@ def render_frames(test_mode=False, out_dir=None):
     frame_count = 0
     seen_keys = set()
     all_detected = False
+    # Video stream types that are slower to arrive than IMU
+    VIDEO_KEYS = {"color", "depth", "left_ir", "right_ir", "ir", "confidence", "left_color", "right_color"}
 
     while not state.stop_rendering:
         blocks = []
@@ -357,12 +359,13 @@ def render_frames(test_mode=False, out_dir=None):
 
         display = create_display(blocks, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
-        if test_mode:
-            if not all_detected:
-                # Wait until all detected frame types have appeared at least once
-                if current_keys == seen_keys and len(seen_keys) >= 1:
-                    all_detected = True
-                    print(f"All {len(seen_keys)} stream types detected: {', '.join(sorted(seen_keys))}")
+        if test_mode and not all_detected:
+            # Wait until all detected frame types have appeared at least once,
+            # and at least one video frame has arrived (IMU frames come first)
+            has_video = bool(seen_keys & VIDEO_KEYS)
+            if current_keys == seen_keys and has_video:
+                all_detected = True
+                print(f"All {len(seen_keys)} stream types detected: {', '.join(sorted(seen_keys))}")
         else:
             cv2.imshow(WINDOW_NAME, display)
 

@@ -71,7 +71,7 @@ TESTS = [
     ("06 multi_streams", "examples/beginner/06_multi_streams.py", ["--test"], None, None),
     ("07 imu (--test)", "examples/beginner/07_imu.py", ["--test"], None, None),
     ("10 logger (--test)", "examples/beginner/10_logger.py", ["--test"], None, None),
-    # 08 net_device — needs network camera; skip
+    ("08 net_device (SKIPPED)", "examples/beginner/08_net_device.py", ["--test"], None, None),
     # 09 firmware_update — destructive; skip
     # ---- Advanced ----
     (
@@ -159,7 +159,6 @@ LIDAR_TESTS = [
 ]
 
 SKIP_SET = {
-    "examples/beginner/08_net_device.py",
     "examples/beginner/09_device_firmware_update.py",
     "examples/advanced/18_forceip.py",
     "examples/advanced/19_device_optional_depth_presets_update.py",
