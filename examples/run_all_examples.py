@@ -132,7 +132,10 @@ TESTS = [
     ("adv19 depth_presets_update (SKIPPED)", "examples/advanced/19_device_optional_depth_presets_update.py", ["--test"], None, None),
     # ---- Applications ----
     ("app ruler (--test)", "examples/applications/ruler.py", ["--test"], None, None),
-    ("app object_detection (SKIPPED)", "examples/applications/object_detection/object_detection.py", ["--test"], None, None),
+]
+
+HARDCODED_SKIP = [
+    ("app object_detection (SKIPPED)", "examples/applications/object_detection/object_detection.py", "requires onnxruntime & ONNX model"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -479,6 +482,20 @@ def main():
     print(f"{'='*72}\n")
 
     all_tests = TESTS + (LIDAR_TESTS if args.lidar else [])
+
+    results = []
+    # Record hardcoded skip items (not executed, just reported as SKIPPED)
+    for label, script, reason in HARDCODED_SKIP:
+        log_path = save_log(label, f"SKIPPED: {reason}".encode(), b"", report_dir)
+        results.append({
+            "label": label,
+            "script": script,
+            "status": "SKIP",
+            "duration": 0,
+            "log_path": log_path,
+            "artifacts": [],
+            "message": reason,
+        })
 
     for label, script, extra_args, stdin_input, env_override in all_tests:
         print(f"  Running  {label:<45}", end="", flush=True)
