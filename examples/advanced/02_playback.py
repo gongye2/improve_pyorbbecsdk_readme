@@ -419,6 +419,11 @@ def render_frames(test_mode=False, out_dir=None):
         display = create_display(DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
         if test_mode:
+            # Skip empty frames — wait until at least one video frame has arrived
+            is_blank = np.all(display == 0)
+            if is_blank:
+                time.sleep(0.1)
+                continue
             cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
             frame_count += 1
             if frame_count >= 3:

@@ -245,10 +245,7 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
         else:
             out_dir_name = "color_depth_aligned_sw"
     elif name_no_ext == "01_recorder":
-        if "NO-GUI" in label.upper() or "NO_GUI" in label.upper():
-            out_dir_name = "recorder_no_gui"
-        else:
-            out_dir_name = "recorder"
+        out_dir_name = "recorder"
     else:
         dir_map = {
             "02_depth_visualization": "depth_visualization",
