@@ -560,6 +560,12 @@ def main():
     report_path = render_html_report(results, report_dir)
     print(f"\n  Report: {REPORT_DIR}/report.html")
 
+    # Clean up intermediate test_outputs directory
+    test_outputs_dir = os.path.join(REPO, "test_outputs")
+    if os.path.isdir(test_outputs_dir):
+        shutil.rmtree(test_outputs_dir)
+        print(f"  Cleaned up: test_outputs/")
+
     # Summary
     passed = sum(1 for r in results if r["status"] in ("PASS", "TIMEOUT"))
     failed = sum(1 for r in results if r["status"] == "FAIL")
