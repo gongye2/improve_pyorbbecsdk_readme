@@ -11,6 +11,7 @@
 #  Run:
 #    python examples/lidar_examples/lidar_quick_start.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -27,6 +28,14 @@ if not os.path.exists(save_points_dir):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="LiDAR Quick Start")
+    parser.add_argument("--test", action="store_true", help="Test mode: auto-save frames and exit")
+    args = parser.parse_args()
+
+    if args.test:
+        os.makedirs(save_points_dir, exist_ok=True)
+        print(f"Test mode: saving LiDAR point clouds to '{save_points_dir}/'")
+
     # Create a pipeline.
     pipeline = Pipeline()
 
@@ -36,7 +45,7 @@ def main():
     # Check LiDAR device
     if not is_lidar_device(device):
         print("Invalid device, please connect a LiDAR device!")
-        return
+        sys.exit(77)
 
     # Start the pipeline with default config.
     # Modify the default configuration by the configuration file: "*SDKConfig.xml"
@@ -46,33 +55,51 @@ def main():
     print("Press 'r' or 'R' to create LiDAR PointCloud and save to ply file! ")
     print("Press 'q' or 'Q' to exit! ")
 
+    test_frame_count = 0
+
     try:
         while True:
-            # Wait for user input
-            key = input("Wating for command:")
-            if key.lower() == "q":
-                break
-
-            # Press 'r' or 'R' to save LiDAR point cloud to ply file
-            if key.lower() == "r":
-                print("Save LiDAR PointCloud to ply file, this will take some time...")
-
-                # Wait for frameSet from the pipeline, the default timeout is 1000ms.
+            if args.test:
+                # Wait for LiDAR frame automatically
                 frames = pipeline.wait_for_frames(1000)
                 if frames is None:
-                    print("No frame data, please try again!")
                     continue
-
-                # Get LiDAR point cloud frame
                 frame = frames.get_lidar_points_frame()
                 if frame is None:
-                    print("No LiDAR frame found!")
                     continue
-
-                # Save point cloud data to ply file
-                save_path = os.path.join(save_points_dir, "LiDARPoints.ply")
+                save_path = os.path.join(save_points_dir, f"lidar_frame_{test_frame_count:04d}.ply")
                 save_lidar_point_cloud_to_ply(save_path, frame, False)
-                print(f"LiDARPoints.ply Saved at: {os.path.abspath(save_path)}")
+                test_frame_count += 1
+                print(f"[Saved] {save_path}")
+                if test_frame_count >= 3:
+                    print(f"Saved {test_frame_count} LiDAR point clouds, exiting test mode.")
+                    break
+            else:
+                # Wait for user input
+                key = input("Wating for command:")
+                if key.lower() == "q":
+                    break
+
+                # Press 'r' or 'R' to save LiDAR point cloud to ply file
+                if key.lower() == "r":
+                    print("Save LiDAR PointCloud to ply file, this will take some time...")
+
+                    # Wait for frameSet from the pipeline, the default timeout is 1000ms.
+                    frames = pipeline.wait_for_frames(1000)
+                    if frames is None:
+                        print("No frame data, please try again!")
+                        continue
+
+                    # Get LiDAR point cloud frame
+                    frame = frames.get_lidar_points_frame()
+                    if frame is None:
+                        print("No LiDAR frame found!")
+                        continue
+
+                    # Save point cloud data to ply file
+                    save_path = os.path.join(save_points_dir, "LiDARPoints.ply")
+                    save_lidar_point_cloud_to_ply(save_path, frame, False)
+                    print(f"LiDARPoints.ply Saved at: {os.path.abspath(save_path)}")
 
     except KeyboardInterrupt:
         pass

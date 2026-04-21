@@ -18,8 +18,10 @@ paths — the entire folder can be zipped and opened on any machine.
 
 Run from repo root:
     python examples/run_all_examples.py
+    python examples/run_all_examples.py --lidar    # include LiDAR examples
 """
 
+import argparse
 import shutil
 
 import datetime as dt
@@ -33,6 +35,7 @@ PYTHON = sys.executable
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TIMEOUT_SEC = 30  # seconds per example before we send SIGTERM
 BAG_FILE = "test_recording.bag"  # shared bag file between recorder and playback
+LIDAR_BAG_FILE = "test_lidar_recording.bag"  # bag file for lidar record/playback
 
 # Directories for outputs
 REPORT_DIR = "reports/examples-smoke"
@@ -43,10 +46,6 @@ REPORT_DIR = "reports/examples-smoke"
 #   stdin_input  - bytes fed to the process stdin (simulates user typing)
 #   extra_args   - additional CLI args to pass
 #   env_override - dict of environment variables to set for this test
-#
-# Examples with --test support: GUI/rendering examples that save frames to
-# disk and auto-exit after a fixed count.  No stdin or timeout needed —
-# they terminate cleanly on their own.
 # ---------------------------------------------------------------------------
 TESTS = [
     # ---- Quick start ----
@@ -72,6 +71,7 @@ TESTS = [
     ("05 point_cloud (--test)", "examples/beginner/05_point_cloud.py", ["--test"], None, None),
     ("06 multi_streams", "examples/beginner/06_multi_streams.py", ["--test"], None, None),
     ("07 imu (--test)", "examples/beginner/07_imu.py", ["--test"], None, None),
+    ("10 logger (--test)", "examples/beginner/10_logger.py", ["--test"], None, None),
     # 08 net_device — needs network camera; skip
     # 09 firmware_update — destructive; skip
     # ---- Advanced ----
@@ -127,6 +127,29 @@ TESTS = [
     # ---- Applications ----
     ("app ruler (--test)", "examples/applications/ruler.py", ["--test"], None, None),
     # app object_detection — needs ONNX model file; skip
+]
+
+# ---------------------------------------------------------------------------
+# LiDAR test matrix — only executed when --lidar flag is passed
+# ---------------------------------------------------------------------------
+LIDAR_TESTS = [
+    ("lidar quick_start (--test)", "examples/lidar_examples/lidar_quick_start.py", ["--test"], None, None),
+    ("lidar stream (--test)", "examples/lidar_examples/lidar_stream.py", ["--test"], None, None),
+    (
+        "lidar record (--test)",
+        "examples/lidar_examples/lidar_record.py",
+        ["--test"],
+        None,
+        None,
+    ),
+    (
+        "lidar playback (--test)",
+        "examples/lidar_examples/lidar_playback.py",
+        ["--test"],
+        None,
+        {"LIDAR_PLAYBACK_FILE": LIDAR_BAG_FILE},
+    ),
+    ("lidar device_control (--test)", "examples/lidar_examples/lidar_device_control.py", ["--test"], None, None),
 ]
 
 SKIP_SET = {
@@ -232,6 +255,11 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
         "17_laser_interleave": "laser_interleave",
         "quick_start": "quick_start",
         "ruler": "ruler",
+        "lidar_quick_start": "lidar_quick_start",
+        "lidar_record": "lidar_record",
+        "lidar_playback": "lidar_playback",
+        "lidar_stream": "lidar_stream",
+        "lidar_device_control": "lidar_device_control",
     }
 
     out_dir_name = dir_map.get(name_no_ext)
@@ -269,6 +297,8 @@ def _category_from_script(script: str) -> str:
         return "Applications"
     if norm.startswith("examples/quick_start"):
         return "Quick Start"
+    if norm.startswith("examples/lidar_examples/"):
+        return "LiDAR"
     return "Other"
 
 
@@ -277,7 +307,7 @@ def render_html_report(results, output_dir):
     os.makedirs(output_dir, exist_ok=True)
 
     # Group results by category, preserving original order within each group
-    category_order = ["Quick Start", "Beginner", "Advanced", "Applications", "Other"]
+    category_order = ["Quick Start", "Beginner", "Advanced", "Applications", "LiDAR", "Other"]
     groups: dict[str, list[dict]] = {}
     for r in results:
         cat = _category_from_script(r["script"])
@@ -425,6 +455,10 @@ def render_html_report(results, output_dir):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run pyorbbecsdk example smoke tests")
+    parser.add_argument("--lidar", action="store_true", help="Include LiDAR examples in the test run")
+    args = parser.parse_args()
+
     # Prepare report directory
     report_dir = os.path.join(REPO, REPORT_DIR)
     os.makedirs(report_dir, exist_ok=True)
@@ -434,9 +468,13 @@ def main():
     print(f"  pyorbbecsdk Example Smoke Tests")
     print(f"  Timeout per example: {TIMEOUT_SEC}s")
     print(f"  Report: {REPORT_DIR}/")
+    if args.lidar:
+        print(f"  LiDAR examples: enabled")
     print(f"{'='*72}\n")
 
-    for label, script, extra_args, stdin_input, env_override in TESTS:
+    all_tests = TESTS + (LIDAR_TESTS if args.lidar else [])
+
+    for label, script, extra_args, stdin_input, env_override in all_tests:
         if script in SKIP_SET:
             continue
         print(f"  Running  {label:<45}", end="", flush=True)
@@ -509,9 +547,10 @@ def main():
     print(f"\n{'='*72}\n")
 
     # Cleanup test bag files
-    if os.path.exists(os.path.join(REPO, BAG_FILE)):
-        os.remove(os.path.join(REPO, BAG_FILE))
-        print(f"  Cleaned up: {BAG_FILE}")
+    for bag in [BAG_FILE, LIDAR_BAG_FILE]:
+        if os.path.exists(os.path.join(REPO, bag)):
+            os.remove(os.path.join(REPO, bag))
+            print(f"  Cleaned up: {bag}")
 
     return 1 if (failed + errors) > 0 else 0
 

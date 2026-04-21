@@ -444,6 +444,7 @@ def main():
             pipeline.start(config, _headless_frame_callback)
             print("Recording started (headless). Press Ctrl+C to stop and save.")
 
+            headless_frame_count = 0
             last_time = time.time()
             while True:
                 time.sleep(2)
@@ -452,9 +453,14 @@ def main():
                     duration = now - last_time
                     for ftype, cnt in _counts.items():
                         print(f"{ftype}: {cnt / duration:.2f} FPS", end="  ")
+                        headless_frame_count += cnt
                     print()
                     _counts.clear()
                     last_time = now
+
+                if args.test and headless_frame_count >= 3:
+                    print(f"Recorded {headless_frame_count} frames in headless test mode, exiting.")
+                    break
 
         else:
             # ---- GUI mode ----
