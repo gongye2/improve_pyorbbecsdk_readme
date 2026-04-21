@@ -180,7 +180,10 @@ def main():
     }
 
     if args.test:
+        import time
+
         # Test mode: run all 4 transforms programmatically
+        time.sleep(1)  # Give pipeline time to initialize
         try:
             frames = None
             for _ in range(10):

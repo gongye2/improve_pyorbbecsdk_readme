@@ -137,13 +137,23 @@ TESTS = [
     ("adv16 coordinate_transform (--test)", "examples/advanced/16_coordinate_transform.py", ["--test"], None, None),
     ("adv17 laser_interleave (--test)", "examples/advanced/17_laser_interleave.py", ["--test"], None, None),
     ("adv18 forceip (SKIPPED)", "examples/advanced/18_forceip.py", ["--test"], None, None),
-    ("adv19 depth_presets_update (SKIPPED)", "examples/advanced/19_device_optional_depth_presets_update.py", ["--test"], None, None),
+    (
+        "adv19 depth_presets_update (SKIPPED)",
+        "examples/advanced/19_device_optional_depth_presets_update.py",
+        ["--test"],
+        None,
+        None,
+    ),
     # ---- Applications ----
     ("app ruler (--test)", "examples/applications/ruler.py", ["--test"], None, None),
 ]
 
 HARDCODED_SKIP = [
-    ("app object_detection (SKIPPED)", "examples/applications/object_detection/object_detection.py", "requires onnxruntime & ONNX model"),
+    (
+        "app object_detection (SKIPPED)",
+        "examples/applications/object_detection/object_detection.py",
+        "requires onnxruntime & ONNX model",
+    ),
 ]
 
 # ---------------------------------------------------------------------------
@@ -299,7 +309,9 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
                 dst_dir = os.path.join(report_dir, "outputs", label_id)
                 os.makedirs(dst_dir, exist_ok=True)
             shutil.copy2(os.path.join(src_dir, f), os.path.join(dst_dir, f))
-            artifacts.append({"path": f"outputs/{label_id}/{f}", "type": "image" if lower.endswith(".png") else "pointcloud"})
+            artifacts.append(
+                {"path": f"outputs/{label_id}/{f}", "type": "image" if lower.endswith(".png") else "pointcloud"}
+            )
     return artifacts
 
 
@@ -500,15 +512,17 @@ def main():
     # Record hardcoded skip items (not executed, just reported as SKIPPED)
     for label, script, reason in HARDCODED_SKIP:
         log_path = save_log(label, f"SKIPPED: {reason}".encode(), b"", report_dir)
-        results.append({
-            "label": label,
-            "script": script,
-            "status": "SKIP",
-            "duration": 0,
-            "log_path": log_path,
-            "artifacts": [],
-            "message": reason,
-        })
+        results.append(
+            {
+                "label": label,
+                "script": script,
+                "status": "SKIP",
+                "duration": 0,
+                "log_path": log_path,
+                "artifacts": [],
+                "message": reason,
+            }
+        )
 
     for label, script, extra_args, stdin_input, env_override in all_tests:
         print(f"  Running  {label:<45}", end="", flush=True)

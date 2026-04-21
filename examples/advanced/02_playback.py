@@ -451,7 +451,7 @@ def main():
 
     if args.test:
         playback_file = os.environ.get("PLAYBACK_FILE", "")
-        suffix = "_nogui" if "nogui" in playback_file else ""
+        suffix = "_gui" if "nogui" not in playback_file else "_nogui"
         out_dir = f"test_outputs/playback{suffix}"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
