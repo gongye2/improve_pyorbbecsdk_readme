@@ -331,6 +331,21 @@ def _create_display(blocks, width=1280, height=720):
     return canvas
 
 
+def _build_expected_keys():
+    """Compute the set of frame types we expect based on device sensor capabilities."""
+    expected = {"color", "depth"}
+    if state.support_dual_ir:
+        expected.update({"left_ir", "right_ir"})
+    else:
+        expected.add("ir")
+    expected.add("confidence")
+    if state.support_imu:
+        expected.update({"accel", "gyro"})
+    if state.support_dual_rgb:
+        expected.update({"left_color", "right_color"})
+    return expected
+
+
 def render_frames(test_mode=False, out_dir=None):
     WINDOW = "MultiStream Record Viewer"
     W, H = 1280, 720
@@ -341,9 +356,7 @@ def render_frames(test_mode=False, out_dir=None):
     frame_count = 0
     seen_keys = set()
     all_detected = False
-    loop_count = 0
-    # Video stream types that are slower to arrive than IMU
-    VIDEO_KEYS = {"color", "depth", "left_ir", "right_ir", "ir", "confidence", "left_color", "right_color"}
+    expected_keys = _build_expected_keys()
 
     KEYS = [
         "color",
@@ -361,8 +374,7 @@ def render_frames(test_mode=False, out_dir=None):
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
             blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
-            current_keys = {k for k in KEYS if state.cached_frames.get(k) is not None}
-            seen_keys |= current_keys
+            seen_keys |= {k for k in KEYS if state.cached_frames.get(k) is not None}
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in (ord("q"), 27):
@@ -370,14 +382,13 @@ def render_frames(test_mode=False, out_dir=None):
             continue
 
         display = _create_display(blocks, W, H)
-        loop_count += 1
         if test_mode and not all_detected:
-            # Wait until all detected frame types have appeared at least once,
-            # and at least one video frame has arrived (IMU frames come first)
-            has_video = bool(seen_keys & VIDEO_KEYS)
-            if current_keys == seen_keys and has_video:
+            if expected_keys <= seen_keys:
                 all_detected = True
-                print(f"All {len(seen_keys)} stream types detected: {', '.join(sorted(seen_keys))}")
+                print(f"All {len(expected_keys)} expected stream types detected: {', '.join(sorted(seen_keys))}")
+            elif len(seen_keys) < len(expected_keys):
+                missing = expected_keys - seen_keys
+                print(f"Waiting for: {', '.join(sorted(missing))} (got {', '.join(sorted(seen_keys))})")
         else:
             cv2.imshow(WINDOW, display)
             key = cv2.waitKey(1) & 0xFF
