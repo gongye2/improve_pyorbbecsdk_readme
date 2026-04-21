@@ -339,6 +339,8 @@ def render_frames(test_mode=False, out_dir=None):
         cv2.resizeWindow(WINDOW, W, H)
 
     frame_count = 0
+    seen_keys = set()
+    all_detected = False
 
     KEYS = [
         "color",
@@ -356,6 +358,8 @@ def render_frames(test_mode=False, out_dir=None):
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
             blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
+            current_keys = {k for k in KEYS if state.cached_frames.get(k) is not None}
+            seen_keys |= current_keys
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in (ord("q"), 27):
@@ -364,11 +368,11 @@ def render_frames(test_mode=False, out_dir=None):
 
         display = _create_display(blocks, W, H)
         if test_mode:
-            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
-            frame_count += 1
-            if frame_count >= 3:
-                print(f"Saved {frame_count} frames, exiting test mode.")
-                state.stop_rendering = True
+            if not all_detected:
+                # Wait until all detected frame types have appeared at least once
+                if current_keys == seen_keys and len(seen_keys) >= 1:
+                    all_detected = True
+                    print(f"All {len(seen_keys)} stream types detected: {', '.join(sorted(seen_keys))}")
         else:
             cv2.imshow(WINDOW, display)
             key = cv2.waitKey(1) & 0xFF
@@ -382,6 +386,13 @@ def render_frames(test_mode=False, out_dir=None):
                     print("[RESUMED]")
             elif key in (ord("q"), 27):
                 break
+
+        if test_mode and all_detected:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 3:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                state.stop_rendering = True
 
 
 # ---------------------------------------------------------------------------

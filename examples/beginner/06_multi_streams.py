@@ -324,6 +324,8 @@ def render_frames(test_mode=False, out_dir=None):
         cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
     frame_count = 0
+    seen_keys = set()
+    all_detected = False
 
     while not state.stop_rendering:
         blocks = []
@@ -345,6 +347,8 @@ def render_frames(test_mode=False, out_dir=None):
                 img = state.cached_frames.get(key)
                 if img is not None:
                     blocks.append(img)
+            current_keys = {k for k in check_keys if state.cached_frames.get(k) is not None}
+            seen_keys |= current_keys
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in [ord("q"), 27]:
@@ -354,11 +358,11 @@ def render_frames(test_mode=False, out_dir=None):
         display = create_display(blocks, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
         if test_mode:
-            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
-            frame_count += 1
-            if frame_count >= 3:
-                print(f"Saved {frame_count} frames, exiting test mode.")
-                state.stop_rendering = True
+            if not all_detected:
+                # Wait until all detected frame types have appeared at least once
+                if current_keys == seen_keys and len(seen_keys) >= 1:
+                    all_detected = True
+                    print(f"All {len(seen_keys)} stream types detected: {', '.join(sorted(seen_keys))}")
         else:
             cv2.imshow(WINDOW_NAME, display)
 
@@ -366,6 +370,13 @@ def render_frames(test_mode=False, out_dir=None):
             key = cv2.waitKey(1) & 0xFF
             if key in [ord("q"), 27]:  # q or ESC
                 break
+
+        if test_mode and all_detected:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 3:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                state.stop_rendering = True
 
 
 def main():
