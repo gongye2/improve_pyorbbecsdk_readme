@@ -74,9 +74,7 @@ class FrameProcessor(threading.Thread):
                     color_image = decode_h26x_frame(self.decoder, self.latest_frame)
                     if color_image is not None:
                         # Resize the image to 1080p
-                        resized_image = cv2.resize(
-                            color_image, (self.display_width, self.display_height)
-                        )
+                        resized_image = cv2.resize(color_image, (self.display_width, self.display_height))
                         rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
                         self.processed_frame = rgb_image
                     self.latest_frame = None
@@ -110,10 +108,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "net_device_test"
-        os.makedirs(out_dir, exist_ok=True)
-        frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
+        print("Test mode: net_device requires a network camera, skipping.")
+        sys.exit(77)
 
     ctx = Context()
     ip = args.ip
@@ -131,14 +127,10 @@ def main():
     if device_info.get_pid() in SUPPORTED_PIDS:
         # Set up 1280*800 capture
         print("Current device is GEMINI 435Le or GEMINI 335Le, use OBFormat.MJPG")
-        color_profile = get_stream_profile(
-            pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10
-        )
+        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 1280, 800, OBFormat.MJPG, 10)
     else:
         # Set up 4K capture
-        color_profile = get_stream_profile(
-            pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25
-        )
+        color_profile = get_stream_profile(pipeline, OBSensorType.COLOR_SENSOR, 3840, 2160, OBFormat.H264, 25)
 
     config.enable_stream(color_profile)
     pipeline.start(config)
@@ -198,7 +190,7 @@ def main():
                     bgr_frame = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
                     cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", bgr_frame)
                     frame_count += 1
-                    if frame_count >= 30:
+                    if frame_count >= 3:
                         print(f"Saved {frame_count} frames, exiting test mode.")
                         running = False
                 else:

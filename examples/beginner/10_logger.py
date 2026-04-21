@@ -1,6 +1,7 @@
 # Copyright (c) 2024 Orbbec 3D Technology, Inc
 # Licensed under the Apache License, Version 2.0
 
+import argparse
 import os
 import time
 
@@ -15,6 +16,10 @@ def main():
 
     See LOG_CONFIGURATION.md for detailed documentation on log levels and configuration options.
     """
+    parser = argparse.ArgumentParser(description="Logger Configuration")
+    parser.add_argument("--test", action="store_true", help="Test mode: auto-exit after logging")
+    args = parser.parse_args()
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -46,6 +51,11 @@ def main():
     pipeline.stop()
 
     print(f"\nLogs saved to: {os.path.abspath(log_path)}")
+
+    if args.test:
+        print("Test mode: exiting.")
+        return
+
     print("Press any key to exit.")
     input()
 

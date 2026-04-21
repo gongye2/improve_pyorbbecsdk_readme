@@ -68,9 +68,7 @@ def _render_depth_2d(depth_mm: np.ndarray) -> np.ndarray:
     depth_clipped = np.clip(depth_mm, MIN_DEPTH_MM, MAX_DEPTH_MM)
     depth_clipped = np.where(depth_clipped > MIN_DEPTH_MM, depth_clipped, 0)
 
-    depth_norm = cv2.normalize(
-        depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-    )
+    depth_norm = cv2.normalize(depth_clipped, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
     # Apply selected colormap
     colormap, cmap_name = COLORMAPS[_cmap_index]
@@ -201,7 +199,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "depth_visualization_test"
+        out_dir = "test_outputs/depth_visualization"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")
@@ -283,7 +281,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:

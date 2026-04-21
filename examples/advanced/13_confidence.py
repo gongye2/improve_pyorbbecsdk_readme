@@ -36,7 +36,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "confidence_test"
+        out_dir = "test_outputs/confidence"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")
@@ -58,8 +58,8 @@ def main():
         # Verify if the connected device supports a confidence sensor
         device.get_sensor(OBSensorType.CONFIDENCE_SENSOR)
     except:
-        print("This sample requires a device with a confidence sensor.")
-        return
+        print("This sample requires a device with a confidence sensor. SKIPPED.")
+        sys.exit(77)
 
     # Enable the Depth stream first as it is often tied to confidence data
     config.enable_video_stream(OBStreamType.DEPTH_STREAM)
@@ -99,18 +99,12 @@ def main():
 
             try:
                 # Convert raw frame data into a NumPy buffer (unsigned 8-bit integers)
-                confidence_data = np.frombuffer(
-                    confidence_frame.get_data(), dtype=np.uint8
-                )
+                confidence_data = np.frombuffer(confidence_frame.get_data(), dtype=np.uint8)
                 # Reshape the 1D buffer into a 2D image based on frame dimensions
-                confidence_data = confidence_data.reshape(
-                    confidence_frame.get_height(), confidence_frame.get_width()
-                )
+                confidence_data = confidence_data.reshape(confidence_frame.get_height(), confidence_frame.get_width())
 
                 # Normalize the data values to the 0-255 range for visualization
-                confidence_image = cv2.normalize(
-                    confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-                )
+                confidence_image = cv2.normalize(confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
                 # Convert the grayscale normalized image to RGB for display purposes
                 confidence_image = cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
             except ValueError:
@@ -120,7 +114,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", confidence_image)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:

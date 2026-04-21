@@ -132,7 +132,10 @@ def main() -> int:
             saved_images = sorted(str(path) for path in case_output_dir.glob("*.png"))
             result["saved_images"] = saved_images
 
-            if completed.returncode != 0:
+            if completed.returncode == 77:
+                result["status"] = "skipped"
+                result["message"] = "feature not supported by this device"
+            elif completed.returncode != 0:
                 result["status"] = "failed"
                 result["message"] = f"exit code {completed.returncode}"
             elif case.get("supports_png_save") and not saved_images:

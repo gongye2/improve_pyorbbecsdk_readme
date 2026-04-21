@@ -18,7 +18,7 @@
 #  Run:
 #    python examples/beginner/05_point_cloud.py
 # ******************************************************************************
-
+import argparse
 import os
 
 import numpy as np
@@ -378,6 +378,19 @@ class PointCloudVisualizer:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="3D Point Cloud Viewer")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: save point cloud frames to disk instead of displaying GUI",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        out_dir = "test_outputs/point_cloud"
+        os.makedirs(out_dir, exist_ok=True)
+        print(f"Test mode: saving point clouds to '{out_dir}/'")
+
     # Check if device is connected
     ctx = Context()
     device_list = ctx.query_devices()
@@ -424,7 +437,7 @@ def main():
 
     # ----- Setup viewer -----
     viewer = None
-    if HAS_OPEN3D:
+    if HAS_OPEN3D and not args.test:
         viewer = PointCloudVisualizer()
         mode_str = "RGB + Depth" if has_color_sensor else "Depth only"
         print("=== Open3D Point Cloud Viewer ===")
@@ -439,6 +452,7 @@ def main():
 
     save_index = 0
     running = True
+    test_frame_count = 0
 
     try:
         while running:
@@ -462,7 +476,18 @@ def main():
             if point_cloud_frame is None:
                 continue
 
-            # Extract numpy arrays
+            # ----- Test mode: save .ply and exit -----
+            if args.test:
+                ply_path = os.path.join(out_dir, f"frame_{test_frame_count:04d}.ply")
+                save_point_cloud_to_ply(ply_path, point_cloud_frame)
+                test_frame_count += 1
+                print(f"[Saved] {ply_path}")
+                if test_frame_count >= 3:
+                    print(f"Saved {test_frame_count} point clouds, exiting test mode.")
+                    break
+                continue
+
+            # Extract numpy arrays (for viewer)
             if has_color_sensor and color_frame is not None:
                 xyz, rgb = _extract_xyz_rgb(point_cloud_frame.as_points_frame())
             else:

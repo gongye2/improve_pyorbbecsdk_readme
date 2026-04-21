@@ -149,9 +149,7 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
         my = (seg_start[1] + seg_end[1]) // 2
         label = f"{dist:.1f} mm" if dist is not None else "no depth"
         # Black outline for readability
-        cv2.putText(
-            out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3
-        )
+        cv2.putText(out, label, (mx + 4, my - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 3)
         cv2.putText(
             out,
             label,
@@ -171,9 +169,7 @@ def _draw_overlay(canvas: np.ndarray) -> np.ndarray:
     h = out.shape[0]
     hint = "Drag to measure | C = clear | Q/ESC = quit"
     cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 2)
-    cv2.putText(
-        out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1
-    )
+    cv2.putText(out, hint, (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (220, 220, 220), 1)
 
     return out
 
@@ -190,7 +186,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "ruler_test"
+        out_dir = "test_outputs/ruler"
         os.makedirs(out_dir, exist_ok=True)
         frame_count = 0
         print(f"Test mode: saving frames to '{out_dir}/'")
@@ -284,7 +280,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     break
             else:

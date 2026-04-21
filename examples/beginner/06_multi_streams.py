@@ -33,6 +33,18 @@ from utils import frame_to_bgr_image, is_astra_mini_device
 from pyorbbecsdk import OBFormat  # type: ignore
 from pyorbbecsdk import Config, Context, OBError, OBFrameType, OBSensorType, Pipeline
 
+# Map sensor types to the cached frame keys used in render_frames
+_SENSOR_TO_FRAME_KEY = {
+    OBSensorType.COLOR_SENSOR: "color",
+    OBSensorType.DEPTH_SENSOR: "depth",
+    OBSensorType.IR_SENSOR: "ir",
+    OBSensorType.LEFT_IR_SENSOR: "left_ir",
+    OBSensorType.RIGHT_IR_SENSOR: "right_ir",
+    OBSensorType.CONFIDENCE_SENSOR: "confidence",
+    OBSensorType.LEFT_COLOR_SENSOR: "left_color",
+    OBSensorType.RIGHT_COLOR_SENSOR: "right_color",
+}
+
 
 class GlobalState:
     def __init__(self):
@@ -55,6 +67,7 @@ class GlobalState:
             "left_color": None,
             "right_color": None,
         }
+        self.enabled_frame_keys = set()
 
 
 state = GlobalState()
@@ -99,6 +112,9 @@ def setup_camera():
                 continue
         try:
             config.enable_stream(sensor_type)
+            key = _SENSOR_TO_FRAME_KEY.get(sensor_type)
+            if key:
+                state.enabled_frame_keys.add(key)
         except:
             continue
 
@@ -119,6 +135,7 @@ def setup_imu():
     config = Config()
     config.enable_accel_stream()
     config.enable_gyro_stream()
+    state.enabled_frame_keys.update({"accel", "gyro"})
     try:
         pipeline.start(config, imu_frame_callback)
     except OBError as e:
@@ -142,9 +159,7 @@ def process_depth(frame):
     try:
         depth_data = np.frombuffer(frame.get_data(), dtype=np.uint16)
         depth_data = depth_data.reshape(frame.get_height(), frame.get_width())
-        depth_image = cv2.normalize(
-            depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
     except ValueError:
         return None
@@ -192,9 +207,7 @@ def process_confidence(frame):
     try:
         confidence_data = np.frombuffer(frame.get_data(), dtype=np.uint8)
         confidence_data = confidence_data.reshape(frame.get_height(), frame.get_width())
-        confidence_image = cv2.normalize(
-            confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-        )
+        confidence_image = cv2.normalize(confidence_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(confidence_image, cv2.COLOR_GRAY2RGB)
     except ValueError:
         return None
@@ -227,9 +240,7 @@ def create_single_imu_panel(imu_frame, title, w=480, h=240):
         text_size = cv2.getTextSize(line, font, font_scale, thickness)[0]
         text_x = (w - text_size[0]) // 2
         text_y = start_y + i * line_height + text_size[1]
-        cv2.putText(
-            p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA
-        )
+        cv2.putText(p, line, (text_x, text_y), font, font_scale, color, thickness, cv2.LINE_AA)
     return p
 
 
@@ -319,6 +330,15 @@ def create_display(blocks, width=1280, height=720):
     return display
 
 
+def _build_expected_keys():
+    """Return the set of frame keys for all successfully enabled streams."""
+    return state.enabled_frame_keys.copy()
+
+
+# Video stream keys that must arrive before saving test images
+VIDEO_KEYS = {"color", "depth", "left_ir", "right_ir", "ir", "confidence", "left_color", "right_color"}
+
+
 def render_frames(test_mode=False, out_dir=None):
     # Window settings
     WINDOW_NAME = "MultiStream Viewer"
@@ -330,6 +350,14 @@ def render_frames(test_mode=False, out_dir=None):
         cv2.resizeWindow(WINDOW_NAME, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
     frame_count = 0
+    seen_keys = set()
+    all_detected = False
+    expected_keys = _build_expected_keys()
+
+    if test_mode and not (expected_keys & VIDEO_KEYS):
+        print(f"Error: no video streams enabled. Enabled: {sorted(expected_keys)}")
+        state.stop_rendering = True
+        sys.exit(1)
 
     while not state.stop_rendering:
         blocks = []
@@ -351,6 +379,7 @@ def render_frames(test_mode=False, out_dir=None):
                 img = state.cached_frames.get(key)
                 if img is not None:
                     blocks.append(img)
+            seen_keys |= {k for k in check_keys if state.cached_frames.get(k) is not None}
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in [ord("q"), 27]:
@@ -359,12 +388,13 @@ def render_frames(test_mode=False, out_dir=None):
 
         display = create_display(blocks, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
-        if test_mode:
-            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
-            frame_count += 1
-            if frame_count >= 30:
-                print(f"Saved {frame_count} frames, exiting test mode.")
-                state.stop_rendering = True
+        if test_mode and not all_detected:
+            if expected_keys <= seen_keys:
+                all_detected = True
+                print(f"All {len(expected_keys)} expected stream types detected: {', '.join(sorted(seen_keys))}")
+            elif len(seen_keys) < len(expected_keys):
+                missing = expected_keys - seen_keys
+                print(f"Waiting for: {', '.join(sorted(missing))} (got {', '.join(sorted(seen_keys))})")
         else:
             cv2.imshow(WINDOW_NAME, display)
 
@@ -372,6 +402,13 @@ def render_frames(test_mode=False, out_dir=None):
             key = cv2.waitKey(1) & 0xFF
             if key in [ord("q"), 27]:  # q or ESC
                 break
+
+        if test_mode and all_detected:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 3:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                state.stop_rendering = True
 
 
 def main():
@@ -391,7 +428,7 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "multi_streams_test"
+        out_dir = "test_outputs/multi_streams"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 

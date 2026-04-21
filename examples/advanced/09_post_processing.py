@@ -17,7 +17,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import sys
 import time
 from threading import Thread
 
@@ -124,9 +123,7 @@ def filter_control(filter_list):
                     print(f"Success: Filter {found_filter.get_name()} is now {status}")
                 elif len(tokens) == 1:
                     status = "enabled" if found_filter.is_enabled() else "disabled"
-                    print(
-                        f" - {found_filter.get_name()}: {status} (config schema API not available)"
-                    )
+                    print(f" - {found_filter.get_name()}: {status} (config schema API not available)")
                 else:
                     print(
                         f"Error: Config schema API not available for this build. Only on/off is supported.",
@@ -152,9 +149,7 @@ def filter_control(filter_list):
                 print(f"Config schema for {found_filter.get_name()}:")
                 schema_vec = found_filter.get_config_schema_vec()
                 for s in schema_vec:
-                    print(
-                        f" - {{{s.name}, {s.type}, {s.min}, {s.max}, {s.step}, {s.default}, {s.desc}}}"
-                    )
+                    print(f" - {{{s.name}, {s.type}, {s.min}, {s.max}, {s.step}, {s.default}, {s.desc}}}")
 
             # Case 4: [Filter] [Config Name] -> Get specific parameter value
             elif len(tokens) == 2:
@@ -164,9 +159,7 @@ def filter_control(filter_list):
                 for s in schema_vec:
                     if s.name == target_config:
                         val = found_filter.get_config_value(s.name)
-                        print(
-                            f"Config values for {found_filter.get_name()}@{s.name}: {val}"
-                        )
+                        print(f"Config values for {found_filter.get_name()}@{s.name}: {val}")
                         found_config = True
                         break
                 if not found_config:
@@ -185,9 +178,7 @@ def filter_control(filter_list):
                         f"Success: Config value of {config_name} for filter {target_filter_name} is set to {tokens[2]}"
                     )
                 except ValueError:
-                    print(
-                        f"Error: '{tokens[2]}' is not a valid number", file=sys.stderr
-                    )
+                    print(f"Error: '{tokens[2]}' is not a valid number", file=sys.stderr)
                 except Exception as e:
                     print(f"Error: {e}", file=sys.stderr)
         else:
@@ -209,10 +200,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "post_processing_test"
-        os.makedirs(out_dir, exist_ok=True)
+        out_dir = "test_outputs/post_processing"
         frame_count = 0
-        print(f"Test mode: saving frames to '{out_dir}/'")
 
     try:
         # Check if device is connected
@@ -238,21 +227,31 @@ def main():
         config.enable_stream(OBStreamType.DEPTH_STREAM)
         pipeline.start(config)
 
-        # Start the background control thread for terminal input
-        control_thread = Thread(target=filter_control, args=(filters,))
-        control_thread.daemon = True
-        control_thread.start()
+        # Start the background control thread for terminal input (skip in test mode)
+        if not args.test:
+            control_thread = Thread(target=filter_control, args=(filters,))
+            control_thread.daemon = True
+            control_thread.start()
 
         print("Press 'ESC' on the window to exit.")
 
-        # Create window once outside the loop
-        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        # Create window once outside the loop (skip in test mode)
+        if not args.test:
+            cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
         window_initialized = False
+
+        if args.test:
+            os.makedirs(out_dir, exist_ok=True)
+            print(f"Test mode: saving frames to '{out_dir}/'")
+            loop_start = time.monotonic()
 
         while not quit_program:
             # Wait for frameset from the pipeline
             frames = pipeline.wait_for_frames(1000)
             if frames is None:
+                if args.test and time.monotonic() - loop_start > 15:
+                    print("Timeout: no frames received after 15 seconds")
+                    return
                 continue
             depth_frame = frames.get_depth_frame()
             if depth_frame is None:
@@ -269,23 +268,15 @@ def main():
 
             # --- Process Original Frame for Display ---
             depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
-            depth_data = depth_data.reshape(
-                depth_frame.get_height(), depth_frame.get_width()
-            )
+            depth_data = depth_data.reshape(depth_frame.get_height(), depth_frame.get_width())
             # Normalize 16-bit depth to 8-bit for visualization
-            depth_image = cv2.normalize(
-                depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-            )
+            depth_image = cv2.normalize(depth_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             depth_image = cv2.applyColorMap(depth_image, cv2.COLORMAP_JET)
 
             # --- Process Filtered Frame for Display ---
             processed_data = np.frombuffer(processed_frame.get_data(), dtype=np.uint16)
-            processed_data = processed_data.reshape(
-                processed_frame.get_height(), processed_frame.get_width()
-            )
-            processed_image = cv2.normalize(
-                processed_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
-            )
+            processed_data = processed_data.reshape(processed_frame.get_height(), processed_frame.get_width())
+            processed_image = cv2.normalize(processed_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             processed_image = cv2.applyColorMap(processed_image, cv2.COLORMAP_JET)
 
             # --- Render Side-by-Side View ---
@@ -304,7 +295,7 @@ def main():
             if args.test:
                 cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", combined_view)
                 frame_count += 1
-                if frame_count >= 30:
+                if frame_count >= 3:
                     print(f"Saved {frame_count} frames, exiting test mode.")
                     quit_program = True
                     break

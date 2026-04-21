@@ -141,6 +141,16 @@ def main():
         print("Device Not Found! Please connect an Orbbec camera and try again.")
         return
 
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Coordinate System Transforms")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: run all 4 transforms once and exit",
+    )
+    args = parser.parse_args()
+
     print_help()  # Display help menu
     config = ob.Config()  # Initialize the config for the pipeline
     pipeline = ob.Pipeline()  # Create the pipeline object
@@ -168,6 +178,30 @@ def main():
         "3": (ob.transformation3dto3d, "3d_to_3d"),
         "4": (ob.transformation3dto2d, "3d_to_2d"),
     }
+
+    if args.test:
+        import time
+
+        # Test mode: run all 4 transforms programmatically
+        time.sleep(1)  # Give pipeline time to initialize
+        try:
+            frames = None
+            for _ in range(10):
+                frames = pipeline.wait_for_frames(1000)
+                if frames and frames.get_depth_frame() and frames.get_color_frame():
+                    break
+            if frames and frames.get_depth_frame() and frames.get_color_frame():
+                for key in ["1", "2", "3", "4"]:
+                    transform_func, dimension = transform_functions[key]
+                    transform_points(transform_func, frames.get_color_frame(), frames.get_depth_frame(), dimension)
+                print("Test mode: all transforms completed, exiting.")
+            else:
+                print("Test mode: no valid frames received, exiting.")
+        except Exception as e:
+            print(f"Test mode error: {e}")
+        finally:
+            pipeline.stop()
+        return
 
     # Start the keyboard listener to capture key presses
     listener = keyboard.Listener(on_press=on_press)

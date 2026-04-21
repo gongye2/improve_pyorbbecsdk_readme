@@ -13,6 +13,7 @@
 #  Run:
 #    python examples/advanced/05_hot_plug.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 
@@ -62,6 +63,17 @@ def on_device_changed_callback(removed_list: DeviceList, added_list: DeviceList)
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Device Hot-Plug Detection")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Test mode: query device list and save log to disk",
+    )
+    args = parser.parse_args()
+
+    if args.test:
+        print("Test mode: output captured by runner")
+
     print("Create Context")
     ctx = Context()
 
@@ -71,6 +83,13 @@ def main():
     print("Query current device list")
     current_list = ctx.query_devices()
     print_device_list("connected", current_list)
+
+    if args.test:
+        # Query the initial device list and exit after a short wait.
+        # Output is captured by the runner's log file.
+        print(f"Hot-plug detection initialized, monitoring for 5 seconds...")
+        time.sleep(5)
+        return
 
     print("Press Ctrl+C to exit.")
     print("You can manually unplug / plugin device to trigger callbacks.\n")

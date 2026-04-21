@@ -11,6 +11,7 @@
 #  Run:
 #    python examples/lidar_examples/lidar_playback.py
 # ******************************************************************************
+import argparse
 import os
 import sys
 import threading
@@ -22,7 +23,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils import is_lidar_device
 
 
-# Get valid .bag file path from user input
 def get_rosbag_path():
     while True:
         print("Please input the path of the Rosbag file (.bag) to playback: ")
@@ -39,18 +39,17 @@ def get_rosbag_path():
 
 
 class PlaybackApp:
-    def __init__(self, file_path):
+    def __init__(self, file_path, test_mode=False):
         self.exited = False
         self.file_path = file_path
         self.frame_count = 0
         self.pipeline_started = False
         self.pipeline_lock = threading.Lock()
+        self.test_mode = test_mode
+        self.test_frame_target = 5 if test_mode else 0
 
-        # Create a playback device with a Rosbag file
         self.playback = PlaybackDevice(file_path)
-        # Create a pipeline with the playback device
         self.pipe = Pipeline(self.playback)
-        # Enable all recording streams from the playback device
         self.config = Config()
 
         print(f"Duration: {self.playback.get_duration()}ms")
@@ -58,7 +57,6 @@ class PlaybackApp:
         self.replay_condition = threading.Condition()
         self.play_status = OBPlaybackStatus.STOPPED
 
-        # Set playback status change callback, when the playback stops, start the pipeline again with the same config
         self.playback.set_playback_status_change_callback(self.on_playback_status_change)
 
         sensor_list = self.playback.get_sensor_list()
@@ -83,6 +81,10 @@ class PlaybackApp:
                     print(f"frame index: {frame.get_index()}, tsp: {frame.get_timestamp_us()}, format: {fmt}")
         self.frame_count += 1
 
+        if self.test_mode and self.frame_count >= self.test_frame_target:
+            print(f"Captured {self.frame_count} frames in test mode, stopping.")
+            self.exited = True
+
     def monitor_replay(self):
         while not self.exited:
             with self.replay_condition:
@@ -92,53 +94,43 @@ class PlaybackApp:
                     break
 
                 if self.play_status == OBPlaybackStatus.STOPPED:
-                    print("End of file reached. Replaying in 1s...")
-
-                    # wait 1s and play again
-                    self.replay_condition.wait(1.0)
-                    if self.exited:
-                        break
-
-                    self.play_status = OBPlaybackStatus.UNKNOWN
-                    print("Replay again")
-                    with self.pipeline_lock:
-                        try:
-                            self.pipe.start(self.config, self.on_new_frame)
-                            self.pipeline_started = True
-                        except Exception as e:
-                            print(f"Error starting pipe: {e}")
+                    print("End of file reached.")
+                    break
 
     def run(self):
         monitor_thread = threading.Thread(target=self.monitor_replay)
         monitor_thread.start()
 
-        # Start the pipeline with the config
         with self.pipeline_lock:
             self.pipe.start(self.config, self.on_new_frame)
             self.pipeline_started = True
 
-        print("\nControls:")
-        print("Press 'p' or 'P' to pause/resume.")
-        print("Press 'q' or 'Ctrl+C' to exit.")
-
-        try:
+        if self.test_mode:
+            # In test mode, wait for frames to be captured
             while not self.exited:
-                key = input(">> (p: Pause/Resume, q: Quit): ").strip().lower()
+                time.sleep(0.5)
+        else:
+            print("\nControls:")
+            print("Press 'p' or 'P' to pause/resume.")
+            print("Press 'q' or 'Ctrl+C' to exit.")
 
-                if key == "q":  # 'q' key to exit.
-                    break
-                elif key == "p":  # 'p' or 'P' key to pause/resume playback.
-                    status = self.playback.get_playback_status()
-                    if status == OBPlaybackStatus.PLAYING:
-                        self.playback.pause()
-                        print("Playback paused")
-                    elif status == OBPlaybackStatus.PAUSED:
-                        self.playback.resume()
-                        print("Playback resumed")
-        except KeyboardInterrupt:
-            pass
+            try:
+                while not self.exited:
+                    key = input(">> (p: Pause/Resume, q: Quit): ").strip().lower()
 
-        # stop
+                    if key == "q":
+                        break
+                    elif key == "p":
+                        status = self.playback.get_playback_status()
+                        if status == OBPlaybackStatus.PLAYING:
+                            self.playback.pause()
+                            print("Playback paused")
+                        elif status == OBPlaybackStatus.PAUSED:
+                            self.playback.resume()
+                            print("Playback resumed")
+            except KeyboardInterrupt:
+                pass
+
         self.exited = True
         with self.pipeline_lock:
             if self.pipeline_started:
@@ -151,9 +143,22 @@ class PlaybackApp:
 
 
 def main():
+    import time
+
+    parser = argparse.ArgumentParser(description="LiDAR Bag File Playback")
+    parser.add_argument("--test", action="store_true", help="Test mode: auto-playback and exit after frames")
+    args = parser.parse_args()
+
     try:
-        file_path = get_rosbag_path()
-        app = PlaybackApp(file_path)
+        if args.test:
+            file_path = os.environ.get("LIDAR_PLAYBACK_FILE", "")
+            if not file_path:
+                print("In test mode, set LIDAR_PLAYBACK_FILE env var or pass via stdin")
+                return
+        else:
+            file_path = get_rosbag_path()
+
+        app = PlaybackApp(file_path, test_mode=args.test)
         app.run()
     except Exception as e:
         print(f"Error: {e}")

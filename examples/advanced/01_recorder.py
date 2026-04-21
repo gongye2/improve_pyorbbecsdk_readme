@@ -70,9 +70,23 @@ class GlobalState:
             "left_color": None,
             "right_color": None,
         }
+        self.enabled_frame_keys = set()
 
 
 state = GlobalState()
+
+# Map sensor types to the cached frame keys used in render_frames
+_SENSOR_TO_FRAME_KEY = {
+    OBSensorType.COLOR_SENSOR: "color",
+    OBSensorType.DEPTH_SENSOR: "depth",
+    OBSensorType.IR_SENSOR: "ir",
+    OBSensorType.LEFT_IR_SENSOR: "left_ir",
+    OBSensorType.RIGHT_IR_SENSOR: "right_ir",
+    OBSensorType.CONFIDENCE_SENSOR: "confidence",
+    OBSensorType.LEFT_COLOR_SENSOR: "left_color",
+    OBSensorType.RIGHT_COLOR_SENSOR: "right_color",
+}
+
 
 # --- Headless mode globals ---
 _frame_mutex = Lock()
@@ -129,6 +143,9 @@ def setup_camera(file_path: str):
                 continue
         try:
             config.enable_stream(sensor_type)
+            key = _SENSOR_TO_FRAME_KEY.get(sensor_type)
+            if key:
+                state.enabled_frame_keys.add(key)
         except Exception:
             continue
 
@@ -144,6 +161,7 @@ def setup_imu():
     config = Config()
     config.enable_accel_stream()
     config.enable_gyro_stream()
+    state.enabled_frame_keys.update({"accel", "gyro"})
     pipeline.start(config, _imu_frame_callback)
     return pipeline
 
@@ -163,9 +181,7 @@ def _process_depth(frame):
     if frame is None:
         return state.cached_frames["depth"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint16).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.applyColorMap(img, cv2.COLORMAP_JET)
     except ValueError:
@@ -207,9 +223,7 @@ def _process_confidence(frame):
     if frame is None:
         return state.cached_frames["confidence"]
     try:
-        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(
-            frame.get_height(), frame.get_width()
-        )
+        d = np.frombuffer(frame.get_data(), dtype=np.uint8).reshape(frame.get_height(), frame.get_width())
         img = cv2.normalize(d, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
         return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     except ValueError:
@@ -335,6 +349,15 @@ def _create_display(blocks, width=1280, height=720):
     return canvas
 
 
+def _build_expected_keys():
+    """Return the set of frame keys for all successfully enabled streams."""
+    return state.enabled_frame_keys.copy()
+
+
+# Video stream keys that must arrive before saving test images
+VIDEO_KEYS = {"color", "depth", "left_ir", "right_ir", "ir", "confidence", "left_color", "right_color"}
+
+
 def render_frames(test_mode=False, out_dir=None):
     WINDOW = "MultiStream Record Viewer"
     W, H = 1280, 720
@@ -343,6 +366,14 @@ def render_frames(test_mode=False, out_dir=None):
         cv2.resizeWindow(WINDOW, W, H)
 
     frame_count = 0
+    seen_keys = set()
+    all_detected = False
+    expected_keys = _build_expected_keys()
+
+    if test_mode and not (expected_keys & VIDEO_KEYS):
+        print(f"Error: no video streams enabled. Enabled: {sorted(expected_keys)}")
+        state.stop_rendering = True
+        sys.exit(1)
 
     KEYS = [
         "color",
@@ -359,11 +390,8 @@ def render_frames(test_mode=False, out_dir=None):
 
     while not state.stop_rendering:
         with state.frame_mutex, state.imu_mutex:
-            blocks = [
-                state.cached_frames[k]
-                for k in KEYS
-                if state.cached_frames.get(k) is not None
-            ]
+            blocks = [state.cached_frames[k] for k in KEYS if state.cached_frames.get(k) is not None]
+            seen_keys |= {k for k in KEYS if state.cached_frames.get(k) is not None}
 
         if not blocks:
             if not test_mode and cv2.waitKey(5) & 0xFF in (ord("q"), 27):
@@ -371,12 +399,13 @@ def render_frames(test_mode=False, out_dir=None):
             continue
 
         display = _create_display(blocks, W, H)
-        if test_mode:
-            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
-            frame_count += 1
-            if frame_count >= 30:
-                print(f"Saved {frame_count} frames, exiting test mode.")
-                state.stop_rendering = True
+        if test_mode and not all_detected:
+            if expected_keys <= seen_keys:
+                all_detected = True
+                print(f"All {len(expected_keys)} expected stream types detected: {', '.join(sorted(seen_keys))}")
+            elif len(seen_keys) < len(expected_keys):
+                missing = expected_keys - seen_keys
+                print(f"Waiting for: {', '.join(sorted(missing))} (got {', '.join(sorted(seen_keys))})")
         else:
             cv2.imshow(WINDOW, display)
             key = cv2.waitKey(1) & 0xFF
@@ -390,6 +419,13 @@ def render_frames(test_mode=False, out_dir=None):
                     print("[RESUMED]")
             elif key in (ord("q"), 27):
                 break
+
+        if test_mode and all_detected:
+            cv2.imwrite(f"{out_dir}/frame_{frame_count:04d}.png", display)
+            frame_count += 1
+            if frame_count >= 3:
+                print(f"Saved {frame_count} frames, exiting test mode.")
+                state.stop_rendering = True
 
 
 # ---------------------------------------------------------------------------
@@ -419,13 +455,11 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "recorder_test"
+        out_dir = "test_outputs/recorder"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 
-    file_path = input(
-        "Enter output filename (.bag) and press Enter to start recording: "
-    )
+    file_path = input("Enter output filename (.bag) and press Enter to start recording: ")
 
     try:
         if args.no_gui:
@@ -454,6 +488,7 @@ def main():
             pipeline.start(config, _headless_frame_callback)
             print("Recording started (headless). Press Ctrl+C to stop and save.")
 
+            headless_frame_count = 0
             last_time = time.time()
             while True:
                 time.sleep(2)
@@ -462,18 +497,21 @@ def main():
                     duration = now - last_time
                     for ftype, cnt in _counts.items():
                         print(f"{ftype}: {cnt / duration:.2f} FPS", end="  ")
+                        headless_frame_count += cnt
                     print()
                     _counts.clear()
                     last_time = now
+
+                if args.test and headless_frame_count >= 3:
+                    print(f"Recorded {headless_frame_count} frames in headless test mode, exiting.")
+                    break
 
         else:
             # ---- GUI mode ----
             pipeline = setup_camera(file_path)
             imu_pipeline = setup_imu()
             try:
-                render_frames(
-                    test_mode=args.test, out_dir=out_dir if args.test else None
-                )
+                render_frames(test_mode=args.test, out_dir=out_dir if args.test else None)
             except KeyboardInterrupt:
                 state.stop_rendering = True
             if imu_pipeline:
