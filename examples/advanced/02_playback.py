@@ -450,7 +450,9 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "test_outputs/playback"
+        playback_file = os.environ.get("PLAYBACK_FILE", "")
+        suffix = "_nogui" if "nogui" in playback_file else ""
+        out_dir = f"test_outputs/playback{suffix}"
         os.makedirs(out_dir, exist_ok=True)
         print(f"Test mode: saving frames to '{out_dir}/'")
 

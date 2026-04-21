@@ -33,7 +33,8 @@ import time
 PYTHON = sys.executable
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TIMEOUT_SEC = 30  # seconds per example before we send SIGTERM
-BAG_FILE = "test_recording.bag"  # shared bag file between recorder and playback
+BAG_FILE = "test_recording.bag"  # shared bag file for GUI recorder
+NOGUI_BAG_FILE = "test_recording_nogui.bag"  # bag file for no-gui recorder
 LIDAR_BAG_FILE = "test_lidar_recording.bag"  # bag file for lidar record/playback
 
 # Directories for outputs
@@ -85,15 +86,22 @@ TESTS = [
         "adv01 recorder --no-gui (--test)",
         "examples/advanced/01_recorder.py",
         ["--test", "--no-gui"],
-        f"{BAG_FILE}\n".encode(),
+        f"{NOGUI_BAG_FILE}\n".encode(),
         None,
     ),
     (
-        "adv02 playback (--test)",
+        "adv02 playback GUI (--test)",
         "examples/advanced/02_playback.py",
         ["--test"],
         None,
         {"PLAYBACK_FILE": BAG_FILE},
+    ),
+    (
+        "adv02 playback no-gui (--test)",
+        "examples/advanced/02_playback.py",
+        ["--test"],
+        None,
+        {"PLAYBACK_FILE": NOGUI_BAG_FILE},
     ),
     (
         "adv03 save_image_to_disk (--test)",
@@ -246,6 +254,11 @@ def copy_artifacts(label, script, report_dir) -> list[dict]:
             out_dir_name = "color_depth_aligned_sw"
     elif name_no_ext == "01_recorder":
         out_dir_name = "recorder"
+    elif name_no_ext == "02_playback":
+        if "NO-GUI" in label.upper() or "NOGUI" in label.upper().replace("-", "").replace("_", ""):
+            out_dir_name = "playback_nogui"
+        else:
+            out_dir_name = "playback_gui"
     else:
         dir_map = {
             "02_depth_visualization": "depth_visualization",
@@ -565,7 +578,7 @@ def main():
     print(f"\n{'='*72}\n")
 
     # Cleanup test bag files
-    for bag in [BAG_FILE, LIDAR_BAG_FILE]:
+    for bag in [BAG_FILE, NOGUI_BAG_FILE, LIDAR_BAG_FILE]:
         if os.path.exists(os.path.join(REPO, bag)):
             os.remove(os.path.join(REPO, bag))
             print(f"  Cleaned up: {bag}")
