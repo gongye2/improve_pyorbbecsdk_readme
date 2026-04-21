@@ -206,9 +206,8 @@ def main():
     args = parser.parse_args()
 
     if args.test:
-        out_dir = "two_devices_sync_test"
-        os.makedirs(out_dir, exist_ok=True)
-        print(f"Test mode: saving frames to '{out_dir}/'")
+        print("Test mode: two_devices_sync requires 2 cameras, skipping.")
+        sys.exit(77)
 
     read_config(config_file_path)
     ctx = Context()

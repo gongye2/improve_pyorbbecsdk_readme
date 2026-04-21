@@ -22,11 +22,10 @@ Run from repo root:
 """
 
 import argparse
-import shutil
-
 import datetime as dt
 import html
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -119,7 +118,7 @@ TESTS = [
     ("adv11 preset", "examples/advanced/11_preset.py", [], b"-1\n", None),
     ("adv12 depth_work_mode", "examples/advanced/12_depth_work_mode.py", [], None, None),
     ("adv13 confidence (--test)", "examples/advanced/13_confidence.py", ["--test"], None, None),
-    # adv14 two_devices_sync — needs 2 cameras; skip
+    ("adv14 two_devices_sync (SKIPPED)", "examples/advanced/14_two_devices_sync.py", ["--test"], None, None),
     (
         "adv15 high_performance_pipeline (--test)",
         "examples/advanced/15_high_performance_pipeline.py",
@@ -162,7 +161,6 @@ LIDAR_TESTS = [
 SKIP_SET = {
     "examples/beginner/08_net_device.py",
     "examples/beginner/09_device_firmware_update.py",
-    "examples/advanced/14_two_devices_sync.py",
     "examples/advanced/18_forceip.py",
     "examples/advanced/19_device_optional_depth_presets_update.py",
     "examples/advanced/16_coordinate_transform.py",  # requires pynput module
