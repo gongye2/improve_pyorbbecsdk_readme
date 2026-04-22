@@ -119,10 +119,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build wheel (self-hosted Linux via ade)
+      - name: Build wheel (self-hosted Linux via docker)
         if: matrix.runner_labels
         run: |
-          ade enter bash -c "cd /home/root/python/improve_pyorbbecsdk_readme && bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}"
+          docker exec ade bash ${{ env.ADE_CONTAINER_PATH }}/python/improve_pyorbbecsdk_readme/scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}
 
       - name: Copy wheels to workspace
         if: matrix.runner_labels

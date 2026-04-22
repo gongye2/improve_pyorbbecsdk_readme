@@ -446,6 +446,7 @@ build_version() {
 
     # Build wheel via uv
     echo "Building wheel..."
+    cd "$ROOT_DIR"
     uv build --wheel --python "$PYVER" --link-mode copy
 
     # auditwheel (skip py38 if needed)
