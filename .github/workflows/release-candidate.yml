@@ -122,13 +122,13 @@ jobs:
       - name: Build wheel (self-hosted Linux via docker)
         if: matrix.runner_labels
         run: |
-          docker exec ade bash ${{ env.ADE_CONTAINER_PATH }}/python/improve_pyorbbecsdk_readme/scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}
+          docker exec ade bash $ADE_CONTAINER_PATH/python/improve_pyorbbecsdk_readme/scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}
 
       - name: Copy wheels to workspace
         if: matrix.runner_labels
         run: |
           mkdir -p ./wheel
-          cp ${{ env.ADE_WORKSPACE }}/python/improve_pyorbbecsdk_readme/wheel/*.whl ./wheel/
+          cp $ADE_WORKSPACE/python/improve_pyorbbecsdk_readme/wheel/*.whl ./wheel/
 
       - name: Install uv
         if: "!matrix.runner_labels"
@@ -167,7 +167,7 @@ jobs:
   verify-wheels:
     name: "Verify Wheels"
     runs-on: ubuntu-22.04
-    needs: build-wheels
+    needs: [generate-matrix, build-wheels]
     strategy:
       matrix:
         include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}

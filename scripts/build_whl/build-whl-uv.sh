@@ -519,6 +519,20 @@ final_cleanup() {
         while IFS= read -r -d '' dir; do
             remove_directory_safe "$dir" "$(basename "$dir")" || true
         done
+
+    # Remove build artifacts from src/pyorbbecsdk/ that cmake/uv build places there
+    local src_pkg="$ROOT_DIR/src/pyorbbecsdk"
+    if [ -d "$src_pkg" ]; then
+        remove_directory_safe "$src_pkg/config" "src/pyorbbecsdk/config" || true
+        remove_directory_safe "$src_pkg/examples" "src/pyorbbecsdk/examples" || true
+        remove_directory_safe "$src_pkg/extensions" "src/pyorbbecsdk/extensions" || true
+        remove_directory_safe "$src_pkg/shared" "src/pyorbbecsdk/shared" || true
+        # Remove generated files (keep tracked .cpp/.hpp/.py sources)
+        rm -f "$src_pkg"/*.cpython-*.so 2>/dev/null || true
+        rm -f "$src_pkg"/*.pyi 2>/dev/null || true
+        rm -f "$src_pkg"/libOrbbecSDK.so* 2>/dev/null || true
+        rm -f "$src_pkg"/OrbbecSDKConfig.* 2>/dev/null || true
+    fi
 }
 
 # Show cleanup report
