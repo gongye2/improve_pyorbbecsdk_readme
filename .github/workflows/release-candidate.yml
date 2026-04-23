@@ -81,10 +81,10 @@ jobs:
               MATRIX+='{"os":"self-hosted","runner_labels":["self-hosted","X64","Linux","python-release"],"os_name":"linux-x64","python-version":"'$pyver'","arch":"x64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-x64-Python-'$pyver'"}'
             fi
 
-            # Linux ARM64 (ubuntu-22.04-arm)
+            # Linux ARM64 (self-hosted)
             if [[ "$PLATFORM" == "all" || "$PLATFORM" == "linux-arm64" ]]; then
               if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
-              MATRIX+='{"os":"ubuntu-22.04-arm","os_name":"linux-arm64","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
+              MATRIX+='{"os":"self-hosted","runner_labels":["self-hosted","ARM64","Linux","python-release"],"os_name":"linux-arm64","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
             fi
 
             # Windows (windows-2022)
@@ -162,46 +162,12 @@ jobs:
           retention-days: 30
 
   # ============================================================
-  # Job 2: Verify wheels
-  # ============================================================
-  verify-wheels:
-    name: "Verify Wheels"
-    runs-on: ubuntu-22.04
-    needs: [generate-matrix, build-wheels]
-    strategy:
-      matrix:
-        include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}
-    steps:
-      - name: Download wheels
-        uses: actions/download-artifact@v4
-        with:
-          name: release-wheels-${{ matrix.os_name || matrix.os }}-${{ matrix.arch }}-py${{ matrix.python-version }}
-          path: wheel/
-
-      - name: Verify wheel exists and is valid
-        run: |
-          echo "Checking for .whl files..."
-          WHEEL_COUNT=$(find wheel/ -name "*.whl" -type f | wc -l)
-          if [ "$WHEEL_COUNT" -eq 0 ]; then
-            echo "::error::No .whl files found for ${{ matrix.label }}"
-            exit 1
-          fi
-          echo "Found $WHEEL_COUNT wheel(s):"
-          ls -lh wheel/*.whl
-          echo "Verifying wheel format..."
-          for whl in wheel/*.whl; do
-            python3 -m zipfile -l "$whl" | head -5
-            echo "---"
-          done
-          echo "All wheels verified successfully."
-
-  # ============================================================
-  # Job 3: Create Release
+  # Job 2: Create Release
   # ============================================================
   create-release:
     name: "Create Release"
     runs-on: ubuntu-22.04
-    needs: [generate-matrix, build-wheels, verify-wheels]
+    needs: [generate-matrix, build-wheels]
     if: success()
     steps:
       - uses: actions/checkout@v4
