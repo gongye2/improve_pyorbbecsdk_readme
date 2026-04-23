@@ -1,0 +1,3 @@
+import pyorbbecsdk
+
+print("hello")
