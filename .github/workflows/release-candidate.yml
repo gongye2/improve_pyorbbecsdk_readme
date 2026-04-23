@@ -121,10 +121,12 @@ jobs:
       - name: Build wheel (self-hosted Linux via docker)
         if: matrix.runner_labels
         run: |
-          docker cp . ade:/tmp/build-src/
-          docker exec ade bash -c "cd /tmp/build-src && bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}"
-          mkdir -p ./wheel
-          docker cp ade:/tmp/build-src/wheel/. ./wheel/
+          docker run --rm --net=host \
+            -v "$(pwd):/workspace" \
+            -w /workspace \
+            --entrypoint bash \
+            python-build-env:latest \
+            -c "bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}"
 
       - name: Install uv
         if: "!matrix.runner_labels"
