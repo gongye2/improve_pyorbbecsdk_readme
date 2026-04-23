@@ -12,6 +12,11 @@ on:
         description: "Release version (e.g., v2.1.0)"
         required: true
         type: string
+      ref:
+        description: "Branch or tag to build from"
+        required: false
+        default: ""
+        type: string
       python_versions:
         description: "Python versions to build (min/default/all)"
         required: true
@@ -39,10 +44,6 @@ env:
 jobs:
   # ============================================================
   # Job 0: Dynamically generate version matrix
-  # Unified strategy for all platforms:
-  #   min:     3.10 (1 version)
-  #   default: 3.10, 3.11, 3.12 (3 versions)
-  #   all:     3.8, 3.9, 3.10, 3.11, 3.12, 3.13 (6 versions)
   # ============================================================
   generate-matrix:
     name: "Generate Build Matrix"
@@ -70,30 +71,25 @@ jobs:
               ;;
           esac
 
-          # Build matrix based on platform selection
           MATRIX="["
           FIRST=true
 
           for pyver in "${VERSIONS[@]}"; do
-            # Linux x64 (ubuntu-22.04)
             if [[ "$PLATFORM" == "all" || "$PLATFORM" == "linux-x64" ]]; then
               if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
               MATRIX+='{"os":"self-hosted","runner_labels":["self-hosted","X64","Linux","python-release"],"os_name":"linux-x64","python-version":"'$pyver'","arch":"x64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-x64-Python-'$pyver'"}'
             fi
 
-            # Linux ARM64 (self-hosted)
             if [[ "$PLATFORM" == "all" || "$PLATFORM" == "linux-arm64" ]]; then
               if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
               MATRIX+='{"os":"self-hosted","runner_labels":["self-hosted","ARM64","Linux","python-release"],"os_name":"linux-arm64","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv.sh","label":"Linux-arm64-Python-'$pyver'"}'
             fi
 
-            # Windows (windows-2022)
             if [[ "$PLATFORM" == "all" || "$PLATFORM" == "windows-x64" ]]; then
               if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
               MATRIX+='{"os":"windows-2022","python-version":"'$pyver'","arch":"x64","build_script":"powershell -Command .\\scripts\\build_whl\\build-whl-uv.ps1","label":"Windows-x64-Python-'$pyver'"}'
             fi
 
-            # macOS (macos-latest)
             if [[ "$PLATFORM" == "all" || "$PLATFORM" == "macos" ]]; then
               if [ "$FIRST" = true ]; then FIRST=false; else MATRIX+=","; fi
               MATRIX+='{"os":"macos-latest","python-version":"'$pyver'","arch":"arm64","build_script":"bash scripts/build_whl/build-whl-uv-macos.sh","label":"macOS-arm64-Python-'$pyver'"}'
@@ -104,8 +100,9 @@ jobs:
 
           echo "matrix-include=$MATRIX" >> $GITHUB_OUTPUT
           echo "Matrix: $MATRIX"
+
   # ============================================================
-  # Job 1: Multi-platform Wheel build (including ARM64)
+  # Job 1: Multi-platform Wheel build
   # ============================================================
   build-wheels:
     name: "Build Wheels - ${{ matrix.label }}"
@@ -118,17 +115,16 @@ jobs:
         include: ${{ fromJSON(needs.generate-matrix.outputs.matrix-include) }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
 
       - name: Build wheel (self-hosted Linux via docker)
         if: matrix.runner_labels
         run: |
-          docker exec ade bash $ADE_CONTAINER_PATH/python/improve_pyorbbecsdk_readme/scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}
-
-      - name: Copy wheels to workspace
-        if: matrix.runner_labels
-        run: |
+          docker cp . ade:/tmp/build-src/
+          docker exec ade bash -c "cd /tmp/build-src && bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}"
           mkdir -p ./wheel
-          cp $ADE_WORKSPACE/python/improve_pyorbbecsdk_readme/wheel/*.whl ./wheel/
+          docker cp ade:/tmp/build-src/wheel/. ./wheel/
 
       - name: Install uv
         if: "!matrix.runner_labels"
