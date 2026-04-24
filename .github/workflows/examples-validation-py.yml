@@ -203,44 +203,56 @@ jobs:
           uv pip install "$WHL_FILE"
 
       # -----------------------------------------------------------------------
-      # 6. Run examples batch
+      # 6. Run all examples smoke test
       # -----------------------------------------------------------------------
-      - name: Run examples batch (Windows)
+      - name: Run all examples (Windows)
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          New-Item -ItemType Directory -Force -Path "reports/examples/${{ matrix.job_id }}" | Out-Null
-          python test/examples_tests/run_examples_suite.py `
-            --manifest reports/examples/discovery/examples_manifest.json `
-            --case-ids '${{ matrix.case_ids }}' `
-            --suite-name '${{ matrix.job_id }}' `
-            --pool-name '${{ matrix.pool_name }}' `
-            --platform '${{ matrix.platform }}' `
-            --output-dir "reports/examples/${{ matrix.job_id }}"
+          python examples/run_all_examples.py
 
-      - name: Run examples batch (Linux/macOS)
+      - name: Run all examples (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p reports/examples/${{ matrix.job_id }}
-          python test/examples_tests/run_examples_suite.py \
-            --manifest reports/examples/discovery/examples_manifest.json \
-            --case-ids '${{ matrix.case_ids }}' \
-            --suite-name '${{ matrix.job_id }}' \
-            --pool-name '${{ matrix.pool_name }}' \
-            --platform '${{ matrix.platform }}' \
-            --output-dir reports/examples/${{ matrix.job_id }}
+          python examples/run_all_examples.py
 
       # -----------------------------------------------------------------------
-      # 7. Upload artifacts
+      # 7. Archive and upload smoke report
       # -----------------------------------------------------------------------
-      - name: Upload batch artifacts
+      - name: Archive smoke report (Windows)
+        if: runner.os == 'Windows' && always()
+        shell: powershell
+        run: |
+          $src = "reports/examples-smoke"
+          $dst = "reports/examples-smoke.zip"
+          if (Test-Path $dst) { Remove-Item $dst -Force }
+          if (Test-Path $src) {
+            Compress-Archive -Path "$src/*" -DestinationPath $dst -Force
+            Write-Host "Archived to $dst"
+          } else {
+            Write-Host "Source directory $src not found, skipping archive"
+          }
+
+      - name: Archive smoke report (Linux/macOS)
+        if: runner.os != 'Windows' && always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d "reports/examples-smoke" ]; then
+            cd reports
+            rm -f examples-smoke.zip
+            zip -r examples-smoke.zip examples-smoke/
+            cd ..
+          fi
+
+      - name: Upload smoke report artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: py-examples-results-${{ matrix.job_id }}
-          path: reports/examples/${{ matrix.job_id }}/**
+          name: py-examples-smoke-${{ matrix.job_id }}
+          path: reports/examples-smoke.zip
           retention-days: 30
 
   # -----------------------------------------------------------------------
@@ -261,50 +273,44 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Download examples artifacts
+      - name: Download smoke artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: py-examples-results-*
-          path: all_examples_results
+          pattern: py-examples-smoke-*
+          path: all_smoke_results
           merge-multiple: false
 
-      - name: Merge reports
+      - name: Package all smoke reports
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p reports/examples/aggregate
-          python test/examples_tests/merge_example_results.py \
-            --input-dir all_examples_results \
-            --output-dir reports/examples/aggregate \
-            --title 'Examples Aggregate Report (Python)'
+          mkdir -p reports/examples-smoke-aggregate
+          for dir in all_smoke_results/*/; do
+            job_id=$(basename "$dir")
+            mkdir -p "reports/examples-smoke-aggregate/$job_id"
+            if [ -f "$dir/examples-smoke.zip" ]; then
+              unzip -q "$dir/examples-smoke.zip" -d "reports/examples-smoke-aggregate/$job_id" || true
+            fi
+          done
+          cd reports
+          zip -r examples-smoke-aggregate.zip examples-smoke-aggregate/
+          cd ..
 
-      - name: Upload aggregate artifact
+      - name: Upload aggregate smoke artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: py-examples-aggregate-${{ github.run_id }}
-          path: reports/examples/aggregate/**
+          name: py-examples-smoke-aggregate-${{ github.run_id }}
+          path: reports/examples-smoke-aggregate.zip
           retention-days: 30
 
-      - name: Summarize aggregate result
+      - name: Summarize smoke results
         if: always()
         shell: bash
         run: |
-          python -c "
-          import json
-          from pathlib import Path
-
-          result_path = Path('reports/examples/aggregate/results.json')
-          if not result_path.exists():
-              raise SystemExit(0)
-
-          payload = json.loads(result_path.read_text(encoding='utf-8'))
-          stats = payload.get('stats', {})
-          with open('summary.md', 'w', encoding='utf-8') as summary:
-              summary.write('## Examples Aggregate Summary\n')
-              summary.write(f'- Total: {stats.get(\"total\", 0)}\n')
-              summary.write(f'- Passed: {stats.get(\"passed\", 0)}\n')
-              summary.write(f'- Failed: {stats.get(\"failed\", 0)}\n')
-              summary.write(f'- Skipped: {stats.get(\"skipped\", 0)}\n')
-          "
-          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+          echo "## Examples Smoke Test Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Platforms tested: $(ls all_smoke_results/ | wc -l)" >> "$GITHUB_STEP_SUMMARY"
+          for dir in all_smoke_results/*/; do
+            job_id=$(basename "$dir")
+            echo "- $job_id" >> "$GITHUB_STEP_SUMMARY"
+          done
