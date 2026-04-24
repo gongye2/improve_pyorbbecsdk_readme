@@ -2,6 +2,17 @@ name: Examples Validation (Python)
 
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: "Target platform"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - windows_x64
+          - linux_x86_64
+          - linux_arm64
   pull_request:
     paths:
       - examples/**
@@ -10,9 +21,9 @@ on:
 
 jobs:
   # -----------------------------------------------------------------------
-  # 1. Discover examples and generate CI matrix
+  # 1. Discover self-hosted runners and generate CI matrix
   # -----------------------------------------------------------------------
-  discover:
+  discover-hw-runners:
     runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.export.outputs.matrix }}
@@ -26,20 +37,25 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Generate manifest and matrix
+      - name: Generate examples validation matrix from global runner pools
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p reports/examples/discovery
-          python test/examples_tests/generate_examples_manifest.py \
-            --workspace-root . \
-            --output reports/examples/discovery/examples_manifest.json \
-            --overrides test/examples_tests/config/example_overrides.json
-          python test/examples_tests/generate_ci_matrix.py \
-            --manifest reports/examples/discovery/examples_manifest.json \
-            --runner-pools scripts/runner/runner_pools.json \
-            --output-matrix reports/examples/discovery/examples_matrix.json \
-            --output-unassigned reports/examples/discovery/examples_unassigned.json
+          mkdir -p reports/hw_discovery
+          PLATFORM="${{ github.event.inputs.platform || '' }}"
+          if [ "$PLATFORM" = "all" ] || [ -z "$PLATFORM" ]; then
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --required-capabilities depth,color \
+              --all-platforms \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          else
+            python scripts/runner/generate_hw_full_test_matrix.py \
+              --runner-pools scripts/runner/runner_pools.json \
+              --platform "$PLATFORM" \
+              --required-capabilities depth,color \
+              --output-matrix reports/hw_discovery/hw_matrix.json
+          fi
 
       - name: Export matrix output
         id: export
@@ -49,13 +65,13 @@ jobs:
           MATRIX_JSON=$(python -c "
           import json
           from pathlib import Path
-          payload = json.loads(Path('reports/examples/discovery/examples_matrix.json').read_text(encoding='utf-8'))
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
           print(json.dumps(payload, separators=(',', ':')))
           ")
           MATRIX_COUNT=$(python -c "
           import json
           from pathlib import Path
-          payload = json.loads(Path('reports/examples/discovery/examples_matrix.json').read_text(encoding='utf-8'))
+          payload = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
           print(len(payload))
           ")
           echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
@@ -73,38 +89,24 @@ jobs:
           import os
           from pathlib import Path
 
-          manifest = json.loads(Path('reports/examples/discovery/examples_manifest.json').read_text(encoding='utf-8'))
-          matrix = json.loads(Path('reports/examples/discovery/examples_matrix.json').read_text(encoding='utf-8'))
-          unassigned = json.loads(Path('reports/examples/discovery/examples_unassigned.json').read_text(encoding='utf-8'))
-
+          matrix = json.loads(Path('reports/hw_discovery/hw_matrix.json').read_text(encoding='utf-8'))
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as summary:
-              summary.write('## Examples Discovery\n')
-              summary.write(f'- Cases discovered: {manifest.get(\"case_count\", 0)}\n')
+              summary.write('## Examples Validation Runner Discovery\n')
               summary.write(f'- Matrix jobs: {len(matrix)}\n')
-              summary.write(f'- Unassigned case-platform pairs: {len(unassigned)}\n')
-              if unassigned:
-                  summary.write('### Unassigned\n')
-                  for item in unassigned[:20]:
-                      summary.write(f'- {item[\"case_id\"]}: {\", \".join(item[\"missing_platforms\"])}\n')
+              for item in matrix:
+                  summary.write(f'- {item[\"pool_name\"]} -> {item[\"platform\"]}\n')
           "
 
-      - name: Upload discovery artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: py-examples-discovery-${{ github.run_id }}
-          path: reports/examples/discovery/*
-          retention-days: 30
-
   # -----------------------------------------------------------------------
-  # 2. Build wheel and run examples
+  # 2. Build wheel, run examples smoke test and upload report
   # -----------------------------------------------------------------------
   examples:
-    needs: discover
-    if: ${{ needs.discover.outputs.has_matrix == 'true' }}
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix == 'true' }}
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.discover.outputs.matrix) }}
+        include: ${{ fromJSON(needs.discover-hw-runners.outputs.matrix) }}
     name: ${{ matrix.display_name }}
     runs-on: ${{ fromJSON(matrix.runs_on) }}
     steps:
@@ -203,7 +205,57 @@ jobs:
           uv pip install "$WHL_FILE"
 
       # -----------------------------------------------------------------------
-      # 6. Run all examples smoke test
+      # 6. Device health check
+      # -----------------------------------------------------------------------
+      - name: Device health check (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      - name: Device health check (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python -c "
+          from pyorbbecsdk import Context, OBLogLevel
+          ctx = Context()
+          ctx.set_logger_level(OBLogLevel.NONE)
+          dev_list = ctx.query_devices()
+          count = dev_list.get_count()
+          print(f'Connected devices: {count}')
+          if count > 0:
+              dev = dev_list.get_device_by_index(0)
+              info = dev.get_device_info()
+              print(f'Device: {info.get_name()}')
+              print(f'Serial: {info.get_serial_number()}')
+              print(f'Firmware: {info.get_firmware_version()}')
+          else:
+              print('WARNING: No Orbbec device detected')
+              exit(1)
+          "
+
+      # -----------------------------------------------------------------------
+      # 7. Run all examples smoke test
       # -----------------------------------------------------------------------
       - name: Run all examples (Windows)
         if: runner.os == 'Windows'
@@ -219,7 +271,7 @@ jobs:
           python examples/run_all_examples.py
 
       # -----------------------------------------------------------------------
-      # 7. Archive and upload smoke report
+      # 8. Archive and upload smoke report
       # -----------------------------------------------------------------------
       - name: Archive smoke report (Windows)
         if: runner.os == 'Windows' && always()
@@ -251,16 +303,17 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: py-examples-smoke-${{ matrix.job_id }}
+          name: py-examples-smoke-${{ matrix.pool_name }}-${{ github.run_id }}
           path: reports/examples-smoke.zip
           retention-days: 30
+          if-no-files-found: warn
 
   # -----------------------------------------------------------------------
   # 3. Merge and summarize results
   # -----------------------------------------------------------------------
   aggregate:
     needs:
-      - discover
+      - discover-hw-runners
       - examples
     if: always()
     runs-on: ubuntu-22.04
@@ -303,6 +356,7 @@ jobs:
           name: py-examples-smoke-aggregate-${{ github.run_id }}
           path: reports/examples-smoke-aggregate.zip
           retention-days: 30
+          if-no-files-found: warn
 
       - name: Summarize smoke results
         if: always()
@@ -314,3 +368,15 @@ jobs:
             job_id=$(basename "$dir")
             echo "- $job_id" >> "$GITHUB_STEP_SUMMARY"
           done
+
+  # -----------------------------------------------------------------------
+  # 4. Report missing runner mapping
+  # -----------------------------------------------------------------------
+  no-runner-summary:
+    needs: discover-hw-runners
+    if: ${{ needs.discover-hw-runners.outputs.has_matrix != 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Report missing runner mapping
+        run: |
+          echo "No eligible self-hosted runner pool found for examples validation in scripts/runner/runner_pools.json" >> "$GITHUB_STEP_SUMMARY"
