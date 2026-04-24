@@ -60,7 +60,14 @@ if [[ -z "$LABELS" ]]; then
   exit 1
 fi
 
-ARCHIVE="actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz"
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64)  ARCHIVE="actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" ;;
+  aarch64|arm64) ARCHIVE="actions-runner-linux-arm64-${RUNNER_VERSION}.tar.gz" ;;
+  armv7l)  ARCHIVE="actions-runner-linux-arm-${RUNNER_VERSION}.tar.gz" ;;
+  *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+esac
+
 URL="https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/${ARCHIVE}"
 
 mkdir -p .runner
