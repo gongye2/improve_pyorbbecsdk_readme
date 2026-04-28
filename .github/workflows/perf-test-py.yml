@@ -15,6 +15,11 @@ on:
           - windows_x64
           - linux_x86_64
           - linux_arm64
+      duration_seconds:
+        description: "Test duration in seconds per test case"
+        required: false
+        default: "15"
+        type: number
 
 jobs:
   discover-hw-runners:
@@ -254,6 +259,8 @@ jobs:
       - name: Run performance & thread-safety tests (Windows)
         if: runner.os == 'Windows'
         shell: powershell
+        env:
+          PERF_DURATION_SECONDS: ${{ github.event.inputs.duration_seconds || '15' }}
         run: |
           python -m pytest test/perf/ test/thread_safety/ -v --tb=short `
             --junitxml=reports/perf_junit.xml `
@@ -262,6 +269,8 @@ jobs:
       - name: Run performance & thread-safety tests (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
+        env:
+          PERF_DURATION_SECONDS: ${{ github.event.inputs.duration_seconds || '15' }}
         run: |
           python -m pytest test/perf/ test/thread_safety/ -v --tb=short \
             --junitxml=reports/perf_junit.xml \
