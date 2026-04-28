@@ -262,7 +262,7 @@ jobs:
         env:
           PERF_DURATION_SECONDS: ${{ github.event.inputs.duration_seconds || '15' }}
         run: |
-          python -m pytest test/perf/ test/thread_safety/ -v --tb=short `
+          python -m pytest test/perf/ test/thread_safety/ -v -s --tb=short `
             --junitxml=reports/perf_junit.xml `
             2>&1 | Tee-Object -FilePath reports/perf.log
 
@@ -272,7 +272,7 @@ jobs:
         env:
           PERF_DURATION_SECONDS: ${{ github.event.inputs.duration_seconds || '15' }}
         run: |
-          python -m pytest test/perf/ test/thread_safety/ -v --tb=short \
+          python -m pytest test/perf/ test/thread_safety/ -v -s --tb=short \
             --junitxml=reports/perf_junit.xml \
             2>&1 | tee reports/perf.log
 
