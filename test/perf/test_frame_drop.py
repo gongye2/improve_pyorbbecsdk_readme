@@ -105,8 +105,16 @@ _VALID_TYPES = {
 class StreamStats:
     stream_name: str = ""
     total_frames: int = 0
-    fps: int = 0
+    configured_fps: int = 0  # from stream profile
+    actual_fps: float = 0.0  # computed as total_frames / elapsed_time
     expected_interval_us: float = 0.0
+
+    # timing for actual FPS calculation
+    first_frame_time: float = 0.0
+    last_frame_time: float = 0.0
+
+    # interval FPS tracking
+    last_interval_frames: int = 0  # total_frames at last interval checkpoint
 
     # frame-index continuity
     prev_meta_frame_number: int = -1
@@ -121,6 +129,17 @@ class StreamStats:
     hw_ts_anomalies: int = 0
     sys_ts_anomalies: int = 0
     global_ts_anomalies: int = 0
+
+
+# ===================================================================
+# Interval FPS record
+# ===================================================================
+@dataclass
+class FpsInterval:
+    stream_name: str = ""
+    interval_sec: int = 0
+    frame_count: int = 0
+    fps: float = 0.0
 
 
 # ===================================================================
@@ -304,6 +323,12 @@ class PerfStreamTest:
         self.csv_prefix = ""
         self.resource_monitor = ResourceMonitor()
 
+        # Interval FPS tracking
+        self._fps_interval_sec = 5
+        self._fps_intervals: list[FpsInterval] = []
+        self._fps_interval_running = False
+        self._fps_interval_thread: threading.Thread | None = None
+
     def process_frame(self, frame):
         """Process a single frame, updating stats and writing CSV."""
         if frame is None:
@@ -328,14 +353,15 @@ class PerfStreamTest:
         except Exception:
             pass
 
-        fps = 0
+        profile_fps = 0
         try:
             profile = frame.get_stream_profile()
             if profile:
-                fps = profile.get_fps()
+                profile_fps = profile.get_fps()
         except Exception:
             pass
 
+        now = time.time()
         with self.lock:
             st = self.stats_map.get(ntype)
             if st is None:
@@ -343,8 +369,11 @@ class PerfStreamTest:
                 self.stats_map[ntype] = st
 
             if st.total_frames == 0:
-                st.fps = fps if fps > 0 else 30
-                st.expected_interval_us = 1e6 / st.fps if st.fps > 0 else 0
+                st.configured_fps = profile_fps if profile_fps > 0 else 30
+                st.expected_interval_us = 1e6 / st.configured_fps if st.configured_fps > 0 else 0
+                st.first_frame_time = now
+
+            st.last_frame_time = now
 
             if st.total_frames > 0:
                 # SDK index continuity
@@ -383,23 +412,23 @@ class PerfStreamTest:
             st.total_frames += 1
 
             # Write CSV row
-            self._write_csv_row(ntype, sdk_index, meta_fn, hw_ts, sys_ts, global_ts, fps)
+            self._write_csv_row(ntype, sdk_index, meta_fn, hw_ts, sys_ts, global_ts)
 
     def open_csv(self, ftype: OBFrameType):
         """Open a per-stream CSV file for writing."""
         name = f"{self.csv_prefix}_{_stream_label(ftype)}_frames.csv"
         try:
             f = open(name, "w")
-            f.write("SdkIndex,MetaFrameNumber,HwTimestamp_us,SysTimestamp_us,GlobalTimestamp_us,FPS\n")
+            f.write("SdkIndex,MetaFrameNumber,HwTimestamp_us,SysTimestamp_us,GlobalTimestamp_us\n")
             self.csv_files[ftype] = f
         except Exception:
             pass
 
-    def _write_csv_row(self, ftype, sdk_index, meta_fn, hw_ts, sys_ts, global_ts, fps):
+    def _write_csv_row(self, ftype, sdk_index, meta_fn, hw_ts, sys_ts, global_ts):
         csv_file = self.csv_files.get(ftype)
         if csv_file and not csv_file.closed:
             try:
-                csv_file.write(f"{sdk_index},{meta_fn},{hw_ts},{sys_ts},{global_ts},{fps}\n")
+                csv_file.write(f"{sdk_index},{meta_fn},{hw_ts},{sys_ts},{global_ts}\n")
             except Exception:
                 pass
 
@@ -412,6 +441,55 @@ class PerfStreamTest:
                 except Exception:
                     pass
         self.csv_files.clear()
+
+    def _fps_interval_loop(self):
+        sec = 0
+        while self._fps_interval_running:
+            time.sleep(self._fps_interval_sec)
+            if not self._fps_interval_running:
+                break
+            sec += self._fps_interval_sec
+            with self.lock:
+                for ftype, st in sorted(self.stats_map.items(), key=lambda x: int(x[0])):
+                    delta = st.total_frames - st.last_interval_frames
+                    fps = round(delta / self._fps_interval_sec, 6)
+                    st.last_interval_frames = st.total_frames
+                    self._fps_intervals.append(
+                        FpsInterval(
+                            stream_name=st.stream_name,
+                            interval_sec=sec,
+                            frame_count=delta,
+                            fps=fps,
+                        )
+                    )
+                    print(f"[FPS] [{sec}s] {st.stream_name}: {delta} frames, {fps:.6f} FPS")
+
+    def start_fps_interval(self):
+        self._fps_intervals.clear()
+        with self.lock:
+            for st in self.stats_map.values():
+                st.last_interval_frames = st.total_frames
+        self._fps_interval_running = True
+        self._fps_interval_thread = threading.Thread(
+            target=self._fps_interval_loop, daemon=True, name="fps_interval_monitor"
+        )
+        self._fps_interval_thread.start()
+
+    def stop_fps_interval(self):
+        self._fps_interval_running = False
+        if self._fps_interval_thread and self._fps_interval_thread.is_alive():
+            self._fps_interval_thread.join(timeout=10)
+
+    def save_fps_interval_csv(self, prefix: str):
+        path = f"{prefix}_fps_interval.csv"
+        try:
+            with open(path, "w") as f:
+                f.write("Stream,IntervalSec,FrameCount,FPS\n")
+                for rec in self._fps_intervals:
+                    f.write(f"{rec.stream_name},{rec.interval_sec},{rec.frame_count},{rec.fps:.6f}\n")
+            print(f"[FpsInterval] Saved: {path}")
+        except Exception as e:
+            print(f"[FpsInterval] Failed to save CSV: {e}")
 
     def run_streaming_test(self, prefix: str):
         """Run the shared streaming test logic."""
@@ -472,13 +550,19 @@ class PerfStreamTest:
             pytest.skip("Failed to start pipeline")
 
         print(f"[PerfTest] Streaming ({prefix}) for {self.duration_sec}s ...")
+
+        # Start interval FPS monitor (needs stats_map populated, so start after first frames arrive)
+        self.start_fps_interval()
+
         time.sleep(self.duration_sec)
 
         self.pipeline.stop()
         self.resource_monitor.stop()
+        self.stop_fps_interval()
 
         # Save reports
         self.resource_monitor.save_csv(prefix)
+        self.save_fps_interval_csv(prefix)
         self.close_csv()
 
         # Print summary
@@ -490,7 +574,10 @@ class PerfStreamTest:
 
         with self.lock:
             for ntype, st in sorted(self.stats_map.items(), key=lambda x: int(x[0])):
-                print(f"--- {st.stream_name} (fps={st.fps}) ---")
+                elapsed = st.last_frame_time - st.first_frame_time if st.first_frame_time and st.last_frame_time else 0
+                st.actual_fps = round(st.total_frames / elapsed, 6) if elapsed > 0 else 0.0
+
+                print(f"--- {st.stream_name} (configured_fps={st.configured_fps}, actual_fps={st.actual_fps:.6f}) ---")
                 print(f"  Total frames:              {st.total_frames}")
                 print(f"  SDK index discontinuities: {st.sdk_index_drops}")
                 print(f"  Meta HW index drops:       {st.meta_index_drops}")
@@ -528,6 +615,7 @@ class PerfStreamTest:
 
     def cleanup(self):
         self.resource_monitor.stop()
+        self.stop_fps_interval()
         self.close_csv()
 
 

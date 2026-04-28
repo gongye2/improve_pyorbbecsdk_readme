@@ -395,6 +395,7 @@ jobs:
             reports/*.log
             *_frames.csv
             *_resource.csv
+            *_fps_interval.csv
           retention-days: 30
 
   no-runner-summary:
