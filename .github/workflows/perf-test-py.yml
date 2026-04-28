@@ -393,6 +393,8 @@ jobs:
           path: |
             reports/*.xml
             reports/*.log
+            *_frames.csv
+            *_resource.csv
           retention-days: 30
 
   no-runner-summary:
