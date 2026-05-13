@@ -126,7 +126,8 @@ jobs:
             -w /workspace \
             --entrypoint bash \
             python-build-env:latest \
-            -c "bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }}"
+            -c "bash scripts/build_whl/build-whl-uv.sh --yes ${{ matrix.python-version }} \
+            && chown -R $(id -u):$(id -g) /workspace"
 
       - name: Install uv
         if: "!matrix.runner_labels"
