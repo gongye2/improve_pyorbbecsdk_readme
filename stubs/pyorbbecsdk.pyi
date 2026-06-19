@@ -3535,6 +3535,8 @@ class OBPropertyID:
 
       OB_PROP_DHCP_ASSIGN_IP_TIMEOUT_INT : DHCP assign IP timeout, unit: second
 
+      OB_PROP_FPS_BOOST_BOOL : Enable FPS boost in trigger mode
+
       OB_PROP_LASER_OVERCURRENT_PROTECTION_STATUS_BOOL : Query the status of laser overcurrent protection (read-only)
 
       OB_PROP_LASER_PULSE_WIDTH_PROTECTION_STATUS_BOOL : Query the status of laser pulse width protection (read-only)
@@ -4005,6 +4007,7 @@ class OBPropertyID:
     OB_PROP_FAN_WORK_MODE_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FAN_WORK_MODE_INT: 62>
     OB_PROP_FLOOD_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FLOOD_BOOL: 6>
     OB_PROP_FLOOD_LEVEL_INT: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FLOOD_LEVEL_INT: 7>
+    OB_PROP_FPS_BOOST_BOOL: typing.ClassVar[OBPropertyID]  # value = <OBPropertyID.OB_PROP_FPS_BOOST_BOOL: 275>
     OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT: typing.ClassVar[
         OBPropertyID
     ]  # value = <OBPropertyID.OB_PROP_FRAME_INTERLEAVE_CONFIG_INDEX_INT: 204>
