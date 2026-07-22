@@ -20,6 +20,7 @@ import sys
 
 import cv2
 import numpy as np
+from utils import resize_to_fit
 
 from pyorbbecsdk import HDRMergeFilter  # type: ignore
 from pyorbbecsdk import (
@@ -184,11 +185,12 @@ def main(argv):
             ir_right_image = enhance_contrast(ir_right_image, clip_limit=4.0)
             merged_depth_image = enhance_contrast(merged_depth_image, clip_limit=4.0)
 
-            # Ensure all images have the same dimensions for display
+            # Fit all images into a common cell (depth's resolution) for the
+            # 2x2 grid, preserving each one's aspect ratio with black borders.
             h, w = depth_image.shape[:2]
-            ir_left_image = cv2.resize(ir_left_image, (w, h))
-            ir_right_image = cv2.resize(ir_right_image, (w, h))
-            merged_depth_image = cv2.resize(merged_depth_image, (w, h))
+            ir_left_image = resize_to_fit(ir_left_image, w, h)
+            ir_right_image = resize_to_fit(ir_right_image, w, h)
+            merged_depth_image = resize_to_fit(merged_depth_image, w, h)
 
             # Add text annotations to images
             ir_left_image = add_text_to_image(ir_left_image, "Left IR (HDR)", (10, 30))

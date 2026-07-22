@@ -255,6 +255,16 @@ def main():
             else:
                 optional_filters.append(f)
 
+        if disparity_filter is None:
+            # Some devices/firmwares do not recommend a DisparityTransform
+            # filter. On uncompressed streams (Y16/Z16/Y12C4, checked below)
+            # it is only a near-identity transform, so we fall back to using
+            # the raw depth frame directly as the baseline.
+            print(
+                "Warning: DisparityTransform filter is not available on this "
+                "device. Using raw depth frames directly as the baseline."
+            )
+
         # Show initial filters information
         print_filters_info(filters)
 
@@ -289,7 +299,12 @@ def main():
                 continue
 
             # ---- Pre-process: decompress RLE → raw depth (baseline) ----
-            baseline_frame = disparity_filter.process(depth_frame)
+            if disparity_filter is not None:
+                baseline_frame = disparity_filter.process(depth_frame)
+            else:
+                # No DisparityTransform filter on this device; the format is
+                # already uncompressed (checked above), so use the raw frame.
+                baseline_frame = depth_frame
             if baseline_frame is None:
                 continue
 

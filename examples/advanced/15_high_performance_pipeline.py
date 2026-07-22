@@ -36,7 +36,6 @@ from pyorbbecsdk import (
     Context,
     FrameSet,
     OBError,
-    OBLogLevel,
     OBSensorType,
     Pipeline,
 )
@@ -116,8 +115,6 @@ def main():
         print("Device Not Found! Please connect an Orbbec camera and try again.")
         return
 
-    ctx.set_logger_level(OBLogLevel.WARNING)
-
     pipeline = Pipeline()
     config = Config()
     depth_q = FrameQueue()
@@ -157,6 +154,9 @@ def main():
     print("Press 'q' or ESC to quit.\n")
 
     try:
+        # Create a resizable window for the pipeline visualization
+        cv2.namedWindow("High-Performance Pipeline  |  Press 'q' to quit", cv2.WINDOW_NORMAL)
+
         while True:
             t0 = time.perf_counter()
 

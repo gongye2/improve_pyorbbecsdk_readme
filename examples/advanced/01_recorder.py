@@ -7,6 +7,8 @@
 #    3. How to use frame callbacks with threading for smooth GUI recording
 #    4. How to pause and resume recording without stopping the pipeline
 #    5. How to run in headless mode (no display) with per-stream FPS output
+#    6. How to export a sidecar JSON preset so playback can restore the exact
+#       recording environment (sensor profiles, D2C/PC config, HDR, etc.)
 #
 #  Keyboard (GUI mode, default):
 #    S       — Pause / Resume recording
@@ -30,6 +32,7 @@ import argparse
 import math
 import threading
 import time
+from pathlib import Path
 from threading import Lock
 
 import cv2
@@ -38,11 +41,14 @@ from utils import frame_to_bgr_image, is_astra_mini_device, is_gemini305g_device
 
 from pyorbbecsdk import OBFormat  # type: ignore
 from pyorbbecsdk import (
+    ApplicationConfig,
+    ApplicationSensorConfig,
     Config,
     Context,
     OBError,
     OBFrameType,
     OBSensorType,
+    OBStreamType,
     Pipeline,
     RecordDevice,
 )
@@ -53,6 +59,8 @@ class GlobalState:
         self.frame_mutex = threading.Lock()
         self.imu_mutex = threading.Lock()
         self.recorder = None
+        self.device = None
+        self.bag_path = ""
         self.is_paused = False
         self.stop_rendering = False
         self.support_dual_ir = False
@@ -84,11 +92,145 @@ _counts: dict = {}
 # ---------------------------------------------------------------------------
 
 
+def _derive_json_path(bag_path: str) -> str:
+    """Derive sidecar JSON path from bag path (xxx.bag -> xxx.json)."""
+    return str(Path(bag_path).with_suffix(".json"))
+
+
+def _stream_type_to_sensor_type(stream_type):
+    """Map OBStreamType (or its underlying int) to OBSensorType.
+
+    This function is robust against SDK version differences:
+    - some pyorbbecsdk wheels expose enum members as  OBStreamType.COLOR_STREAM
+    - others may expose them as  OBStreamType.COLOR
+    We therefore convert everything to int before comparing.
+    """
+    # 1. Normalise the input to an int (works for both enum members and raw ints)
+    try:
+        type_val = int(stream_type)
+    except Exception:
+        return None
+
+    # 2. Helper: safely fetch an enum value, trying several possible names
+    def _get(enum_type, *names):
+        for n in names:
+            if hasattr(enum_type, n):
+                try:
+                    return int(getattr(enum_type, n))
+                except Exception:
+                    pass
+        return None
+
+    # 3. Build the int -> OBSensorType mapping dynamically
+    mapping = {}
+    color = _get(OBStreamType, "COLOR_STREAM", "COLOR")
+    if color is not None:
+        mapping[color] = OBSensorType.COLOR_SENSOR
+
+    depth = _get(OBStreamType, "DEPTH_STREAM", "DEPTH")
+    if depth is not None:
+        mapping[depth] = OBSensorType.DEPTH_SENSOR
+
+    ir = _get(OBStreamType, "IR_STREAM", "IR")
+    if ir is not None:
+        mapping[ir] = OBSensorType.IR_SENSOR
+
+    left_ir = _get(OBStreamType, "LEFT_IR_STREAM", "LEFT_IR")
+    if left_ir is not None:
+        mapping[left_ir] = OBSensorType.LEFT_IR_SENSOR
+
+    right_ir = _get(OBStreamType, "RIGHT_IR_STREAM", "RIGHT_IR")
+    if right_ir is not None:
+        mapping[right_ir] = OBSensorType.RIGHT_IR_SENSOR
+
+    confidence = _get(OBStreamType, "CONFIDENCE_STREAM", "CONFIDENCE")
+    if confidence is not None:
+        mapping[confidence] = OBSensorType.CONFIDENCE_SENSOR
+
+    left_color = _get(OBStreamType, "LEFT_COLOR_STREAM", "LEFT_COLOR")
+    if left_color is not None:
+        mapping[left_color] = OBSensorType.LEFT_COLOR_SENSOR
+
+    right_color = _get(OBStreamType, "RIGHT_COLOR_STREAM", "RIGHT_COLOR")
+    if right_color is not None:
+        mapping[right_color] = OBSensorType.RIGHT_COLOR_SENSOR
+
+    accel = _get(OBStreamType, "ACCEL_STREAM", "ACCEL")
+    if accel is not None:
+        mapping[accel] = OBSensorType.ACCEL_SENSOR
+
+    gyro = _get(OBStreamType, "GYRO_STREAM", "GYRO")
+    if gyro is not None:
+        mapping[gyro] = OBSensorType.GYRO_SENSOR
+
+    return mapping.get(type_val)
+
+
+def _export_sidecar_json(device, pipeline, bag_path: str):
+    """Export sidecar JSON alongside the .bag file to persist runtime settings.
+
+    The JSON contains ApplicationConfig (sensor profiles, D2C/PC config,
+    HDR merge, decimation) plus device-level properties.  It is loaded
+    during playback to restore the exact recording environment.
+
+    NOTE: To make the exported JSON complete, we manually build the
+    ApplicationConfig layer before calling export_settings_as_preset_json_file().
+    Otherwise only device-level properties (exposure, gain, filters, etc.)
+    are exported; the stream profiles and D2C/HDR/undistortion states are lost.
+    """
+    if device is None or not bag_path:
+        return
+    json_path = _derive_json_path(bag_path)
+    try:
+        # Build ApplicationConfig from current pipeline state so that the
+        # sidecar JSON also records which streams are active and their exact
+        # StreamProfiles (resolution, format, fps).
+        app_cfg_ok = False
+        try:
+            if ApplicationConfig.is_supported(device) and pipeline:
+                app_config = ApplicationConfig.get(device)
+                app_config.reset()
+
+                cfg = pipeline.get_config()
+                profile_list = cfg.get_enabled_stream_profile_list()
+                sensor_cfgs = []
+                for i in range(len(profile_list)):
+                    profile = profile_list.get_stream_profile_by_index(i)
+                    st = profile.get_type()
+                    sensor_type = _stream_type_to_sensor_type(st)
+                    if sensor_type is not None:
+                        sensor_cfg = ApplicationSensorConfig(sensor_type)
+                        sensor_cfg.enable_stream(True)
+                        sensor_cfg.set_stream_profile(profile)
+                        # Undistortion state is not tracked in this sample;
+                        # default to False.  If your app toggles undistortion,
+                        # read the state and pass it here.
+                        sensor_cfg.enable_undistortion(False)
+                        sensor_cfgs.append(sensor_cfg)
+                    else:
+                        print(f"[Sidecar] Debug: unmapped stream type {st} (int={int(st)})")
+
+                if sensor_cfgs:
+                    app_config.set_sensors(sensor_cfgs)
+                    app_cfg_ok = True
+                    print(f"[Sidecar] Built ApplicationConfig for {len(sensor_cfgs)} sensor(s).")
+        except Exception as e:
+            print(f"[Sidecar] Warning: failed to build ApplicationConfig: {e}")
+
+        device.export_settings_as_preset_json_file(json_path)
+        print(f"[Sidecar] Exported preset JSON: {json_path} (app_cfg_ok={app_cfg_ok})")
+    except Exception as e:
+        # Export failure must not affect the recording result
+        print(f"[Sidecar] Warning: failed to export preset JSON: {e}")
+
+
 def setup_camera(file_path: str):
     """Initialize device, create RecordDevice, enable all available streams."""
     pipeline = Pipeline()
     config = Config()
     device = pipeline.get_device()
+    state.device = device
+    state.bag_path = file_path
 
     try:
         device.timer_sync_with_host()
@@ -399,6 +541,10 @@ def main():
 
     file_path = input("Enter output filename (.bag) and press Enter to start recording: ")
 
+    # Pre-declare so the finally block is safe even if setup fails early
+    # (e.g. Pipeline() construction throws) and `pipeline` is never assigned.
+    pipeline = None
+
     try:
         if args.no_gui:
             # ---- Headless mode ----
@@ -409,6 +555,8 @@ def main():
                 device.timer_sync_with_host()
             except OBError as e:
                 print(e)
+            state.device = device
+            state.bag_path = file_path
             state.recorder = RecordDevice(device, file_path)
             device_info = device.get_device_info()
             sensor_list = device.get_sensor_list()
@@ -458,11 +606,17 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
     finally:
+        # 1. Close the bag file by releasing RecordDevice
         state.recorder = None
-        try:
+
+        # 2. Export sidecar JSON (must happen after bag is closed,
+        #    but BEFORE pipeline.stop() so we can still read the config).
+        #    This persists ApplicationConfig + device properties so that
+        #    playback can restore the exact recording environment.
+        _export_sidecar_json(state.device, pipeline, state.bag_path)
+
+        if pipeline:
             pipeline.stop()
-        except (NameError, UnboundLocalError):
-            pass
         cv2.destroyAllWindows()
 
 

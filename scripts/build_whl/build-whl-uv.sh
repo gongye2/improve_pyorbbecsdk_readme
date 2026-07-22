@@ -452,7 +452,7 @@ build_version() {
     if [ -d "$ROOT_DIR/dist" ]; then
         if [[ "$PYVER" != "3.8" ]]; then
             echo "Repairing wheel with auditwheel..."
-            uv run --python "$PYVER" --with auditwheel auditwheel repair "$ROOT_DIR"/dist/*.whl \
+            uv run --python "$PYVER" --with auditwheel auditwheel repair "."/dist/*.whl \
                 --exclude libEGL* \
                 --exclude libGLES* \
                 --exclude libGL* \
@@ -462,6 +462,11 @@ build_version() {
                 --exclude libob_*.so \
                 --exclude libfirmwareupdater.so \
                 --exclude libob_frame_processor.so \
+                --exclude libnvinfer.so.10 \
+                --exclude libnvinfer_plugin.so.10 \
+                --exclude libnvonnxparser.so.10 \
+                --exclude libcudart.so.* \
+                --exclude libcudart_* \
                 -w "$ROOT_DIR/dist/"
         fi
 
